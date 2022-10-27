@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html>
+<head>
+	
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css" integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ==" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js" integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ==" crossorigin=""></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <link rel="stylesheet" href="/static/pageStyle.css">
+    <link rel="stylesheet" href="/static/dialogPageStyle.css">
+
+    <script src="/static/haversine.js"></script>
+    <script src="/static/getMinMax.js"></script>
+    <script src="/static/gridCalc.js"></script>
+    <script src="/static/pointInPolygon.js"></script>
+
+<style>
+
+</style>
+</head>
+<body>
+
+<dialog id="aboutPage">
+    <h2>About this Site</h2>
+    <p>The purpose of this website is to provide a tool to develop algorithms
+         to detect anomalous behaviors in the marine traffic.</p>
+
+    <p>Through a visual interface the user can plot an Area of Interest (AOI) and save it for further loading. 
+        After that, it is possible to generate a grid of cells to map this AOI in order to analyze vessels trajectories
+        from recorded data through Automatic Information System (AIS) transmissions. </p>
+
+    <p>Instructions for the usage of this aplication can be found in the Help menu.</p>
+
+    <p>The source code is available to be download at XXXXX.</p>
+
+    <p>The site was developed and designed by Claudio V. Ribeiro as part of studies in his P.H.D. course.</p>
+
+    <button onclick="fechaAboutPage();" style="display:block; margin: 0 auto; background-color: rgb(141, 163, 236);">Close</button>
+</dialog>
+
+<dialog class="dialogo"    id="instructionsPage">
+    <h2>USER INSTRUCTIONS</h2>
+    <b>=== Navigation Menu ===</b>
+
+    <p>=== Map Set View<br>
+    Selection of a zoom area to center the map
+    </p>
+    === Area of Interest<br>
+    - Load: a storaged build area will be loaded from a file (CSV format) <br>
+    - Create: Build an area through the connection of location marks in the order of locations created <br>
+    - Save: All the location markers will be saved in a CSV file (latlongAOI.csv) in the order of locations created.
+    </p>
+    <p>
+     === Grid Cell Size<br>
+     Allow the selection of the Grid Cell Size in meters. The default value is 2000. 
+    </p>
+
+    <p>=== Grid Creation <br>
+      A Grid of Cells is built from the AOI and the selected Cell Size.</p>
+    
+    <p>=== Help<br>
+    - Instructions: To aid the user with the operation of the Vessel Trajectory Classifier Tool <br>
+    - About: To present information of the development description
+    </p>
+
+    <p><b>Note:</b> The action of page refresh in the browser will perform a new start of the aplication and <br>
+      all the previous interactions will be lost (e.g. location marks/polygons creation).
+    </p>
+    <b>======== MAP ========</b>
+    <p>A set of actions are available through mouse events over the map presented:</p>
+    <p>
+    - Mouse click: create a new location marker<br><br>
+    - Mouse double click: Over an existing location marker, the location will be excluded if it was <br>
+    <p {indent-text: 15em;}></p>the last one created<br><br>
+    - Mouse dragging: move the map to a new position<br><br>
+    - Mouse Scrolling: up -> zoom in; down -> zoom out.
+    </p>
+  
+     <button onclick="fechaInstructions();" style="display:block; margin: 0 auto; background-color: rgb(141, 163, 236);">Close</button>
+</dialog>
+
+<div class="header">
+  <h1>Vessel Trajectory Classifier Toll</h1>
+</div>
+
+<div class="topnav" id="myTopnav">
+  <div class="subnav">
+    <button class="subnavbtn">Map Set View <i class="fa fa-caret-down"></i></button>
+    <div class="subnav-content">
+      <a href="#" onclick="centralizarMapa(3);">Africa West Coast</a>
+      <a href="#" onclick="centralizarMapa(4);">Australia West Coast</a>
+      <a href="#" onclick="centralizarMapa(1);">Brazil Coast</a>
+      <a href="#" onclick="centralizarMapa(5);">Europe</a>
+      <a href="#" onclick="centralizarMapa(2);">USA East Coast</a>
+
+    </div>
+  </div> 	
+  <!----<a href="#" onclick="centralizarMapa();">Map Set View</a>-->
+  
+  <div class="subnav">
+    <button class="subnavbtn">Area of Interest <i class="fa fa-caret-down"></i></button>
+    <div class="subnav-content">
+    <!----  <a href="#" onclick="excluirUltPonto();">Remove Last Marker</a>-->
+      <a href="#" onclick="loadArea();" id="loadAOI">Load </a>
+      <a href="#" onclick="gerarPoligono();" id="geraAOI">Create </a>
+      <a href="#" onclick="download_csv_file();">Save </a>
+    </div>
+  </div>
+    
+  <div class="subnav">
+    <button class="subnavbtn">Grid Cell Size <i class="fa fa-caret-down"></i></button>
+    <div class="subnav-content">
+      <a href="#" onclick="setSizeCell(100);">100 </a>
+      <a href="#" onclick="setSizeCell(200);">200 </a>
+      <a href="#" onclick="setSizeCell(300);">300 </a>
+      <a href="#" onclick="setSizeCell(500);">500 </a>
+      <a href="#" onclick="setSizeCell(1000);">1000 </a>
+      <a href="#" onclick="setSizeCell(2000);">*2000 </a>
+      <a href="#" onclick="setSizeCell(5000);">5000 </a>
+    </div>
+  </div>
+
+  <div class="subnav">
+    <button class="subnavbtn" onclick="gridCreation();">Grid Creation </button>
+  </div>
+
+  <div class="subnav">
+    <button class="subnavbtn">Help <i class="fa fa-caret-down"></i></button>
+    <div class="subnav-content">
+      <a href="#" onclick="exibeInstructions();">Instructions</a>
+      <a href="#" onclick="exibeAboutPage();" id="showAboutPage">About</a>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="leftcolumn">
+    <div class="card">
+      <h3>MAP</h3>
+      <div id="mapa" style="width: 100.0%; height: 670px;"></div>
+    </div>
+    
+  </div>
+  <div class="rightcolumn">
+    <div class="card" id="cardSuperior">
+      <h3>Instructions</h3>
+      <div class="fakeimg" style="height:265px;">Image</div>
+      <p>Some text to aid the user..</p>
+    </div>
+    <div class="card" id="cardInferior">
+      <h3>Miscelaneous card</h3>
+      <div class="fakeimg" style="height:265px;"><p>Image</p></div>
+    
+    </div>
+  </div>
+</div>
+
+
+<div class="footer">
+  <p>&copy; 2022 - Claudio V. Ribeiro</p>
+</div>
+
+<script>
+    //const modal = document.querySelector("dialog");  //funciona
+    const modalAbout = document.getElementById("aboutPage");
+    const modalInstructions = document.getElementById("instructionsPage");
+    
+    console.log("distancia = ", getDistanceFromLatLng(30, -90, 31, -90));
+    cellSize = 2000 ; //valor default
+    var vertA_Cel, vertB_Cel, vertC_Cel, vertD_Cel;
+    var vertices;
+    //var new_mark;
+    var qtdeCel_X, qtdeCel_Y, larguraCelula, alturaCelula;
+    var polygon;
+    var flagPolygon = false;
+    let pontos = [[0.0,0.0][0.0,0.0]]    
+	
+	pontos.pop()
+  //document.getElementById("geraAOI").disabled = true;
+  	
+	var mapa = L.map('mapa').setView([-14,-38], 4);
+    L.control.scale().addTo(mapa);
+
+	var tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+		maxZoom: 19, attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+	}).addTo(mapa);
+
+    exibeAboutPage();
+
+    function newMarker(e){
+        var new_mark = L.marker().setLatLng(e.latlng).addTo(mapa);
+        new_mark = L.marker().setLatLng(e.latlng).addTo(mapa);
+        new_mark.dragging.disable();//enable
+        new_mark.on('dblclick', function(e){ 
+        //  console.log(e.target);
+           var latUltPonto = pontos[pontos.length - 1][0];
+           var lonUltPonto = pontos[pontos.length - 1][1]; 
+           console.log(latUltPonto,lonUltPonto);
+           if ((latUltPonto == e.latlng.lat.toFixed(5)) && (lonUltPonto == e.latlng.lng.toFixed(5))){
+              mapa.removeLayer(e.target);
+              pontos.pop();
+              mapa.removeLayer(polygon);
+           };
+        })
+        var lat = e.latlng.lat.toFixed(5), lng = e.latlng.lng.toFixed(5);
+        new_mark.bindPopup("Latitude: " + lat + "</br>" + "Longitude: "+ lng);
+		console.log(lat, lng);
+		pontos.push([lat, lng]);
+		//console.table(pontos);
+		new_mark.on('dragend', function(e) {  //precisa habilitar o dragging
+		       new_mark.bindPopup("Latitude: " + lat + "</br>"+ "Longitude: "+ lng) // 
+        });
+
+		//valida conteudo do input 
+    	if (pontos.length > 2) {
+     		   //habilita o botão
+      			//  document.getElementById("geraAOI").disabled = false;
+			      //  document.getElementById("salvaCoordAOI").disabled = false;
+    	} else {
+      		     //desabilita o botão se o conteúdo do input ficar em branco
+      		  //  document.getElementById("geraAOI").disabled = true;
+		        //  document.getElementById("salvaCoordAOI").disabled = false;
+    	};
+	};
+    mapa.on('click', newMarker);	    	
+
+	function gerarPoligono(){
+		if (pontos.length > 2) {
+    
+        //pontos.push(pontos[0,0])
+            if (flagPolygon == true){
+            mapa.removeLayer(polygon);
+            flagPolygon = false;
+            };
+            polygon = L.polygon(pontos, {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", 			"noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 1}
+                    ).addTo(mapa);
+                console.table(pontos);
+            flagPolygon = true;
+        }
+        else {alert("To create a polygon it would have at least three locations in the map.")};  
+    }
+		
+	function centralizarMapa(local){
+        //var latCentral = document.getElementById("LatitudeCentral").value;
+		//var lonCentral = document.getElementById("LongitudeCentral").value;
+    var localZoom = local;
+    if (localZoom == 1){
+      mapa.setView([-14, -38], 4);
+    }
+    if (localZoom == 2){
+      mapa.setView([39, -73], 4);
+    }
+		if (localZoom == 3){
+      mapa.setView([3, 5], 4);
+    }
+    if (localZoom == 4){
+      mapa.setView([-24, 112], 4);
+    }
+    if (localZoom == 5){
+      mapa.setView([45, 0], 4);
+    }
+
+  	//console.log(latCentral, lonCentral)
+	};
+
+    //create a user-defined function to download CSV file   
+  function download_csv_file() {  
+        
+    if (pontos.length > 2) {
+        //define the heading for each row of the data  
+        var csv = 'LAT,LONG\n';  
+          
+        //merge the data with CSV  
+        pontos.forEach(function(row) {  
+                csv += row.join(',');  
+                csv += "\n";  
+        });  
+        //display the created CSV data on the web browser   
+        //document.write(csv);  
+        var hiddenElement = document.createElement('a');  
+        hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);  
+        hiddenElement.target = '_blank';  
+          
+        //provide the name for the CSV file to be downloaded  
+        hiddenElement.download = 'LatLongAOI.csv';  
+        hiddenElement.click(); 
+        // novo 04out  - limpa polígono
+    } else {alert("It would have at least three locations in the map to save these.")}; 
+
+  }
+  function excluirUltPonto(){
+      //  console.log(e.target);
+      var latUltPonto = pontos[pontos.length - 1][0];
+      var lonUltPonto = pontos[pontos.length - 1][1]; 
+      console.log(latUltPonto,lonUltPonto);
+      //if ((latUltPonto == e.latlng.lat.toFixed(5)) && (lonUltPonto == e.latlng.lng.toFixed(5))){
+       //       mapa.removeLayer(e.target);
+          //    pontos.pop();
+      //};
+      //mapa.removeLayer(polygon);
+  }
+  function setSizeCell(size){
+    cellSize = size;
+    console.log("cell size = ", cellSize);
+  }  
+  function gridCreation(){
+    if (flagPolygon == true){
+        const [latInfAOI, latSupAOI, lonInfAOI, lonSupAOI, latMedAOI] = findMinMax(pontos);
+        console.log("clique possível no botao grid Creation");
+        console.log("AOI pontos = ", latInfAOI, latSupAOI, lonInfAOI, lonSupAOI, latMedAOI);
+        var pontoA = [latInfAOI, lonInfAOI];
+        var pontoB = [latSupAOI, lonInfAOI];
+        var pontoC = [latSupAOI, lonSupAOI];
+        var pontoD = [latInfAOI, lonSupAOI];
+        var coordGrid = [pontoA, pontoB, pontoC, pontoD, pontoA];
+        
+        exibirAreaLimGrid(coordGrid);
+        //calculaGridParametros(31.5083, 32.39377708333334, 32.7862, -80.9059, -79.0851, 5000);
+        [qtdeCel_X, qtdeCel_Y, larguraCelula, alturaCelula] = calculaGridParametros(latInfAOI, latMedAOI, latSupAOI, lonInfAOI, lonSupAOI, cellSize);
+        for (var j = 0; j < qtdeCel_Y; j++) {
+          for (var k = 0; k < qtdeCel_X; k++) {   
+              //  cantosCell = [[parseFloat(latInfAOI + j * alturaCelula)      ,parseFloat(lonInfAOI + k * larguraCelula)], 
+               //               [parseFloat(latInfAOI + (j + 1) * alturaCelula),parseFloat(lonInfAOI + (k + 1)* larguraCelula)]];
+               // L.rectangle(cantosCell, {color: "green", weight: 1}).addTo(mapa);
+                
+                vertA_Cel = [parseFloat(latInfAOI + j * alturaCelula)      ,parseFloat(lonInfAOI + k * larguraCelula)];
+                vertB_Cel = [parseFloat(latInfAOI + (j + 1) * alturaCelula),parseFloat(lonInfAOI + k * larguraCelula)];
+                vertC_Cel = [parseFloat(latInfAOI + (j + 1) * alturaCelula),parseFloat(lonInfAOI + (k + 1)* larguraCelula)];
+                vertD_Cel = [parseFloat(latInfAOI + j * alturaCelula)      ,parseFloat(lonInfAOI + (k + 1)* larguraCelula)];
+                vertices  = [vertA_Cel, vertB_Cel, vertC_Cel, vertD_Cel];
+                if (isPointInPolygon(vertA_Cel[0],vertA_Cel[1], pontos) ||
+                    isPointInPolygon(vertB_Cel[0],vertB_Cel[1], pontos) ||
+                    isPointInPolygon(vertC_Cel[0],vertC_Cel[1], pontos) ||
+                    isPointInPolygon(vertD_Cel[0],vertD_Cel[1], pontos)){
+                  polygonCell = L.polygon(vertices, {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "red", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", 			"noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 1}
+                  ).addTo(mapa);
+                }
+                else {
+                    polygonCell = L.polygon(vertices, {"bubblingMouseEvents": true, "color": "gray", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "black", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", 			"noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 1}
+                  ).addTo(mapa);
+                }
+                // pontosCell = [[parseFloat(latInfAOI + j * alturaCelula),parseFloat(lonInfAOI + k * larguraCelula)], 
+                //            [parseFloat(latInfAOI + (j + 1) * alturaCelula),parseFloat(lonInfAOI + (k + 1)* larguraCelula)]];
+                //polygonCell = L.polygon(pontosCell, {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", 			"noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 1}
+                //).addTo(mapa);
+          }  
+        }   
+       // console.log("ponto dentro ? ",polygon.contains(10,10));//parseFloat(latInfAOI) + 0.2, parseFloat(lonInfAOI) + 0.2));
+
+    } else {alert("To create a Grid it would have an Area of Interest.")};
+  }  
+  function exibirAreaLimGrid(pontosGrid){
+       
+   // mapa.removeLayer(new_mark);
+      
+    polylinha = L.polyline(pontosGrid, {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "red", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", 			"noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 1}
+                    ).addTo(mapa);
+  }
+  function exibeAboutPage(){
+    //const modal = document.querySelector("dialog")
+    modalAbout.showModal()
+  }
+  function fechaAboutPage(){
+    //const buttonFecha = document.querySelector("dialog button")
+    modalAbout.close()
+  }
+  function exibeInstructions(){
+    modalInstructions.showModal()
+    
+  }
+  function fechaInstructions(){
+    modalInstructions.close()
+  }
+
+
+
+</script>
+
+
+</body>
+</html>

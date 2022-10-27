@@ -1,0 +1,13 @@
+dialog {
+    background-color: rgb(235, 233, 230);
+    
+    border-radius: .5rem;
+    width: 50%;
+}
+
+.dialogo {
+    background-color: rgb(242, 246, 248);
+    max-width: 800px;
+    border-radius: .5rem;
+    width: 70%;
+}
