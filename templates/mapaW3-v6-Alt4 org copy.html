@@ -7,80 +7,16 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
     <link rel="stylesheet" href="/static/pageStyle.css">
-    <link rel="stylesheet" href="/static/dialogPageStyle.css">
 
     <script src="/static/haversine.js"></script>
     <script src="/static/getMinMax.js"></script>
     <script src="/static/gridCalc.js"></script>
     <script src="/static/pointInPolygon.js"></script>
-    <script src="https://cdn.plot.ly/plotly-2.16.1.min.js"></script>
-    <script src="/static/windRosePlot.js"></script>
 <style>
-div.space {
-  line-height: 1.6;
-}
+
 </style>
 </head>
 <body>
-
-<dialog id="aboutPage">
-    <h2>About this Site</h2>
-    <p>The purpose of this website is to provide a tool to develop algorithms
-         to detect anomalous behaviors in the marine traffic.</p>
-
-    <p>Through a visual interface the user can plot an Area of Interest (AOI) and save it for further loading. 
-        After that, it is possible to generate a grid of cells to map this AOI in order to analyze vessels trajectories
-        from recorded data through Automatic Information System (AIS) transmissions. </p>
-
-    <p>Instructions for the usage of this aplication can be found in the Help menu.</p>
-
-    <p>The source code is available to be download at XXXXX.</p>
-
-    <p>The site was developed and designed by Claudio V. Ribeiro as part of studies in his P.H.D. course.</p>
-
-    <button onclick="fechaAboutPage();" style="display:block; margin: 0 auto; background-color: rgb(141, 163, 236);">Close</button>
-</dialog>
-
-<dialog class="dialogo"    id="instructionsPage">
-  <h2>USER INSTRUCTIONS</h2>
-  <b>=== Navigation Menu ===</b>
-
-  <p>=== Map Set View<br>
-  Selection of a zoom area to center the map
-  </p>
-  === Area of Interest<br>
-  - Load: a storaged build area will be loaded from a file (CSV format) <br>
-  - Create: Build an area through the connection of location marks in the order of locations created <br>
-  - Save: All the location markers will be saved in a CSV file (latlongAOI.csv) in the order of locations created.
-  </p>
-  <p>
-   === Grid Cell Size<br>
-   Allow the selection of the Grid Cell Size in meters. The default value is 2000. 
-  </p>
-
-  <p>=== Grid Creation <br>
-    A Grid of Cells is built from the AOI and the selected Cell Size.</p>
-  
-  <p>=== Help<br>
-  - Instructions: To aid the user with the operation of the Vessel Trajectory Classifier Tool <br>
-  - About: To present information of the development description
-  </p>
-
-  <p><b>Note:</b> The action of page refresh in the browser will perform a new start of the aplication and <br>
-    all the previous interactions will be lost (e.g. location marks/polygons creation).
-  </p>
-  <b>======== MAP ========</b>
-  <p>A set of actions are available through mouse events over the map presented:</p>
-  <p>
-  - Mouse click: create a new location marker<br><br>
-  - Mouse double click: Over an existing location marker, the location will be excluded if it was <br>
-  the last one created<br><br>
-  - Mouse dragging: move the map to a new position<br><br>
-  - Mouse Scrolling: up -> zoom in; down -> zoom out.
-  </p>
-
-   <button onclick="fechaInstructions();" style="display:block; margin: 0 auto; background-color: rgb(141, 163, 236);">Close</button>
-</dialog>
 
 <div class="header">
   <h1>Vessel Trajectory Classifier Toll</h1>
@@ -130,8 +66,8 @@ div.space {
   <div class="subnav">
     <button class="subnavbtn">Help <i class="fa fa-caret-down"></i></button>
     <div class="subnav-content">
-      <a href="#" onclick="exibeInstructions();">Instructions</a>
-      <a href="#" onclick="exibeAboutPage();" id="showAboutPage">About</a>
+      <a href="#">Instructions</a>
+      <a href="#">About</a>
     </div>
   </div>
 </div>
@@ -142,89 +78,18 @@ div.space {
       <h3>MAP</h3>
       <div id="mapa" style="width: 100.0%; height: 670px;"></div>
     </div>
+    
   </div>
   <div class="rightcolumn">
-    <div class="card" id="cardSuperior" style="width: 100.0%; height:350px;">
-      <div id="aisData">
-        <fieldset>
-          <legend>AIS Data Processing</legend>
-              <div class="space">
-                  <button id="btnOpenFileAndPlot" onclick="openFileAndPlot();">Open file and Plot</button>
-                  <input type="text" id="fileName" name="Name" disabled/><br>
-                  
-                  <label for="clustering">Clustering:</label>
-                  <select id="trajectories" disabled>
-                      <option value="1">DBSCAN (Lat, Long)</option>
-                      <option value="2">DBSCAN (Lat, Long, Speed)</option>
-                      <option value="3">other</option>
-                  </select>    
-              </div>
-        </fieldset>
-      </div>  
-      <div class="space">
-        <fieldset id="trajectoryPanel"  disabled>
-          <legend>Vessel Trajectory Visualization</legend>
-                  <label for="vessels">Vessel:</label>
-                  <select id="vessels">
-                      <option value="0" selected>Select</option>
-                      <option value="1">Loyd</option>
-                      <option value="2">P12</option>
-                      <option value="3">Niteroi</option>
-                  </select>&nbsp;&nbsp;&nbsp;
-                  <label for="trajectories">Trajectory:</label>
-                  <select id="trajectories">
-                      <option value="0" selected>Select</option>
-                      <option value="1">1</option>
-                      <option value="2">2</option>
-                      <option value="3">3</option>
-                  </select> <br>
-                  Coordinates:
-                  <label id="totalCoordinates">XXXX</label>&nbsp; &nbsp;
-                  Cells:
-                  <label id="totalCells">YYYY</label> <br>
-                  Vessel Coordinate:
-                  <button id="btnPrevious">Previous</button>
-                  <button id="btnNext">Next</button> <br>
-        </fieldset>  
-        <fieldset id="classificationPanel" disabled>
-          <legend>Trajectory Classification</legend>     
-                  <input type="radio" id="btnSelectNormal" name="btnRadioNormal" value="normal" checked />
-                  <label for="btnSelectNormal">Normal</label>
-          
-                  <input type="radio" id="btnSelectAnomalous" name="btnRadioNormal" value="anomalous" />
-                  <label for="btnSelectAnomalous">Anomalous</label> &nbsp; &nbsp;
-                  <button id="btnSaveClassif">Save</button> <br>
-                 
-                  <label for="confidence">Confidence:</label>
-                  <select id="confidence">
-                      <option value="1">Very low</option>
-                      <option value="2">Low</option>
-                      <option value="3">Medium</option>
-                      <option value="4">High</option>
-                      <option value="4">Very high</option>
-                  </select>
-                  
-        </fieldset>
-      </div>
+    <div class="card" id="cardSuperior">
+      <h3>Instructions</h3>
+      <div class="fakeimg" style="height:265px;">Image</div>
+      <p>Some text to aid the user..</p>
     </div>
-
     <div class="card" id="cardInferior">
-      <div id="vesselsSpeed" style="width: 100.0%; height:350px;">
-        <script>
-          exibeWindRose();
-        </script> 
-      </div> 
-      <div style="width: 100.0%; text-align: center;">
-        <font size="-1">
-          <span style="color: black;  background-color: black;">X</span> 0-2 
-          <span style="color: gray;   background-color: gray;">X</span> 2-6 
-          <span style="color: blue;   background-color: blue;">X</span> 6-9 
-          <span style="color: green;  background-color: green;">X</span> 9-12 
-          <span style="color: yellow; background-color: yellow;">X</span> 12-15 
-          <span style="color: orange; background-color: orange;">X</span> 15-20 
-          <span style="color: red;    background-color: red;">X</span> 20+ 
-        </font> 
-      </div>
+      <h3>Miscelaneous card</h3>
+      <div class="fakeimg" style="height:265px;"><p>Image</p></div>
+    
     </div>
   </div>
 </div>
@@ -235,10 +100,6 @@ div.space {
 </div>
 
 <script>
-    //const modal = document.querySelector("dialog");  //funciona
-    const modalAbout = document.getElementById("aboutPage");
-    const modalInstructions = document.getElementById("instructionsPage");
-  
     console.log("distancia = ", getDistanceFromLatLng(30, -90, 31, -90));
     cellSize = 2000 ; //valor default
     var vertA_Cel, vertB_Cel, vertC_Cel, vertD_Cel;
@@ -258,8 +119,6 @@ div.space {
 	var tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 		maxZoom: 19, attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 	}).addTo(mapa);
-
-    exibeAboutPage();
 
     function newMarker(e){
         var new_mark = L.marker().setLatLng(e.latlng).addTo(mapa);
@@ -430,27 +289,6 @@ div.space {
     polylinha = L.polyline(pontosGrid, {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "red", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", 			"noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 1}
                     ).addTo(mapa);
   }
-  function exibeAboutPage(){
-    //const modal = document.querySelector("dialog")
-    modalAbout.showModal()
-  }
-  function fechaAboutPage(){
-    //const buttonFecha = document.querySelector("dialog button")
-    modalAbout.close()
-  }
-  function exibeInstructions(){
-    modalInstructions.showModal()
-    
-  }
-  function fechaInstructions(){
-    modalInstructions.close()
-  }
-  function openFileAndPlot(){
-    //alert("clicou OpenFile");
-    let vesselAisPoints = {{valor|tojson}};
-    alert(vesselAisPoints);
-  }
-
 </script>
 
 

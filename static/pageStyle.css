@@ -46,13 +46,13 @@
   /* Left column */
   .leftcolumn {   
     float: left;
-    width: 75%;
+    width: 65%;
   }
   
   /* Right column */
   .rightcolumn {
     float: left;
-    width: 25%;
+    width: 35%;
     background-color: #f1f1f1;
     padding-left: 10px;
   }

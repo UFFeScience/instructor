@@ -13,9 +13,12 @@
     <script src="/static/getMinMax.js"></script>
     <script src="/static/gridCalc.js"></script>
     <script src="/static/pointInPolygon.js"></script>
-
+    <script src="https://cdn.plot.ly/plotly-2.16.1.min.js"></script>
+    <script src="/static/windRosePlot.js"></script>
 <style>
-
+div.space {
+  line-height: 1.6;
+}
 </style>
 </head>
 <body>
@@ -139,18 +142,89 @@
       <h3>MAP</h3>
       <div id="mapa" style="width: 100.0%; height: 670px;"></div>
     </div>
-    
   </div>
   <div class="rightcolumn">
-    <div class="card" id="cardSuperior">
-      <h3>Instructions</h3>
-      <div class="fakeimg" style="height:265px;">Image</div>
-      <p>Some text to aid the user..</p>
+    <div class="card" id="cardSuperior" style="width: 100.0%; height:350px;">
+      <div id="aisData">
+        <fieldset>
+          <legend>AIS Data Processing</legend>
+              <div class="space">
+                  <button id="btnOpenFileAndPlot" onclick="openFileAndPlot();">Open file and Plot</button>
+                  <input type="text" id="fileName" name="Name" disabled/><br>
+                  
+                  <label for="clustering">Clustering:</label>
+                  <select id="trajectories" disabled>
+                      <option value="1">DBSCAN (Lat, Long)</option>
+                      <option value="2">DBSCAN (Lat, Long, Speed)</option>
+                      <option value="3">other</option>
+                  </select>    
+              </div>
+        </fieldset>
+      </div>  
+      <div class="space">
+        <fieldset id="trajectoryPanel"  disabled>
+          <legend>Vessel Trajectory Visualization</legend>
+                  <label for="vessels">Vessel:</label>
+                  <select id="vessels">
+                      <option value="0" selected>Select</option>
+                      <option value="1">Loyd</option>
+                      <option value="2">P12</option>
+                      <option value="3">Niteroi</option>
+                  </select>&nbsp;&nbsp;&nbsp;
+                  <label for="trajectories">Trajectory:</label>
+                  <select id="trajectories">
+                      <option value="0" selected>Select</option>
+                      <option value="1">1</option>
+                      <option value="2">2</option>
+                      <option value="3">3</option>
+                  </select> <br>
+                  Coordinates:
+                  <label id="totalCoordinates">XXXX</label>&nbsp; &nbsp;
+                  Cells:
+                  <label id="totalCells">YYYY</label> <br>
+                  Vessel Coordinate:
+                  <button id="btnPrevious">Previous</button>
+                  <button id="btnNext">Next</button> <br>
+        </fieldset>  
+        <fieldset id="classificationPanel" disabled>
+          <legend>Trajectory Classification</legend>     
+                  <input type="radio" id="btnSelectNormal" name="btnRadioNormal" value="normal" checked />
+                  <label for="btnSelectNormal">Normal</label>
+          
+                  <input type="radio" id="btnSelectAnomalous" name="btnRadioNormal" value="anomalous" />
+                  <label for="btnSelectAnomalous">Anomalous</label> &nbsp; &nbsp;
+                  <button id="btnSaveClassif">Save</button> <br>
+                 
+                  <label for="confidence">Confidence:</label>
+                  <select id="confidence">
+                      <option value="1">Very low</option>
+                      <option value="2">Low</option>
+                      <option value="3">Medium</option>
+                      <option value="4">High</option>
+                      <option value="4">Very high</option>
+                  </select>
+                  
+        </fieldset>
+      </div>
     </div>
+
     <div class="card" id="cardInferior">
-      <h3>Miscelaneous card</h3>
-      <div class="fakeimg" style="height:265px;"><p>Image</p></div>
-    
+      <div id="vesselsSpeed" style="width: 100.0%; height:350px;">
+        <script>
+          exibeWindRose();
+        </script> 
+      </div> 
+      <div style="width: 100.0%; text-align: center;">
+        <font size="-1">
+          <span style="color: black;  background-color: black;">X</span> 0-2 
+          <span style="color: gray;   background-color: gray;">X</span> 2-6 
+          <span style="color: blue;   background-color: blue;">X</span> 6-9 
+          <span style="color: green;  background-color: green;">X</span> 9-12 
+          <span style="color: yellow; background-color: yellow;">X</span> 12-15 
+          <span style="color: orange; background-color: orange;">X</span> 15-20 
+          <span style="color: red;    background-color: red;">X</span> 20+ 
+        </font> 
+      </div>
     </div>
   </div>
 </div>
@@ -371,7 +445,14 @@
   function fechaInstructions(){
     modalInstructions.close()
   }
-
+ // function openFileAndPlot(){
+    
+  //  alert("clicou OpenFile");
+    //let a = {{valor|tojson}};
+    //alert(a);
+    //let vetor = {{latLon_df|tojson}};
+    
+ // }  
 
 
 </script>
