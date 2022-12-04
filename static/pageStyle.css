@@ -56,6 +56,22 @@
     background-color: #f1f1f1;
     padding-left: 10px;
   }
+/* Create two unequal sub-columns that floats next to each other */
+  /* Left sub-column */
+  .leftSubColumn {   
+    float: left;
+    width: 85%;
+    background-color: #f1f1f1;
+  }
+  
+  /* Right sub-column */
+  .rightSubcolumn {
+    float: left;
+    width: 15%;
+    background-color: #f1f1f1;
+    padding-left: 0px;
+   
+  }
   
   /* Fake image */
   .fakeimg {
@@ -257,5 +273,16 @@
   
   .subnav:hover .subnav-content {
     display: block;
+  }
+  /* visibilidade de um elemento*/
+  .visible {
+    visibility: visible;
+  }
+  
+  .not-visible {
+    visibility: hidden;
+  }
+  .collapse {
+    visibility: collapse;
   }
   

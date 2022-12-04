@@ -9,12 +9,18 @@
     <link rel="stylesheet" href="/static/pageStyle.css">
     <link rel="stylesheet" href="/static/dialogPageStyle.css">
 
+    
     <script src="/static/haversine.js"></script>
     <script src="/static/getMinMax.js"></script>
     <script src="/static/gridCalc.js"></script>
     <script src="/static/pointInPolygon.js"></script>
     <script src="https://cdn.plot.ly/plotly-2.16.1.min.js"></script>
     <script src="/static/windRosePlot.js"></script>
+
+   
+
+    <script src="https://code.jquery.com/jquery-3.6.1.js"></script>
+
 <style>
 div.space {
   line-height: 1.6;
@@ -43,7 +49,11 @@ div.space {
 
 <dialog class="dialogo"    id="instructionsPage">
   <h2>USER INSTRUCTIONS</h2>
-  <b>=== Navigation Menu ===</b>
+  <b>=== Navigation Menu ===</b><br>
+  <figure>
+    <img src="/templates/navBar2.png">
+  </figure>
+  
 
   <p>=== Map Set View<br>
   Selection of a zoom area to center the map
@@ -128,6 +138,10 @@ div.space {
   </div>
 
   <div class="subnav">
+    <button class="subnavbtn" onclick="aisDataWindow();">AIS Data </button>
+  </div>
+
+  <div class="subnav">
     <button class="subnavbtn">Help <i class="fa fa-caret-down"></i></button>
     <div class="subnav-content">
       <a href="#" onclick="exibeInstructions();">Instructions</a>
@@ -140,36 +154,41 @@ div.space {
   <div class="leftcolumn">
     <div class="card">
       <h3>MAP</h3>
-      <div id="mapa" style="width: 100.0%; height: 670px;"></div>
+      <div id="mapa" style="width: 100.0%; height: 630px;"></div>
     </div>
   </div>
   <div class="rightcolumn">
-    <div class="card" id="cardSuperior" style="width: 100.0%; height:350px;">
+    <div class="card" id="cardSuperior" style="width: 100.0%; height:330px;">
       <div id="aisData">
-        <fieldset>
+        <fieldset id="aisDataPanel" class="not-visible">
           <legend>AIS Data Processing</legend>
               <div class="space">
-                  <button id="btnOpenFileAndPlot" onclick="openFileAndPlot();">Open file and Plot</button>
-                  <input type="text" id="fileName" name="Name" disabled/><br>
                   
+                  <button type="button" onclick="openFileAndFilterAOI();">Open File</button>
+                  <input type="text" id="inputTxtFileName" name="Name" disabled/>
+                  <button id="btnPlot" onclick="aisPlotFile();" >Plot</button>
+                  <br>
+         <!---    <button onclick="performPost()" disabled>Perform POST!</button> -->
+
                   <label for="clustering">Clustering:</label>
                   <select id="trajectories" disabled>
                       <option value="1">DBSCAN (Lat, Long)</option>
                       <option value="2">DBSCAN (Lat, Long, Speed)</option>
                       <option value="3">other</option>
                   </select>    
+                  <button type="button" onclick="clustering();">Apply </button>
               </div>
         </fieldset>
       </div>  
       <div class="space">
-        <fieldset id="trajectoryPanel"  disabled>
-          <legend>Vessel Trajectory Visualization</legend>
+        <fieldset id="trajectoryPanel" class="not-visible">
+          <legend>Trajectory Classification</legend>
                   <label for="vessels">Vessel:</label>
                   <select id="vessels">
                       <option value="0" selected>Select</option>
                       <option value="1">Loyd</option>
                       <option value="2">P12</option>
-                      <option value="3">Niteroi</option>
+                      <option value="3">Barca Rio-Niteroi</option>
                   </select>&nbsp;&nbsp;&nbsp;
                   <label for="trajectories">Trajectory:</label>
                   <select id="trajectories">
@@ -177,7 +196,9 @@ div.space {
                       <option value="1">1</option>
                       <option value="2">2</option>
                       <option value="3">3</option>
-                  </select> <br>
+                  </select>
+                  <button type="button" onclick="showTrajectory();">Show </button>
+                  <br>
                   Coordinates:
                   <label id="totalCoordinates">XXXX</label>&nbsp; &nbsp;
                   Cells:
@@ -186,14 +207,14 @@ div.space {
                   <button id="btnPrevious">Previous</button>
                   <button id="btnNext">Next</button> <br>
         </fieldset>  
-        <fieldset id="classificationPanel" disabled>
+        <fieldset id="classificationPanel" class="not-visible">
           <legend>Trajectory Classification</legend>     
                   <input type="radio" id="btnSelectNormal" name="btnRadioNormal" value="normal" checked />
                   <label for="btnSelectNormal">Normal</label>
           
                   <input type="radio" id="btnSelectAnomalous" name="btnRadioNormal" value="anomalous" />
                   <label for="btnSelectAnomalous">Anomalous</label> &nbsp; &nbsp;
-                  <button id="btnSaveClassif">Save</button> <br>
+                  <button id="btnSaveClassif" onclick="btnClassifAnomaly();">Save</button> <br>
                  
                   <label for="confidence">Confidence:</label>
                   <select id="confidence">
@@ -209,21 +230,30 @@ div.space {
     </div>
 
     <div class="card" id="cardInferior">
-      <div id="vesselsSpeed" style="width: 100.0%; height:350px;">
-        <script>
-          exibeWindRose();
-        </script> 
-      </div> 
-      <div style="width: 100.0%; text-align: center;">
-        <font size="-1">
-          <span style="color: black;  background-color: black;">X</span> 0-2 
-          <span style="color: gray;   background-color: gray;">X</span> 2-6 
-          <span style="color: blue;   background-color: blue;">X</span> 6-9 
-          <span style="color: green;  background-color: green;">X</span> 9-12 
-          <span style="color: yellow; background-color: yellow;">X</span> 12-15 
-          <span style="color: orange; background-color: orange;">X</span> 15-20 
-          <span style="color: red;    background-color: red;">X</span> 20+ 
-        </font> 
+      <div id="windRosePanel" class="not-visible">
+        <div class="row">
+          <div class="leftSubColumn">
+            <div id="vesselsSpeed" style="width: 100.0%; height:345px;">
+              <script>
+                exibeWindRose();
+              </script> 
+            </div>
+          </div>
+
+          <div class="rightSubColumn"> 
+            <div style="width: 100.0%; height:345px; text-align: left;">
+              <font size="-1">
+                <span style="color: black;  background-color: black;">X</span> 0-2 <br>
+                <span style="color: gray;   background-color: gray;">X</span> 2-6 <br>
+                <span style="color: blue;   background-color: blue;">X</span> 6-9 <br>
+                <span style="color: green;  background-color: green;">X</span> 9-12 <br>
+                <span style="color: yellow; background-color: yellow;">X</span> 12-15 <br>
+                <span style="color: orange; background-color: orange;">X</span> 15-20 <br>
+                <span style="color: red;    background-color: red;">X</span> 20+ <br>
+              </font> 
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -234,7 +264,9 @@ div.space {
   <p>&copy; 2022 - Claudio V. Ribeiro</p>
 </div>
 
+
 <script>
+    var latInfGrid, latSupGrid, lonInfGrid, lonSupGrid, latMedGrid;
     //const modal = document.querySelector("dialog");  //funciona
     const modalAbout = document.getElementById("aboutPage");
     const modalInstructions = document.getElementById("instructionsPage");
@@ -380,6 +412,7 @@ div.space {
   function gridCreation(){
     if (flagPolygon == true){
         const [latInfAOI, latSupAOI, lonInfAOI, lonSupAOI, latMedAOI] = findMinMax(pontos);
+        latInfGrid = latInfAOI; //, latSupAOI, lonInfAOI, lonSupAOI, latMedAOI = findMinMax(pontos);
         console.log("clique possível no botao grid Creation");
         console.log("AOI pontos = ", latInfAOI, latSupAOI, lonInfAOI, lonSupAOI, latMedAOI);
         var pontoA = [latInfAOI, lonInfAOI];
@@ -430,6 +463,20 @@ div.space {
     polylinha = L.polyline(pontosGrid, {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "red", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", 			"noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 1}
                     ).addTo(mapa);
   }
+  function btnClassifAnomaly(){
+    console.log("Retorno do flask = ", {{ ulat }});
+    
+  }
+  
+  function performPost() {
+        $.ajax({
+            type: "POST",
+            url: "{{ url_for('create_file') }}",
+            data: {"name" : "Jim"},
+        })
+    }
+
+
   function exibeAboutPage(){
     //const modal = document.querySelector("dialog")
     modalAbout.showModal()
@@ -445,10 +492,47 @@ div.space {
   function fechaInstructions(){
     modalInstructions.close()
   }
-  function openFileAndPlot(){
-    //alert("clicou OpenFile");
-    let vesselAisPoints = {{valor|tojson}};
-    alert(vesselAisPoints);
+  function openFileAndFilterAOI(){
+    $.ajax({
+            type: "POST",
+            url: "{{ url_for('openFileAndFilterAOI') }}",
+            //data: {"llon" : lonInfAOI, "ulon" : lonSupAOI, "llat" : latInfAOI, "ulat" : latInfAOI},
+            data: {llon : -75.7, ulon : -74.8, llat : 38.6, ulat : 39.6},
+            dataType: "json",
+        })
+    //document.getElementById("inputTxtFileName").disabled = false;
+    //var inputArqName = document.getElementById("inputTxtFileName");
+    var textField = $('#inputTxtFileName');
+    textField.disabled = false;
+    textField.val('Nome do arquivo');
+    //console.log("Retorno do flask = ", {{ ulat }});
+  }
+ 
+  function aisDataWindow(){
+    $("#aisDataPanel").removeClass("not-visible");
+    $("#aisDataPanel").addClass("visible");
+  }
+  function aisPlotFile(){
+    trajectoryWindow();
+
+  }
+
+  function trajectoryWindow(){
+    $("#trajectoryPanel").removeClass("not-visible");
+    $("#trajectoryPanel").addClass("visible");
+  }
+  function classificationWindow(){
+    $("#classificationPanel").removeClass("not-visible");
+    $("#classificationPanel").addClass("visible");
+    $("#windRosePanel").removeClass("not-visible");
+    $("#windRosePanel").addClass("visible");
+    
+  }
+  function clustering(){
+    trajectoryWindow();
+  }
+  function showTrajectory(){
+    classificationWindow();
   }
 
 </script>
