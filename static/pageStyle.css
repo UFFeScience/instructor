@@ -47,6 +47,7 @@
   .leftcolumn {   
     float: left;
     width: 65%;
+    background-color: #f1f1f1;
   }
   
   /* Right column */
@@ -69,7 +70,7 @@
     float: left;
     width: 15%;
     background-color: #f1f1f1;
-    padding-left: 0px;
+    padding-left: 5px;
    
   }
   
@@ -281,6 +282,7 @@
   
   .not-visible {
     visibility: hidden;
+    display: none;
   }
   .collapse {
     visibility: collapse;

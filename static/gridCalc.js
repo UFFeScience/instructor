@@ -27,3 +27,22 @@ function GridNavio2(latNavio,lonNavio){ // Identificacao posicao do navio no Gri
     var gridNavio = posXGridNavio + (posYGridNavio - 1) * qtdeCelulasX;
     return gridNavio, posXGridNavio, posYGridNavio;
 }
+
+function calcVerticesCell(latNavio,lonNavio, latInfAOI, lonInfAOI, larguraCelula, alturaCelula){
+
+    //[Grid, k, j] = GridNavio2(latNavio,lonNavio); // k: cell axis X    J: cell axis Y
+    var distLat = parseFloat(latNavio) - parseFloat(latInfAOI);
+    var distLon = parseFloat(lonNavio) - parseFloat(lonInfAOI);
+    var k = posXGridNavio = parseInt(distLon / larguraCelula);// + 1;
+    var j = posYGridNavio = parseInt(distLat / alturaCelula);// + 1;
+    //var gridNavio = posXGridNavio + (posYGridNavio - 1) * qtdeCelulasX;
+    //console.log("larguraCel = ", larguraCelula, " alturaCel = ", alturaCelula);
+    //console.log("k = ", k, " j = ", j);
+    
+    vertA_Cel = [parseFloat(latInfAOI + j * alturaCelula)      ,parseFloat(lonInfAOI + k * larguraCelula)];
+    vertB_Cel = [parseFloat(latInfAOI + (j + 1) * alturaCelula),parseFloat(lonInfAOI + k * larguraCelula)];
+    vertC_Cel = [parseFloat(latInfAOI + (j + 1) * alturaCelula),parseFloat(lonInfAOI + (k + 1)* larguraCelula)];
+    vertD_Cel = [parseFloat(latInfAOI + j * alturaCelula)      ,parseFloat(lonInfAOI + (k + 1)* larguraCelula)];
+    return vertices  = [vertA_Cel, vertB_Cel, vertC_Cel, vertD_Cel];
+
+}

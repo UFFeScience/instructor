@@ -17,7 +17,7 @@
     <script src="https://cdn.plot.ly/plotly-2.16.1.min.js"></script>
     <script src="/static/windRosePlot.js"></script>
 
-   
+    <script src="/static/windRoseAISPoint.js"></script>
 
     <script src="https://code.jquery.com/jquery-3.6.1.js"></script>
 
@@ -49,29 +49,30 @@ div.space {
 
 <dialog class="dialogo"    id="instructionsPage">
   <h2>USER INSTRUCTIONS</h2>
-  <b>=== Navigation Menu ===</b><br>
-  <figure>
-    <img src="/templates/navBar2.png">
-  </figure>
+  <b>=== Navigation Menu ===</b><br><br>
   
-
-  <p>=== Map Set View<br>
+  <img src="/static/navBar.gif">
+  
+  <p><span style="color: rgb(255, 255, 255);  background-color: black;">Map Set View</span><br>
   Selection of a zoom area to center the map
   </p>
-  === Area of Interest<br>
+  <span style="color: rgb(255, 255, 255);  background-color: black;">Area of Interest</span><br>
   - Load: a storaged build area will be loaded from a file (CSV format) <br>
   - Create: Build an area through the connection of location marks in the order of locations created <br>
   - Save: All the location markers will be saved in a CSV file (latlongAOI.csv) in the order of locations created.
   </p>
   <p>
-   === Grid Cell Size<br>
+    <span style="color: rgb(255, 255, 255);  background-color: black;">Grid Cell Size</span><br>
    Allow the selection of the Grid Cell Size in meters. The default value is 2000. 
   </p>
 
-  <p>=== Grid Creation <br>
+  <p><span style="color: rgb(255, 255, 255);  background-color: black;">Grid Creation</span><br>
     A Grid of Cells is built from the AOI and the selected Cell Size.</p>
+
+  <p><span style="color: rgb(255, 255, 255);  background-color: black;">AIS Data</span><br>
+      AIS data processing from a CSV file format and trajectory classification functionalities.</p>
   
-  <p>=== Help<br>
+  <p><span style="color: rgb(255, 255, 255);  background-color: black;">Help</span><br>
   - Instructions: To aid the user with the operation of the Vessel Trajectory Classifier Tool <br>
   - About: To present information of the development description
   </p>
@@ -108,8 +109,6 @@ div.space {
 
     </div>
   </div> 	
-  <!----<a href="#" onclick="centralizarMapa();">Map Set View</a>-->
-  
   <div class="subnav">
     <button class="subnavbtn">Area of Interest <i class="fa fa-caret-down"></i></button>
     <div class="subnav-content">
@@ -149,91 +148,103 @@ div.space {
     </div>
   </div>
 </div>
-
+<!---------------------------------  PANELS -------------------------------------->
 <div class="row">
   <div class="leftcolumn">
     <div class="card">
       <h3>MAP</h3>
-      <div id="mapa" style="width: 100.0%; height: 630px;"></div>
+      <div id="mapa" style="width: 100.0%; height: 670px;"></div>
     </div>
   </div>
   <div class="rightcolumn">
-    <div class="card" id="cardSuperior" style="width: 100.0%; height:330px;">
+    <div class="card" id="cardSuperior" style="width: 100.0%; height:265px;">
+      
       <div id="aisData">
-        <fieldset id="aisDataPanel" class="not-visible">
+        <fieldset id="aisDataPanel" class="visible">
           <legend>AIS Data Processing</legend>
               <div class="space">
                   
-                  <button type="button" onclick="openFileAndFilterAOI();">Open File</button>
-                  <input type="text" id="inputTxtFileName" name="Name" disabled/>
-                  <button id="btnPlot" onclick="aisPlotFile();" >Plot</button>
-                  <br>
-         <!---    <button onclick="performPost()" disabled>Perform POST!</button> -->
-
-                  <label for="clustering">Clustering:</label>
-                  <select id="trajectories" disabled>
-                      <option value="1">DBSCAN (Lat, Long)</option>
-                      <option value="2">DBSCAN (Lat, Long, Speed)</option>
-                      <option value="3">other</option>
-                  </select>    
-                  <button type="button" onclick="clustering();">Apply </button>
+                <button type="button" id="btnSelectAIS_File" disabled onclick="selectAIS_File();">Select File</button>
+                <input type="text" id="inputTxtFileName" name="Name" disabled/>
+                <button id="btnPlot" onclick="aisPlotFile();" disabled>Plot</button>
+                <br>
+                <label for="clustering">Clustering:</label>
+                <select id="trajectories" disabled>
+                    <option value="1">None (Density plots only)</option>
+                    <option value="2">DBSCAN (Lat, Long)</option>
+                    <option value="3">DBSCAN (Lat, Long, Speed)</option>
+                    <option value="4">other</option>
+                </select>    
+                <button type="button" id="btnApply" onclick="applyClustering();" disabled>Apply </button>
               </div>
         </fieldset>
-      </div>  
-      <div class="space">
-        <fieldset id="trajectoryPanel" class="not-visible">
-          <legend>Trajectory Classification</legend>
-                  <label for="vessels">Vessel:</label>
-                  <select id="vessels">
+      </div> 
+      <div id="trajectory">
+        <fieldset id="trajectoryPanel" class="visible">
+          <legend>Trajectory Analysis</legend>
+                  <label for="listBoxVesselSelect">Vessel:</label>
+                  <select id="listBoxVesselSelect" disabled>
                       <option value="0" selected>Select</option>
                       <option value="1">Loyd</option>
                       <option value="2">P12</option>
                       <option value="3">Barca Rio-Niteroi</option>
                   </select>&nbsp;&nbsp;&nbsp;
-                  <label for="trajectories">Trajectory:</label>
-                  <select id="trajectories">
+                  <label for="listBoxTrajectories">Trajectory:</label>
+                  <select id="listBoxTrajectories" disabled>
                       <option value="0" selected>Select</option>
                       <option value="1">1</option>
                       <option value="2">2</option>
                       <option value="3">3</option>
                   </select>
-                  <button type="button" onclick="showTrajectory();">Show </button>
-                  <br>
-                  Coordinates:
-                  <label id="totalCoordinates">XXXX</label>&nbsp; &nbsp;
-                  Cells:
-                  <label id="totalCells">YYYY</label> <br>
-                  Vessel Coordinate:
-                  <button id="btnPrevious">Previous</button>
-                  <button id="btnNext">Next</button> <br>
+                  <button type="button" id="btnShow" onclick="showTrajectory();" disabled>Show </button>
+                  <br><br>
+            <!-- alt-->
+            <fieldset id="classificationPanel" disabled class="visible">
+              <legend>Classification</legend>     
+                      <input type="radio" id="btnSelectNormal" name="btnRadioNormal" value="normal" checked />
+                      <label for="btnSelectNormal">Normal</label>
+              
+                      <input type="radio" id="btnSelectAnomalous" name="btnRadioNormal" value="anomalous" />
+                      <label for="btnSelectAnomalous">Anomalous</label> &nbsp; &nbsp;
+                      <button id="btnSaveClassif" onclick="btnClassifAnomaly();">Save</button> <br>
+                     
+                      <label for="confidence">Confidence:</label>
+                      <select id="confidence">
+                          <option value="1">Very low</option>
+                          <option value="2">Low</option>
+                          <option value="3">Medium</option>
+                          <option value="4">High</option>
+                          <option value="4">Very high</option>
+                      </select>
+                      
+            </fieldset>      
         </fieldset>  
-        <fieldset id="classificationPanel" class="not-visible">
-          <legend>Trajectory Classification</legend>     
-                  <input type="radio" id="btnSelectNormal" name="btnRadioNormal" value="normal" checked />
-                  <label for="btnSelectNormal">Normal</label>
-          
-                  <input type="radio" id="btnSelectAnomalous" name="btnRadioNormal" value="anomalous" />
-                  <label for="btnSelectAnomalous">Anomalous</label> &nbsp; &nbsp;
-                  <button id="btnSaveClassif" onclick="btnClassifAnomaly();">Save</button> <br>
-                 
-                  <label for="confidence">Confidence:</label>
-                  <select id="confidence">
-                      <option value="1">Very low</option>
-                      <option value="2">Low</option>
-                      <option value="3">Medium</option>
-                      <option value="4">High</option>
-                      <option value="4">Very high</option>
-                  </select>
-                  
-        </fieldset>
-      </div>
+      </div>  
+      
     </div>
 
-    <div class="card" id="cardInferior">
+    <div class="card" id="cardInferior" >
+      <div id="aisPlotPanel" style="width: 100.0%; height:455px;" class="visible">
+      </div>
+      
+      <div id="AISpointGridPanel" class="not-visible"> 
+        <fieldset id="AISpointPanel">
+          <legend>AIS Selected Point from Trajectory</legend>
+              Course: 
+              <input type="text" id="inputTxtCourse" name="Course" size="6" disabled/>
+              Speed: 
+              <input type="text" id="inputTxtSpeed" name="Speed" size="4" disabled/>
+              <button id="btnPrevious" onclick="btnPrevious()" disabled>Previous</button>
+              <button id="btnNext" onclick="btnNext()" disabled>Next</button>
+               
+              <br>
+        </fieldset>
+      </div>
+      
       <div id="windRosePanel" class="not-visible">
         <div class="row">
           <div class="leftSubColumn">
-            <div id="vesselsSpeed" style="width: 100.0%; height:345px;">
+            <div id="vesselsSpeed" style="width: 100.0%; height:395px;">
               <script>
                 exibeWindRose();
               </script> 
@@ -241,16 +252,24 @@ div.space {
           </div>
 
           <div class="rightSubColumn"> 
-            <div style="width: 100.0%; height:345px; text-align: left;">
-              <font size="-1">
-                <span style="color: black;  background-color: black;">X</span> 0-2 <br>
-                <span style="color: gray;   background-color: gray;">X</span> 2-6 <br>
-                <span style="color: blue;   background-color: blue;">X</span> 6-9 <br>
-                <span style="color: green;  background-color: green;">X</span> 9-12 <br>
-                <span style="color: yellow; background-color: yellow;">X</span> 12-15 <br>
-                <span style="color: orange; background-color: orange;">X</span> 15-20 <br>
-                <span style="color: red;    background-color: red;">X</span> 20+ <br>
-              </font> 
+            <div style="width: 100.0%; height:395px; text-align: left;">
+              
+              <!--<div style="width: 100.0%; height:150px;">  -->
+                <font size="-1">
+                  <span style="color: black;  background-color: black;">X</span> 0-2<br>
+                  <span style="color: gray;   background-color: gray;">X</span> 2-6<br>
+                  <span style="color: blue;   background-color: blue;">X</span> 6-9<br>
+                  <span style="color: green;  background-color: green;">X</span> 9-12<br>
+                  <span style="color: yellow; background-color: yellow;">X</span> 12-15<br>
+                  <span style="color: orange; background-color: orange;">X</span> 15-20<br>
+                  <span style="color: red;    background-color: red;">X</span> 20+ <br>
+                </font> 
+              <!--</div> -->
+              <!--<div style="width: 100.0%; height:245px;">  
+                <script>
+                  
+                </script>
+              </div> -->
             </div>
           </div>
         </div>
@@ -264,52 +283,79 @@ div.space {
   <p>&copy; 2022 - Claudio V. Ribeiro</p>
 </div>
 
+<!------------------------  SCRIPT ---------------------------------------->
 
 <script>
-    var latInfGrid, latSupGrid, lonInfGrid, lonSupGrid, latMedGrid;
-    //const modal = document.querySelector("dialog");  //funciona
-    const modalAbout = document.getElementById("aboutPage");
-    const modalInstructions = document.getElementById("instructionsPage");
-  
-    console.log("distancia = ", getDistanceFromLatLng(30, -90, 31, -90));
-    cellSize = 2000 ; //valor default
-    var vertA_Cel, vertB_Cel, vertC_Cel, vertD_Cel;
-    var vertices;
-    //var new_mark;
-    var qtdeCel_X, qtdeCel_Y, larguraCelula, alturaCelula;
-    var polygon;
-    var flagPolygon = false;
-    let pontos = [[0.0,0.0][0.0,0.0]]    
+  var latInfGrid, latSupGrid, lonInfGrid, lonSupGrid, latMedGrid;
+  //const modal = document.querySelector("dialog");  //funciona
+  const modalAbout = document.getElementById("aboutPage");
+  const modalInstructions = document.getElementById("instructionsPage");
+
+  console.log("distancia = ", getDistanceFromLatLng(30, -90, 31, -90));
+  cellSize = 2000 ; //valor default
+  var vertA_Cel, vertB_Cel, vertC_Cel, vertD_Cel;
+  var vertices;
+  //var new_mark;
+  var qtdeCel_X, qtdeCel_Y, larguraCelula, alturaCelula;
+  var polygon;
+  var flagPolygon = false;
+  var flagGridCreation = false; // novo
+  let pontos = [[0.0,0.0][0.0,0.0]]    
 	
 	pontos.pop()
   //document.getElementById("geraAOI").disabled = true;
   	
 	var mapa = L.map('mapa').setView([-14,-38], 4);
-    L.control.scale().addTo(mapa);
+  L.control.scale().addTo(mapa);
 
 	var tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 		maxZoom: 19, attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 	}).addTo(mapa);
 
-    exibeAboutPage();
+  var mapaAIS = L.map('aisPlotPanel').setView([-14,-38], 4);
+  L.control.scale().addTo(mapaAIS);
 
-    function newMarker(e){
-        var new_mark = L.marker().setLatLng(e.latlng).addTo(mapa);
-        new_mark = L.marker().setLatLng(e.latlng).addTo(mapa);
-        new_mark.dragging.disable();//enable
-        new_mark.on('dblclick', function(e){ 
-        //  console.log(e.target);
-           var latUltPonto = pontos[pontos.length - 1][0];
-           var lonUltPonto = pontos[pontos.length - 1][1]; 
-           console.log(latUltPonto,lonUltPonto);
-           if ((latUltPonto == e.latlng.lat.toFixed(5)) && (lonUltPonto == e.latlng.lng.toFixed(5))){
-              mapa.removeLayer(e.target);
-              pontos.pop();
-              mapa.removeLayer(polygon);
-           };
-        })
-        var lat = e.latlng.lat.toFixed(5), lng = e.latlng.lng.toFixed(5);
-        new_mark.bindPopup("Latitude: " + lat + "</br>" + "Longitude: "+ lng);
+	var tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+		maxZoom: 19, attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+	}).addTo(mapaAIS);
+
+  var markersLayerGroup = new L.LayerGroup(); // novo
+  markersLayerGroup.addTo(mapa); //novo
+
+  var cellsLayerGroup = new L.LayerGroup(); // novo
+  cellsLayerGroup.addTo(mapa); //novo
+
+  var pathFileAISdata = ""; //novo 12Jan
+  var aisAOI_ArrayFiltered = []; // novo 12jan
+  var trajectoryPointIndex = 0;
+
+  exibeAboutPage();
+
+    //////////////////////////////////// FUNCTIONS ////////////////////////////////
+
+  function newMarker(e){
+    //var new_mark = L.marker().setLatLng(e.latlng).addTo(mapa);
+    var new_mark;
+    //new_mark = L.marker().setLatLng(e.latlng).addTo(mapa);
+    new_mark = new L.marker().setLatLng(e.latlng).addTo(mapa);
+    new_mark.addTo(markersLayerGroup); //novo
+    mapa.addLayer(markersLayerGroup); //novo
+
+    new_mark.dragging.disable();//enable
+    new_mark.on('dblclick', function(e){ 
+    //  console.log(e.target);
+        var latUltPonto = pontos[pontos.length - 1][0];
+        var lonUltPonto = pontos[pontos.length - 1][1]; 
+        console.log(latUltPonto,lonUltPonto);
+        if ((latUltPonto == e.latlng.lat.toFixed(5)) && (lonUltPonto == e.latlng.lng.toFixed(5))){
+          mapa.removeLayer(new_mark);//(e.target);
+          pontos.pop();
+          
+          //gerarPoligono(); //novo
+        };
+    })
+    var lat = e.latlng.lat.toFixed(5), lng = e.latlng.lng.toFixed(5);
+    new_mark.bindPopup("Latitude: " + lat + "</br>" + "Longitude: "+ lng);
 		console.log(lat, lng);
 		pontos.push([lat, lng]);
 		//console.table(pontos);
@@ -318,36 +364,41 @@ div.space {
         });
 
 		//valida conteudo do input 
-    	if (pontos.length > 2) {
-     		   //habilita o botão
-      			//  document.getElementById("geraAOI").disabled = false;
-			      //  document.getElementById("salvaCoordAOI").disabled = false;
-    	} else {
-      		     //desabilita o botão se o conteúdo do input ficar em branco
-      		  //  document.getElementById("geraAOI").disabled = true;
-		        //  document.getElementById("salvaCoordAOI").disabled = false;
-    	};
+    if (pontos.length > 2) {
+          //habilita o botão
+          //  document.getElementById("geraAOI").disabled = false;
+          //  document.getElementById("salvaCoordAOI").disabled = false;
+    } else {
+              //desabilita o botão se o conteúdo do input ficar em branco
+          //  document.getElementById("geraAOI").disabled = true;
+          //  document.getElementById("salvaCoordAOI").disabled = false;
+    };
 	};
-    mapa.on('click', newMarker);	    	
+  mapa.on('click', newMarker);	    	
 
 	function gerarPoligono(){
 		if (pontos.length > 2) {
-    
-        //pontos.push(pontos[0,0])
-            if (flagPolygon == true){
-            mapa.removeLayer(polygon);
-            flagPolygon = false;
-            };
-            polygon = L.polygon(pontos, {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", 			"noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 1}
-                    ).addTo(mapa);
-                console.table(pontos);
-            flagPolygon = true;
-        }
-        else {alert("To create a polygon it would have at least three locations in the map.")};  
+      if (flagPolygon == true){
+        mapa.removeLayer(polygon);
+        flagPolygon = false;
+      };
+      polygon = L.polygon(pontos, {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", 			"noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 1}
+              ).addTo(mapa);
+          console.table(pontos);
+      mapa.removeLayer(markersLayerGroup); //novo
+      flagPolygon = true;
     }
+    else {
+      if (flagPolygon == true){
+        mapa.removeLayer(polygon);
+        flagPolygon = false;
+      };
+      alert("To create a polygon it would have at least three locations in the map.")
+    };  
+  }
 		
 	function centralizarMapa(local){
-        //var latCentral = document.getElementById("LatitudeCentral").value;
+    //var latCentral = document.getElementById("LatitudeCentral").value;
 		//var lonCentral = document.getElementById("LongitudeCentral").value;
     var localZoom = local;
     if (localZoom == 1){
@@ -365,10 +416,26 @@ div.space {
     if (localZoom == 5){
       mapa.setView([45, 0], 4);
     }
-
-  	//console.log(latCentral, lonCentral)
-	};
-
+  };
+  function loadArea(){
+    $.ajax({
+            url: "{{ url_for('loadFileAOI') }}",
+            type: "GET",
+            dataType: 'json',
+            success: plotLoadedArea,
+            error: function(){
+              alert("erro execução loadFileAOI no Back-end");
+            }
+            
+        });
+  }
+  function plotLoadedArea(locations){
+    //pontos = locations;
+    pontos = JSON.parse(locations);
+    const [latInfAOI, latSupAOI, lonInfAOI, lonSupAOI, latMedAOI] = findMinMax(pontos);
+    gerarPoligono();
+    mapa.setView([latMedAOI, (lonInfAOI + lonSupAOI)/2], 8);
+  }
     //create a user-defined function to download CSV file   
   function download_csv_file() {  
         
@@ -413,6 +480,9 @@ div.space {
     if (flagPolygon == true){
         const [latInfAOI, latSupAOI, lonInfAOI, lonSupAOI, latMedAOI] = findMinMax(pontos);
         latInfGrid = latInfAOI; //, latSupAOI, lonInfAOI, lonSupAOI, latMedAOI = findMinMax(pontos);
+        latSupGrid = latSupAOI;
+        lonInfGrid = lonInfAOI;
+        lonSupGrid = lonSupAOI;
         console.log("clique possível no botao grid Creation");
         console.log("AOI pontos = ", latInfAOI, latSupAOI, lonInfAOI, lonSupAOI, latMedAOI);
         var pontoA = [latInfAOI, lonInfAOI];
@@ -420,51 +490,60 @@ div.space {
         var pontoC = [latSupAOI, lonSupAOI];
         var pontoD = [latInfAOI, lonSupAOI];
         var coordGrid = [pontoA, pontoB, pontoC, pontoD, pontoA];
+
+        if (flagGridCreation == true){
+          mapa.removeLayer(markersLayerGroup); //novo
+          mapa.removeLayer(cellsLayerGroup);
+          cellsLayerGroup.clearLayers(); //recente
+          flagGridCreation = false;
+        }
         
         exibirAreaLimGrid(coordGrid);
         //calculaGridParametros(31.5083, 32.39377708333334, 32.7862, -80.9059, -79.0851, 5000);
         [qtdeCel_X, qtdeCel_Y, larguraCelula, alturaCelula] = calculaGridParametros(latInfAOI, latMedAOI, latSupAOI, lonInfAOI, lonSupAOI, cellSize);
         for (var j = 0; j < qtdeCel_Y; j++) {
           for (var k = 0; k < qtdeCel_X; k++) {   
-              //  cantosCell = [[parseFloat(latInfAOI + j * alturaCelula)      ,parseFloat(lonInfAOI + k * larguraCelula)], 
-               //               [parseFloat(latInfAOI + (j + 1) * alturaCelula),parseFloat(lonInfAOI + (k + 1)* larguraCelula)]];
-               // L.rectangle(cantosCell, {color: "green", weight: 1}).addTo(mapa);
-                
-                vertA_Cel = [parseFloat(latInfAOI + j * alturaCelula)      ,parseFloat(lonInfAOI + k * larguraCelula)];
-                vertB_Cel = [parseFloat(latInfAOI + (j + 1) * alturaCelula),parseFloat(lonInfAOI + k * larguraCelula)];
-                vertC_Cel = [parseFloat(latInfAOI + (j + 1) * alturaCelula),parseFloat(lonInfAOI + (k + 1)* larguraCelula)];
-                vertD_Cel = [parseFloat(latInfAOI + j * alturaCelula)      ,parseFloat(lonInfAOI + (k + 1)* larguraCelula)];
-                vertices  = [vertA_Cel, vertB_Cel, vertC_Cel, vertD_Cel];
-                if (isPointInPolygon(vertA_Cel[0],vertA_Cel[1], pontos) ||
-                    isPointInPolygon(vertB_Cel[0],vertB_Cel[1], pontos) ||
-                    isPointInPolygon(vertC_Cel[0],vertC_Cel[1], pontos) ||
-                    isPointInPolygon(vertD_Cel[0],vertD_Cel[1], pontos)){
-                  polygonCell = L.polygon(vertices, {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "red", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", 			"noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 1}
-                  ).addTo(mapa);
-                }
-                else {
-                    polygonCell = L.polygon(vertices, {"bubblingMouseEvents": true, "color": "gray", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "black", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", 			"noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 1}
-                  ).addTo(mapa);
-                }
-                // pontosCell = [[parseFloat(latInfAOI + j * alturaCelula),parseFloat(lonInfAOI + k * larguraCelula)], 
-                //            [parseFloat(latInfAOI + (j + 1) * alturaCelula),parseFloat(lonInfAOI + (k + 1)* larguraCelula)]];
-                //polygonCell = L.polygon(pontosCell, {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", 			"noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 1}
-                //).addTo(mapa);
+              
+            vertA_Cel = [parseFloat(latInfAOI + j * alturaCelula)      ,parseFloat(lonInfAOI + k * larguraCelula)];
+            vertB_Cel = [parseFloat(latInfAOI + (j + 1) * alturaCelula),parseFloat(lonInfAOI + k * larguraCelula)];
+            vertC_Cel = [parseFloat(latInfAOI + (j + 1) * alturaCelula),parseFloat(lonInfAOI + (k + 1)* larguraCelula)];
+            vertD_Cel = [parseFloat(latInfAOI + j * alturaCelula)      ,parseFloat(lonInfAOI + (k + 1)* larguraCelula)];
+            vertices  = [vertA_Cel, vertB_Cel, vertC_Cel, vertD_Cel];
+            if (isPointInPolygon(vertA_Cel[0],vertA_Cel[1], pontos) ||
+                isPointInPolygon(vertB_Cel[0],vertB_Cel[1], pontos) ||
+                isPointInPolygon(vertC_Cel[0],vertC_Cel[1], pontos) ||
+                isPointInPolygon(vertD_Cel[0],vertD_Cel[1], pontos)){
+              //polygonCell = L.polygon(vertices, {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "red", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", 			"noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 1}
+              //).addTo(mapa);
+              polygonCell = L.polygon(vertices, {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "red", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", 			"noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 1}
+              ).addTo(cellsLayerGroup);
+            }
+            else {
+              //polygonCell = L.polygon(vertices, {"bubblingMouseEvents": true, "color": "gray", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "black", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", 			"noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 1}
+              //).addTo(mapa);
+              polygonCell = L.polygon(vertices, {"bubblingMouseEvents": true, "color": "gray", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "black", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", 			"noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 1}
+              ).addTo(cellsLayerGroup);
+            }
           }  
         }   
+        //polygonCell.addTo(cellsLayerGroup); //novo
+        mapa.addLayer(cellsLayerGroup); //novo
        // console.log("ponto dentro ? ",polygon.contains(10,10));//parseFloat(latInfAOI) + 0.2, parseFloat(lonInfAOI) + 0.2));
+        flagGridCreation = true;
+        
+        //var btn = $("#btnSelectAIS_File");
+        var btn = document.getElementById("btnSelectAIS_File");
+        btn.disabled = false;
 
     } else {alert("To create a Grid it would have an Area of Interest.")};
   }  
   function exibirAreaLimGrid(pontosGrid){
        
-   // mapa.removeLayer(new_mark);
-      
     polylinha = L.polyline(pontosGrid, {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "red", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", 			"noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 1}
                     ).addTo(mapa);
   }
   function btnClassifAnomaly(){
-    console.log("Retorno do flask = ", {{ ulat }});
+    //console.log("Retorno do flask = ", {{ ulat }});
     
   }
   
@@ -475,7 +554,6 @@ div.space {
             data: {"name" : "Jim"},
         })
     }
-
 
   function exibeAboutPage(){
     //const modal = document.querySelector("dialog")
@@ -492,51 +570,198 @@ div.space {
   function fechaInstructions(){
     modalInstructions.close()
   }
-  function openFileAndFilterAOI(){
+  function selectAIS_File(){
     $.ajax({
-            type: "POST",
-            url: "{{ url_for('openFileAndFilterAOI') }}",
-            //data: {"llon" : lonInfAOI, "ulon" : lonSupAOI, "llat" : latInfAOI, "ulat" : latInfAOI},
-            data: {llon : -75.7, ulon : -74.8, llat : 38.6, ulat : 39.6},
-            dataType: "json",
-        })
-    //document.getElementById("inputTxtFileName").disabled = false;
-    //var inputArqName = document.getElementById("inputTxtFileName");
+            url: "{{ url_for('selectAIS_File') }}",
+            type: "GET",
+            dataType: 'json',
+            success: openFileAIS,
+            error: function(){
+              alert("error execution selection AIS File");
+            }
+    });
+  }
+
+  function openFileAIS(retorno){
+    //alert("funcionou o get");
+    console.log(retorno);
+    //ret = JSON.parse(retorno);
+    
     var textField = $('#inputTxtFileName');
     textField.disabled = false;
-    textField.val('Nome do arquivo');
-    //console.log("Retorno do flask = ", {{ ulat }});
-  }
- 
-  function aisDataWindow(){
-    $("#aisDataPanel").removeClass("not-visible");
-    $("#aisDataPanel").addClass("visible");
-  }
-  function aisPlotFile(){
-    trajectoryWindow();
-
-  }
-
-  function trajectoryWindow(){
-    $("#trajectoryPanel").removeClass("not-visible");
-    $("#trajectoryPanel").addClass("visible");
-  }
-  function classificationWindow(){
-    $("#classificationPanel").removeClass("not-visible");
-    $("#classificationPanel").addClass("visible");
-    $("#windRosePanel").removeClass("not-visible");
-    $("#windRosePanel").addClass("visible");
+    textField.val(retorno);
+    pathFileAISdata = retorno; // novo
+    var btn = document.getElementById("btnPlot");
+    btn.disabled = false;
     
   }
-  function clustering(){
-    trajectoryWindow();
+ 
+  function AISplotPanel(){
+    //var dados = JSON.stringify({llon : -75.7, ulon : -74.8, llat : 38.6, ulat : 39.6});
+    var dados = JSON.stringify([latInfGrid, latSupGrid, lonInfGrid, lonSupGrid, pathFileAISdata]);
+    console.log("front variável dados = ", dados);
+    $.ajax({
+      url: "{{ url_for('openFileAndFilterAOI') }}",
+      type: "POST",
+      dataType: 'json',
+      contentType: 'application/json',
+      //data: {llon : -75.7, ulon : -74.8, llat : 38.6, ulat : 39.6},
+      //data: {"llon" : lonInfAOI, "ulon" : lonSupAOI, "llat" : latInfAOI, "ulat" : latInfAOI},
+      data: dados,
+      success: plotAisDataPanel,
+      error: function(){
+        alert("erro execução Post para Open File");
+      }
+    });
   }
+
+  function plotAisDataPanel(retorno){
+    //alert("funcionou o post do AIS data Panel");
+    console.log(retorno);
+    ret = JSON.parse(retorno);
+    var len = ret.length;
+    
+    if (len > 0){
+      mapa.removeLayer(markersLayerGroup); //novo
+      //mapa.removeLayer(new_mark); //novo
+      mapa.removeLayer(cellsLayerGroup);
+      
+      flagGridCreation = false;
+      
+      for (var i = 0; i < len; i++) {
+        if (isPointInPolygon(ret[i][2], ret[i][3], pontos)){ 
+          aisAOI_ArrayFiltered.push(ret[i]);
+
+          var circle = L.circle([ret[i][2], ret[i][3]], {
+            color: 'red',
+            fillColor: '#f03',
+            fillOpacity: 0.5,
+            radius: 50
+          }).addTo(mapaAIS);
+        }
+      }  
+      var btn = document.getElementById("trajectories");
+      btn.disabled = false;
+      
+      btn = document.getElementById("btnApply");
+      btn.disabled = false;
+
+    } else {
+      alert("arquivo selecionado não possui dados de AIS no Grid/AOI selecionada");
+    } 
+    console.log("tamanho aisAOI_Array = ", aisAOI_ArrayFiltered.length);
+    console.log(aisAOI_ArrayFiltered);
+  }
+
+  function aisDataWindow(){
+    var btn = $('#btnSelectAIS_File');
+    btn.disabled = false;
+  }
+  function aisPlotFile(){
+      
+    $("#windRosePanel").removeClass("visible");
+    $("#windRosePanel").addClass("not-visible");
+    $("#aisPlotPanel").removeClass("not-visible");
+    $("#aisPlotPanel").addClass("visible");
+
+    polygon = L.polygon(pontos, {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", 			"noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 1}
+                    ).addTo(mapaAIS);
+                    const [latInfAOI, latSupAOI, lonInfAOI, lonSupAOI, latMedAOI] = findMinMax(pontos);
+    
+    mapaAIS.setView([latMedAOI, (lonInfAOI + lonSupAOI)/2], 6);
+    AISplotPanel();
+  }
+
+  function enableTrajectoryPanel(){
+   
+    var btn = document.getElementById("listBoxVesselSelect");
+    btn.disabled = false;
+    btn = document.getElementById("listBoxTrajectories");
+    btn.disabled = false;
+    btn = document.getElementById("btnShow");
+    btn.disabled = false;
+    btn = document.getElementById("btnPrevious");
+    btn.disabled = false;
+    btn = document.getElementById("btnNext");
+    btn.disabled = false;
+
+  }
+  function classificationWindow(){
+   
+    $("#aisPlotPanel").removeClass("visible");
+    $("#aisPlotPanel").addClass("not-visible");
+    
+    $("#windRosePanel").removeClass("not-visible");
+    $("#windRosePanel").addClass("visible");
+    var btn = document.getElementById("classificationPanel");
+    btn.disabled = false;
+        
+    $("#AISpointGridPanel").removeClass("not-visible"); //novo 22jan
+    $("#AISpointGridPanel").addClass("visible");
+  }
+  function applyClustering(){
+    
+    var len = aisAOI_ArrayFiltered.length;
+    if (len > 0){
+      //mapa.removeLayer(markersLayerGroup); //novo
+      //mapa.removeLayer(cellsLayerGroup);
+      
+      //flagGridCreation = false;
+      for (var i = 0; i < len; i++) {
+        
+          var circle = L.circle([aisAOI_ArrayFiltered[i][2], aisAOI_ArrayFiltered[i][3]], {
+            color: 'red',
+            fillColor: '#f03',
+            fillOpacity: 0.5,
+            radius: 50
+          }).addTo(mapa);
+        
+      }  
+      enableTrajectoryPanel();
+
+    } else {
+      alert("Botao apply - arquivo selecionado não possui dados de AIS no Grid/AOI selecionada");
+    } 
+  }
+
   function showTrajectory(){
     classificationWindow();
+    drawGridCell(0); // show the first AIS point of the trajectory
+  }
+  function drawGridCell(index){
+    mapa.removeLayer(polygonCell); // teste
+    var lat  = aisAOI_ArrayFiltered[index][2];
+    var long = aisAOI_ArrayFiltered[index][3];
+    var circle = L.circle([lat, long], {color: 'blue', fillColor: '#f03', fillOpacity: 0.5, radius: 50
+          }).addTo(mapa);
+    vertices = calcVerticesCell(lat, long, latInfGrid, lonInfGrid, larguraCelula, alturaCelula); //novo teste
+    polygonCell = L.polygon(vertices, {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "red", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", 			"noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 1}
+                  ).addTo(mapa);
+
+    var textFieldSpeed = $('#inputTxtSpeed');
+    textFieldSpeed.disabled = false;
+    textFieldSpeed.val(aisAOI_ArrayFiltered[index][4]);
+
+    var textFieldCourse = $('#inputTxtCourse');
+    textFieldCourse.disabled = false;
+    textFieldCourse.val(aisAOI_ArrayFiltered[index][5]);
+    console.log("Course = ", aisAOI_ArrayFiltered[index][5], " Heading = ", aisAOI_ArrayFiltered[index][6])
+
+  }
+
+  function btnPrevious(){
+    if (trajectoryPointIndex > 0){
+      trajectoryPointIndex = trajectoryPointIndex - 1;
+      drawGridCell(trajectoryPointIndex);
+    }
+  }
+
+  function btnNext(){
+    trajectoryPointIndex = trajectoryPointIndex + 1;
+    drawGridCell(trajectoryPointIndex);
   }
 
 </script>
-
 
 </body>
 </html>
