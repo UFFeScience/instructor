@@ -67,7 +67,7 @@
   
   /* Right sub-column */
   .rightSubcolumn {
-    float: left;
+    float: none;
     width: 15%;
     background-color: #f1f1f1;
     padding-left: 5px;

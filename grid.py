@@ -8,6 +8,8 @@ import pandas as pd
 import tkinter as tk
 from tkinter import filedialog as fd
 
+#locations_dfBuffer = ""
+
 def teste():
     print ("teste do python")
 
@@ -29,8 +31,10 @@ def create_file():
 @app.route('/loadFileAOI', methods=['GET'])
 def loadFileAOI():
     
+    global locations_dfBuffer
     locations_df = pd.read_csv(selectNameFile())
     #locations_df = pd.read_csv('F:/LatLongAOI.csv')
+    locations_dfBuffer = locations_df.copy() # novo 05fev
     locations_df_json = locations_df.to_json(orient='values')
     resposta = jsonify(locations_df_json)
     resposta.headers.add("Access-Control-Allow-Origin", "*")
@@ -38,6 +42,13 @@ def loadFileAOI():
 
 @app.route('/selectAIS_File', methods=['GET'])
 def selectAIS_File():
+     
+    resposta = jsonify(selectNameFile())
+    #resposta.headers.add("Access-Control-Allow-Origin", "*")
+    return resposta
+
+@app.route('/selectDatasetFile', methods=['GET'])
+def selectDatasetFile():
      
     resposta = jsonify(selectNameFile())
     #resposta.headers.add("Access-Control-Allow-Origin", "*")
@@ -62,13 +73,38 @@ def openFileAndFilterAOI():
        llon = float(dados[2])
        ulon = float(dados[3])
 
-       print ("lats e longs = ", llon)
-       print ("Tam array ais antes = ",ais_df.shape)
+       #print ("lats e longs = ", llon)
+       print ("Tam array ais antes exclusao fora do Grid = ",ais_df.shape)
        ######### filtro
        ais_df = ais_df[(ais_df['LON'] > llon)]
        ais_df = ais_df[(ais_df['LON'] < ulon)]
        ais_df = ais_df[(ais_df['LAT'] > llat)]
        ais_df = ais_df[(ais_df['LAT'] < ulat)]
+
+       print ("Tam array ais depois exclusao fora do Grid = ",ais_df.shape)
+
+       #### NOVO 05fev #####################################
+       ais_df['insideAOI']  = False  #novo
+       print ("shape depois da inclusao da coluna insideAOI ",ais_df.shape)
+       
+       print ("dataframe locations_dfBuffer ", locations_dfBuffer.shape)
+       lat = 0
+       lon = 0
+       print ("print dados locations_dfBuffer ",locations_dfBuffer)
+       ais_df = ais_df.reset_index(drop=True) # novo 05Fev
+
+       for i in range(0, len(ais_df)):
+            
+        lat = ais_df["LAT"][i]
+        lon = ais_df["LON"][i]
+        b_pontoInsidAOI = isPointInPolygon(lat, lon, locations_dfBuffer)
+        if b_pontoInsidAOI:
+            ais_df.loc[i,"insideAOI"]  = True
+
+       ais_df = ais_df[(ais_df['insideAOI'] == True)]
+       
+       print ("Tam array ais_df deletando pontos fora da AOI = ", ais_df.shape)    
+       ############################################################
 
        ais_df = ais_df.sort_values(by=['MMSI', 'BaseDateTime'])#NOVO
        ais_df = ais_df.reset_index(drop=True) # novo
@@ -132,6 +168,49 @@ def geracaoBINs(speed, course):
         speedBIN = "20+"
 
     return speedBIN, courseBIN
+
+def isPointInPolygon (latitude, longitude, polygon):
+
+    y = float(latitude)
+    x = float(longitude)
+    
+    #print ("lats e longs = ", y, "  ", x)
+
+    inside = False
+    #print (inside)
+    
+    lenPoligono = len(polygon)
+    j = lenPoligono - 1
+    #print("antes j = ", j)
+    
+    
+    #for (i = 0, j = polygon.length - 1; i < polygon.length; j = i++):
+    for i in range(0, lenPoligono):
+        #print("i = ", i, "j = ", j)
+        
+       # yi = float(polygon[i][0])
+       # xi = float(polygon[i][1])
+
+        #yj = float(polygon[j][0])
+        #xj = float(polygon[j][1])
+
+        yi = float(polygon["LAT"][i])
+        xi = float(polygon["LONG"][i])
+
+        yj = float(polygon["LAT"][j])
+        xj = float(polygon["LONG"][j])
+
+
+        #print ("xi yi xj yj = ", xi, yi, xj, yj)
+
+        intersect = ((yi > y) != (yj > y)) and (x < (xj - xi) * (y - yi) / (yj - yi) + xi)
+
+        if (intersect):
+            inside = not inside
+        j = i
+        #print("depois j = ", j)
+    return inside
+
 
 if __name__ == "__main__":
     app.run(debug=True)

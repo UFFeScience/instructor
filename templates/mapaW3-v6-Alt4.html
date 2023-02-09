@@ -17,14 +17,17 @@
     <script src="https://cdn.plot.ly/plotly-2.16.1.min.js"></script>
     <script src="/static/windRosePlot.js"></script>
 
-    <script src="/static/windRoseAISPoint.js"></script>
-
+   
     <script src="https://code.jquery.com/jquery-3.6.1.js"></script>
 
 <style>
 div.space {
   line-height: 1.6;
 }
+div.space05 {
+  line-height: 0.5;
+}
+
 </style>
 </head>
 <body>
@@ -113,6 +116,7 @@ div.space {
     <button class="subnavbtn">Area of Interest <i class="fa fa-caret-down"></i></button>
     <div class="subnav-content">
     <!----  <a href="#" onclick="excluirUltPonto();">Remove Last Marker</a>-->
+      <a href="#" onclick="removeArea();" id="removeArea">Remove </a>
       <a href="#" onclick="loadArea();" id="loadAOI">Load </a>
       <a href="#" onclick="gerarPoligono();" id="geraAOI">Create </a>
       <a href="#" onclick="download_csv_file();">Save </a>
@@ -137,8 +141,13 @@ div.space {
   </div>
 
   <div class="subnav">
-    <button class="subnavbtn" onclick="aisDataWindow();">AIS Data </button>
+    <button class="subnavbtn">Trajectory Data <i class="fa fa-caret-down"></i></button>
+    <div class="subnav-content">
+      <a href="#" onclick="createCompiledFile();">Create File</a>
+      <a href="#" onclick="loadCompiledFile();" id="loadCompiledFile">Load File</a>
+    </div>
   </div>
+
 
   <div class="subnav">
     <button class="subnavbtn">Help <i class="fa fa-caret-down"></i></button>
@@ -157,47 +166,63 @@ div.space {
     </div>
   </div>
   <div class="rightcolumn">
-    <div class="card" id="cardSuperior" style="width: 100.0%; height:265px;">
+    <div class="card" id="cardSuperior" style="width: 100.0%; height:275px;">
       
       <div id="aisData">
         <fieldset id="aisDataPanel" class="visible">
-          <legend>AIS Data Processing</legend>
-              <div class="space">
-                  
-                <button type="button" id="btnSelectAIS_File" disabled onclick="selectAIS_File();">Select File</button>
+          <legend>Trajectory Data Processing</legend>
+              <!--<div class="space"> -->
+              <div>    
+                <button type="button" id="btnSelectAIS_File" disabled onclick="selectAIS_File();">Select AIS File</button>
                 <input type="text" id="inputTxtFileName" name="Name" disabled/>
                 <button id="btnPlot" onclick="aisPlotFile();" disabled>Plot</button>
+                <button id="btnCompileAndSave" onclick="compileAndSaveFile();" disabled>Save Dataset</button>
                 <br>
-                <label for="clustering">Clustering:</label>
-                <select id="trajectories" disabled>
-                    <option value="1">None (Density plots only)</option>
-                    <option value="2">DBSCAN (Lat, Long)</option>
-                    <option value="3">DBSCAN (Lat, Long, Speed)</option>
-                    <option value="4">other</option>
-                </select>    
-                <button type="button" id="btnApply" onclick="applyClustering();" disabled>Apply </button>
               </div>
+               
+              <!--</div> -->
         </fieldset>
       </div> 
+
       <div id="trajectory">
         <fieldset id="trajectoryPanel" class="visible">
-          <legend>Trajectory Analysis</legend>
-                  <label for="listBoxVesselSelect">Vessel:</label>
-                  <select id="listBoxVesselSelect" disabled>
-                      <option value="0" selected>Select</option>
-                      <option value="1">Loyd</option>
-                      <option value="2">P12</option>
-                      <option value="3">Barca Rio-Niteroi</option>
-                  </select>&nbsp;&nbsp;&nbsp;
-                  <label for="listBoxTrajectories">Trajectory:</label>
-                  <select id="listBoxTrajectories" disabled>
-                      <option value="0" selected>Select</option>
-                      <option value="1">1</option>
-                      <option value="2">2</option>
-                      <option value="3">3</option>
-                  </select>
-                  <button type="button" id="btnShow" onclick="showTrajectory();" disabled>Show </button>
-                  <br><br>
+              <legend>Trajectory Analysis</legend>
+                  <div class="space">
+                    <button type="button" id="btnLoadDatasets_File" onclick="selectDatasetFile();">Select Dataset </button>
+                    <input type="text" id="inputDataSetsFileName" name="datasetsName" disabled/>
+                    <button id="btnLoadDataset" onclick="loadDatasetFile();" disabled>Load</button>
+                    <br>
+                    <label for="clustering">Clustering:</label>
+                    <select id="clustering" disabled>
+                        <option value="1">None (Density plots only)</option>
+                        <option value="2">DBSCAN (Lat, Long)</option>
+                        <option value="3">DBSCAN (Lat, Long, Speed)</option>
+                        <option value="4">other</option>
+                    </select>    
+                    <button type="button" id="btnApply" onclick="applyClustering();" disabled>Apply </button>
+                    <br>
+                    
+                    <label for="listBoxTrajectories">Trajectory:</label>
+                    <select id="listBoxTrajectories" disabled>
+                        <option value="0" selected>Select</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                    </select>&nbsp;&nbsp;
+                    <!--                  
+                    <label for="listBoxVesselSelect">Vessel:</label>
+                    <select id="listBoxVesselSelect" disabled>
+                        <option value="0" selected>Select</option>
+                        <option value="1">Loyd</option>
+                        <option value="2">P12</option>
+                        <option value="3">Barca Rio-Niteroi</option>
+                    </select>&nbsp;
+                    -->
+                    <button type="button" id="btnShow" onclick="showTrajectory();" disabled>Show </button>
+                  </div> 
+                  <div class="space05">
+                    <br>
+                  </div>  
             <!-- alt-->
             <fieldset id="classificationPanel" disabled class="visible">
               <legend>Classification</legend>     
@@ -206,8 +231,15 @@ div.space {
               
                       <input type="radio" id="btnSelectAnomalous" name="btnRadioNormal" value="anomalous" />
                       <label for="btnSelectAnomalous">Anomalous</label> &nbsp; &nbsp;
-                      <button id="btnSaveClassif" onclick="btnClassifAnomaly();">Save</button> <br>
-                     
+                                           
+                      <label for="listBoxExperts">Expert Id:</label>
+                      <select id="listBoxExperts">
+                        <option value="0" selected>Select</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                      </select>
+                      <br>
                       <label for="confidence">Confidence:</label>
                       <select id="confidence">
                           <option value="1">Very low</option>
@@ -215,7 +247,8 @@ div.space {
                           <option value="3">Medium</option>
                           <option value="4">High</option>
                           <option value="4">Very high</option>
-                      </select>
+                      </select>&nbsp; &nbsp;&nbsp; &nbsp;
+                      <button id="btnSaveClassif"  onclick="btnClassifAnomaly();">Save</button>
                       
             </fieldset>      
         </fieldset>  
@@ -224,7 +257,7 @@ div.space {
     </div>
 
     <div class="card" id="cardInferior" >
-      <div id="aisPlotPanel" style="width: 100.0%; height:455px;" class="visible">
+      <div id="aisPlotPanel" style="width: 100.0%; height:445px;" class="visible">
       </div>
       
       <div id="AISpointGridPanel" class="not-visible"> 
@@ -236,7 +269,6 @@ div.space {
               <input type="text" id="inputTxtSpeed" name="Speed" size="4" disabled/>
               <button id="btnPrevious" onclick="btnPrevious()" disabled>Previous</button>
               <button id="btnNext" onclick="btnNext()" disabled>Next</button>
-               
               <br>
         </fieldset>
       </div>
@@ -245,32 +277,23 @@ div.space {
         <div class="row">
           <div class="leftSubColumn">
             <div id="vesselsSpeed" style="width: 100.0%; height:395px;">
-              <script>
-                exibeWindRose();
-              </script> 
             </div>
           </div>
-
           <div class="rightSubColumn"> 
-            <div style="width: 100.0%; height:395px; text-align: left;">
-              
-              <!--<div style="width: 100.0%; height:150px;">  -->
-                <font size="-1">
-                  <span style="color: black;  background-color: black;">X</span> 0-2<br>
-                  <span style="color: gray;   background-color: gray;">X</span> 2-6<br>
-                  <span style="color: blue;   background-color: blue;">X</span> 6-9<br>
-                  <span style="color: green;  background-color: green;">X</span> 9-12<br>
-                  <span style="color: yellow; background-color: yellow;">X</span> 12-15<br>
-                  <span style="color: orange; background-color: orange;">X</span> 15-20<br>
-                  <span style="color: red;    background-color: red;">X</span> 20+ <br>
-                </font> 
-              <!--</div> -->
-              <!--<div style="width: 100.0%; height:245px;">  
-                <script>
-                  
-                </script>
-              </div> -->
-            </div>
+
+                
+                <div style="text-align: left;">
+                  <font size="-1">
+                    <span style="color: black;  background-color: black;">X</span> 0-2<br>
+                    <span style="color: gray;   background-color: gray;">X</span> 2-6<br>
+                    <span style="color: blue;   background-color: blue;">X</span> 6-9<br>
+                    <span style="color: green;  background-color: green;">X</span> 9-12<br>
+                    <span style="color: yellow; background-color: yellow;">X</span> 12-15<br>
+                    <span style="color: orange; background-color: orange;">X</span> 15-20<br>
+                    <span style="color: red;    background-color: red;">X</span> 20+ <br>
+                  </font> 
+                </div>
+            
           </div>
         </div>
       </div>
@@ -326,6 +349,7 @@ div.space {
   cellsLayerGroup.addTo(mapa); //novo
 
   var pathFileAISdata = ""; //novo 12Jan
+  var pathDatasetFile = ""; //novo 30jan
   var aisAOI_ArrayFiltered = []; // novo 12jan
   var trajectoryPointIndex = 0;
 
@@ -417,6 +441,27 @@ div.space {
       mapa.setView([45, 0], 4);
     }
   };
+  function removeArea(){
+    if (flagPolygon == true){
+      mapa.removeLayer(markersLayerGroup); //novo
+      markersLayerGroup.clearLayers();// novo 24jan
+      while (pontos.length) { //remove all the elements inside the array
+        pontos.pop(); 
+      }
+      mapa.removeLayer(polygon);
+      mapa.removeLayer(polylinha); //TESTE
+      flagPolygon = false;
+      
+      if (flagGridCreation == true){
+          mapa.removeLayer(cellsLayerGroup);
+          cellsLayerGroup.clearLayers(); //recente
+          flagGridCreation = false;
+      }
+    } else {
+      alert("There is no area to be removed.")
+    }
+  }
+    
   function loadArea(){
     $.ajax({
             url: "{{ url_for('loadFileAOI') }}",
@@ -431,6 +476,9 @@ div.space {
   }
   function plotLoadedArea(locations){
     //pontos = locations;
+    if (flagPolygon == true){
+      removeArea();//TESTE 24JAN
+    }
     pontos = JSON.parse(locations);
     const [latInfAOI, latSupAOI, lonInfAOI, lonSupAOI, latMedAOI] = findMinMax(pontos);
     gerarPoligono();
@@ -495,6 +543,7 @@ div.space {
           mapa.removeLayer(markersLayerGroup); //novo
           mapa.removeLayer(cellsLayerGroup);
           cellsLayerGroup.clearLayers(); //recente
+          mapa.removeLayer(polylinha); // novo 24jan 23h
           flagGridCreation = false;
         }
         
@@ -532,8 +581,8 @@ div.space {
         flagGridCreation = true;
         
         //var btn = $("#btnSelectAIS_File");
-        var btn = document.getElementById("btnSelectAIS_File");
-        btn.disabled = false;
+        //var btn = document.getElementById("btnSelectAIS_File");// novo 28jan
+        //btn.disabled = false; // novo 28jan
 
     } else {alert("To create a Grid it would have an Area of Interest.")};
   }  
@@ -542,6 +591,11 @@ div.space {
     polylinha = L.polyline(pontosGrid, {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "red", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", 			"noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 1}
                     ).addTo(mapa);
   }
+  function createCompiledFile(){
+    var btn = document.getElementById("btnSelectAIS_File");
+    btn.disabled = false;
+  }
+
   function btnClassifAnomaly(){
     //console.log("Retorno do flask = ", {{ ulat }});
     
@@ -629,23 +683,23 @@ div.space {
       flagGridCreation = false;
       
       for (var i = 0; i < len; i++) {
-        if (isPointInPolygon(ret[i][2], ret[i][3], pontos)){ 
+        //if (isPointInPolygon(ret[i][2], ret[i][3], pontos)){ // function already done in the back-end
           aisAOI_ArrayFiltered.push(ret[i]);
 
           var circle = L.circle([ret[i][2], ret[i][3]], {
             color: 'red',
             fillColor: '#f03',
             fillOpacity: 0.5,
-            radius: 50
+            radius: 30
           }).addTo(mapaAIS);
-        }
+        //}
       }  
-      var btn = document.getElementById("trajectories");
-      btn.disabled = false;
+      //var btn = document.getElementById("clustering");
+     // btn.disabled = false;
       
-      btn = document.getElementById("btnApply");
-      btn.disabled = false;
-
+     // btn = document.getElementById("btnApply");
+     // btn.disabled = false;
+      alert("The plotting processing has been done.");  
     } else {
       alert("arquivo selecionado não possui dados de AIS no Grid/AOI selecionada");
     } 
@@ -653,12 +707,12 @@ div.space {
     console.log(aisAOI_ArrayFiltered);
   }
 
-  function aisDataWindow(){
-    var btn = $('#btnSelectAIS_File');
-    btn.disabled = false;
-  }
+ // function aisDataWindow(){
+   // var btn = $('#btnSelectAIS_File');
+   // btn.disabled = false;
+  //}
   function aisPlotFile(){
-      
+    alert("This action may be extended for one or more minutes after closing this message. At the end another message will inform the status.");  
     $("#windRosePanel").removeClass("visible");
     $("#windRosePanel").addClass("not-visible");
     $("#aisPlotPanel").removeClass("not-visible");
@@ -674,9 +728,7 @@ div.space {
 
   function enableTrajectoryPanel(){
    
-    var btn = document.getElementById("listBoxVesselSelect");
-    btn.disabled = false;
-    btn = document.getElementById("listBoxTrajectories");
+    var btn = document.getElementById("listBoxTrajectories");
     btn.disabled = false;
     btn = document.getElementById("btnShow");
     btn.disabled = false;
@@ -688,16 +740,19 @@ div.space {
   }
   function classificationWindow(){
    
+    var btn = document.getElementById("classificationPanel");
+    btn.disabled = false;
+    
     $("#aisPlotPanel").removeClass("visible");
     $("#aisPlotPanel").addClass("not-visible");
     
-    $("#windRosePanel").removeClass("not-visible");
-    $("#windRosePanel").addClass("visible");
-    var btn = document.getElementById("classificationPanel");
-    btn.disabled = false;
-        
     $("#AISpointGridPanel").removeClass("not-visible"); //novo 22jan
     $("#AISpointGridPanel").addClass("visible");
+
+    $("#windRosePanel").removeClass("not-visible");
+    $("#windRosePanel").addClass("visible");
+    
+    exibeWindRose();
   }
   function applyClustering(){
     
@@ -741,11 +796,15 @@ div.space {
     var textFieldSpeed = $('#inputTxtSpeed');
     textFieldSpeed.disabled = false;
     textFieldSpeed.val(aisAOI_ArrayFiltered[index][4]);
-
+    var bg = document.getElementById("inputTxtSpeed");
+    bg.style.color = "green";
+    
+    var cardinalLetter = "SW";
+    
     var textFieldCourse = $('#inputTxtCourse');
     textFieldCourse.disabled = false;
-    textFieldCourse.val(aisAOI_ArrayFiltered[index][5]);
-    console.log("Course = ", aisAOI_ArrayFiltered[index][5], " Heading = ", aisAOI_ArrayFiltered[index][6])
+    textFieldCourse.val(aisAOI_ArrayFiltered[index][5] + " " + cardinalLetter);
+    console.log("MMSI = ", aisAOI_ArrayFiltered[index][0], " Course = ", aisAOI_ArrayFiltered[index][5], " Heading = ", aisAOI_ArrayFiltered[index][6])
 
   }
 
@@ -759,6 +818,40 @@ div.space {
   function btnNext(){
     trajectoryPointIndex = trajectoryPointIndex + 1;
     drawGridCell(trajectoryPointIndex);
+  }
+  function selectDatasetFile(){
+    $.ajax({
+            url: "{{ url_for('selectDatasetFile') }}",
+            type: "GET",
+            dataType: 'json',
+            success: openDatasetFile,
+            error: function(){
+              alert("error execution selection AIS File");
+            }
+    });
+  }
+
+  function openDatasetFile(retorno){
+    //alert("funcionou o get");
+    console.log(retorno);
+    //ret = JSON.parse(retorno);
+    
+    var textField = $('#inputDataSetsFileName');
+    textField.disabled = false;
+    textField.val(retorno);
+    pathDatasetFile = retorno; // novo
+    var btn = document.getElementById("btnLoadDataset");
+    btn.disabled = false;
+  }
+
+
+  function loadDatasetFile(){
+    // if ....
+    var btn = document.getElementById("clustering");
+    btn.disabled = false;
+    
+    btn = document.getElementById("btnApply");
+    btn.disabled = false;
   }
 
 </script>

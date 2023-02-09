@@ -1,5 +1,5 @@
 var data = [{
-    r: [1,0,0,0,0,0,0,0],
+    r: [0,1,0,0,0,1,0,0],
     theta: ["North", "N-E", "East", "S-E", "South", "S-W", "West", "N-W"],
     name: "< 2 knots",
     marker: {color: "black"},
