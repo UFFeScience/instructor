@@ -44,14 +44,14 @@ def loadFileAOI():
 def selectAIS_File():
      
     resposta = jsonify(selectNameFile())
-    #resposta.headers.add("Access-Control-Allow-Origin", "*")
+    resposta.headers.add("Access-Control-Allow-Origin", "*")
     return resposta
 
 @app.route('/selectDatasetFile', methods=['GET'])
 def selectDatasetFile():
      
     resposta = jsonify(selectNameFile())
-    #resposta.headers.add("Access-Control-Allow-Origin", "*")
+    resposta.headers.add("Access-Control-Allow-Origin", "*")
     return resposta
 
 @app.route('/openFileAndFilteAOI', methods=['POST'])
