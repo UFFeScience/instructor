@@ -2,7 +2,7 @@
 import json
 import flask
 from flask import Flask, Response, render_template, request, redirect, url_for, jsonify
-from flask_cors import CORS # permitir back receber json do front
+from flask_cors import CORS, cross_origin # permitir back receber json do front
 
 import pandas as pd
 import tkinter as tk
