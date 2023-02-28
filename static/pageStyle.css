@@ -73,6 +73,20 @@
     padding-left: 5px;
    
   }
+/* classification panel division */
+  .leftPanel {   
+    float: left;
+    background-color: #f1f1f1;
+  }
+  
+  /* Right sub-column */
+  .rightPanel {
+    float: right;
+    right: 1%;
+    padding-left: 2px;
+   
+  }
+/*  */
   
   /* Fake image */
   .fakeimg {

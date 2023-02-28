@@ -1,0 +1,6 @@
+Trajetoria,Expert,Clustering,Normal,Conf,Date,Time
+traj1,ferraz,none - density plots,normal,very low,23/02/2023,23:23:02
+traj1,ferraz,none - density plots,normal,very low,23/02/2023,23:23:10
+traj1,ferraz,none - density plots,anomalous,very low,23/02/2023,23:23:18
+traj-02,ferraz,DBSCAN lat-long-speed,normal,low,23/02/2023,23:55:24
+traj2,ferraz,other,anomalous,very high,23/02/2023,23:56:12

@@ -1,0 +1,35 @@
+Trajetoria,Expert,Clustering,Normal,Conf,Date,Time
+traj1,renan,none - density plots,anomalous,medium,22/02/2023,21:03:40
+traj2,renan,DBSCAN lat-long,normal,low,22/02/2023,21:04:03
+traj3,renan,DBSCAN lat-long-speed,anomalous,high,22/02/2023,21:04:18
+traj3,claudio,none - density plots,normal,low,22/02/2023,20:29:04
+traj2,claudio,DBSCAN lat-long,normal,high,22/02/2023,20:29:21
+traj1,wilson,none - density plots,normal,very low,22/02/2023,21:16:10
+traj2,wilson,DBSCAN lat-long,anomalous,low,22/02/2023,21:16:20
+traj3,wilson,DBSCAN lat-long-speed,normal,medium,22/02/2023,21:17:37
+traj2,wilson,other,anomalous,very high,22/02/2023,21:19:17
+traj1,aline,none - density plots,normal,very low,22/02/2023,23:10:28
+traj1,daniel,none - density plots,normal,very low,22/02/2023,23:19:02
+traj3,daniel,other,anomalous,very high,22/02/2023,23:19:14
+traj-04,wilson,none - density plots,anomalous,very low,23/02/2023,00:44:10
+traj2,wilson,none - density plots,anomalous,very low,23/02/2023,00:44:45
+traj-02,wilson,none - density plots,anomalous,very low,23/02/2023,00:44:59
+traj-03,rebuit,DBSCAN lat-long-speed,normal,medium,23/02/2023,00:53:49
+traj1,rebuit,DBSCAN lat-long,anomalous,very low,23/02/2023,00:54:18
+traj-04,rebuit,other,normal,very high,23/02/2023,00:54:39
+traj-01,renan,none - density plots,normal,very low,23/02/2023,20:41:32
+traj-03,renan,other,anomalous,medium,23/02/2023,20:41:56
+traj-02,renan,DBSCAN lat-long,normal,high,23/02/2023,21:33:39
+traj1,ferraz,none - density plots,normal,very low,23/02/2023,23:23:02
+traj1,ferraz,none - density plots,normal,very low,23/02/2023,23:23:10
+traj1,ferraz,none - density plots,anomalous,very low,23/02/2023,23:23:18
+traj-02,ferraz,DBSCAN lat-long-speed,normal,low,23/02/2023,23:55:24
+traj2,ferraz,other,anomalous,very high,23/02/2023,23:56:12
+traj-02,daniel,none - density plots,normal,very low,24/02/2023,00:04:11
+traj3,daniel,none - density plots,anomalous,high,24/02/2023,00:05:34
+25,rebuit,none - density plots,normal,very low,26/02/2023,00:23:48
+19,rebuit,none - density plots,normal,very low,26/02/2023,00:24:05
+7,aline,none - density plots,normal,very low,26/02/2023,00:27:40
+4,aline,none - density plots,normal,very low,26/02/2023,00:28:10
+21,braga,none - density plots,normal,very low,26/02/2023,16:07:25
+21,claudio,none - density plots,normal,very low,26/02/2023,16:54:58

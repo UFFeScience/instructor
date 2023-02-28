@@ -11,3 +11,10 @@ dialog {
     border-radius: .5rem;
     width: 70%;
 }
+
+.dialogoLogin{
+    background-color: rgb(242, 246, 248);
+    max-width: 300px;
+    border-radius: .5rem;
+    width: 50%;
+}

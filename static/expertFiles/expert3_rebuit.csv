@@ -1,0 +1,6 @@
+Trajetoria,Expert,Clustering,Normal,Conf,Date,Time
+traj-03,rebuit,DBSCAN lat-long-speed,normal,medium,23/02/2023,00:53:49
+traj1,rebuit,DBSCAN lat-long,anomalous,very low,23/02/2023,00:54:18
+traj-04,rebuit,other,normal,very high,23/02/2023,00:54:39
+25,rebuit,none - density plots,normal,very low,26/02/2023,00:23:48
+19,rebuit,none - density plots,normal,very low,26/02/2023,00:24:05

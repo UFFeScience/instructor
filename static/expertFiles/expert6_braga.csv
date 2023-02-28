@@ -1,0 +1,11 @@
+Trajetoria,Expert,Clustering,Normal,Conf,Date,Time
+traj1,braga,none - density plots,normal,very low,21/02/2023,12:28:24
+traj3,braga,DBSCAN lat-long-speed,anomalous,medium,21/02/2023,12:28:50
+traj3,braga,DBSCAN lat-long-speed,anomalous,medium,21/02/2023,14:56:06
+traj1,braga,DBSCAN lat-long-speed,normal,low,21/02/2023,14:56:30
+traj3,braga,none - density plots,anomalous,very high,21/02/2023,15:01:18
+traj3,braga,DBSCAN lat-long-speed,anomalous,very high,21/02/2023,15:05:23
+traj2,braga,other,normal,medium,21/02/2023,15:05:37
+traj1,braga,none - density plots,normal,very low,22/02/2023,20:14:42
+traj3,braga,other,anomalous,medium,22/02/2023,20:15:01
+21,braga,none - density plots,normal,very low,26/02/2023,16:07:25

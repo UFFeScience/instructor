@@ -1,0 +1,8 @@
+Trajetoria,Expert,Clustering,Normal,Conf,Date,Time
+traj1,wilson,none - density plots,normal,very low,22/02/2023,21:16:10
+traj2,wilson,DBSCAN lat-long,anomalous,low,22/02/2023,21:16:20
+traj3,wilson,DBSCAN lat-long-speed,normal,medium,22/02/2023,21:17:37
+traj2,wilson,other,anomalous,very high,22/02/2023,21:19:17
+traj-04,wilson,none - density plots,anomalous,very low,23/02/2023,00:44:10
+traj2,wilson,none - density plots,anomalous,very low,23/02/2023,00:44:45
+traj-02,wilson,none - density plots,anomalous,very low,23/02/2023,00:44:59

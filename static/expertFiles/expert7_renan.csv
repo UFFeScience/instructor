@@ -1,0 +1,7 @@
+Trajetoria,Expert,Clustering,Normal,Conf,Date,Time
+traj1,renan,none - density plots,anomalous,medium,22/02/2023,21:03:40
+traj2,renan,DBSCAN lat-long,normal,low,22/02/2023,21:04:03
+traj3,renan,DBSCAN lat-long-speed,anomalous,high,22/02/2023,21:04:18
+traj-01,renan,none - density plots,normal,very low,23/02/2023,20:41:32
+traj-03,renan,other,anomalous,medium,23/02/2023,20:41:56
+traj-02,renan,DBSCAN lat-long,normal,high,23/02/2023,21:33:39

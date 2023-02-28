@@ -50,6 +50,19 @@ div.space05 {
     <button onclick="fechaAboutPage();" style="display:block; margin: 0 auto; background-color: rgb(141, 163, 236);">Close</button>
 </dialog>
 
+<dialog class="dialogoLogin" id="loginPage">
+  <div style="text-align: center;">
+    <h2>Expert Identity</h2>
+  </div>
+  Name:<br> 
+  <input type="text" id="inputTxtName" name="loginName" /><br><br>
+      
+  Password:<br>
+  <input type="text" id="inputTxtPassword" name="password" disabled /><br><br>
+  
+  <button onclick="fechaLoginPage();" style="display:block; margin: 0 auto; background-color: rgb(141, 163, 236);">Login</button>
+</dialog>
+
 <dialog class="dialogo"    id="instructionsPage">
   <h2>USER INSTRUCTIONS</h2>
   <b>=== Navigation Menu ===</b><br><br>
@@ -100,6 +113,8 @@ div.space05 {
   <h1>Vessel Trajectory Classifier Toll</h1>
 </div>
 
+<!---------------------------------------- MENU----------------------------------->
+
 <div class="topnav" id="myTopnav">
   <div class="subnav">
     <button class="subnavbtn">Map Set View <i class="fa fa-caret-down"></i></button>
@@ -145,6 +160,7 @@ div.space05 {
     <div class="subnav-content">
       <a href="#" onclick="createCompiledFile();">Create File</a>
       <a href="#" onclick="loadCompiledFile();" id="loadCompiledFile">Load File</a>
+      <a href="#" onclick="downloadClassificationFile();" id="downloadClassification">Download Classifications</a>
     </div>
   </div>
 
@@ -173,7 +189,7 @@ div.space05 {
           <legend>Trajectory Data Processing</legend>
               <!--<div class="space"> -->
               <div>    
-                <button type="button" id="btnSelectAIS_File" disabled onclick="selectAIS_File();">Select AIS File</button>
+                <button type="button" id="btnSelectAIS_File" disabled onclick="selectAIS_File();">AIS File</button>
                 <input type="text" id="inputTxtFileName" name="Name" disabled/>
                 <button id="btnPlot" onclick="aisPlotFile();" disabled>Plot</button>
                 <button id="btnCompileAndSave" onclick="compileAndSaveFile();" disabled>Save Dataset</button>
@@ -194,20 +210,19 @@ div.space05 {
                     <br>
                     <label for="clustering">Clustering:</label>
                     <select id="clustering" disabled>
-                        <option value="1">None (Density plots only)</option>
-                        <option value="2">DBSCAN (Lat, Long)</option>
-                        <option value="3">DBSCAN (Lat, Long, Speed)</option>
-                        <option value="4">other</option>
+                        <option value="none - density plots">None (Density plots only)</option>
+                        <option value="DBSCAN lat-long">DBSCAN (Lat, Long)</option>
+                        <option value="DBSCAN lat-long-speed">DBSCAN (Lat, Long, Speed)</option>
+                        <option value="other">other</option>
                     </select>    
                     <button type="button" id="btnApply" onclick="applyClustering();" disabled>Apply </button>
                     <br>
-                    
                     <label for="listBoxTrajectories">Trajectory:</label>
                     <select id="listBoxTrajectories" disabled>
-                        <option value="0" selected>Select</option>
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
+                        <!--<option value="0" selected>Select</option> 
+                        <option value="traj1">traj1</option>
+                        <option value="traj2">traj2</option>
+                        <option value="traj3">traj3</option> -->
                     </select>&nbsp;&nbsp;
                     <!--                  
                     <label for="listBoxVesselSelect">Vessel:</label>
@@ -224,33 +239,33 @@ div.space05 {
                     <br>
                   </div>  
             <!-- alt-->
-            <fieldset id="classificationPanel" disabled class="visible">
-              <legend>Classification</legend>     
-                      <input type="radio" id="btnSelectNormal" name="btnRadioNormal" value="normal" checked />
-                      <label for="btnSelectNormal">Normal</label>
-              
-                      <input type="radio" id="btnSelectAnomalous" name="btnRadioNormal" value="anomalous" />
-                      <label for="btnSelectAnomalous">Anomalous</label> &nbsp; &nbsp;
-                                           
-                      <label for="listBoxExperts">Expert Id:</label>
-                      <select id="listBoxExperts">
-                        <option value="0" selected>Select</option>
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                      </select>
-                      <br>
-                      <label for="confidence">Confidence:</label>
-                      <select id="confidence">
-                          <option value="1">Very low</option>
-                          <option value="2">Low</option>
-                          <option value="3">Medium</option>
-                          <option value="4">High</option>
-                          <option value="4">Very high</option>
-                      </select>&nbsp; &nbsp;&nbsp; &nbsp;
-                      <button id="btnSaveClassif"  onclick="btnClassifAnomaly();">Save</button>
-                      
-            </fieldset>      
+            <div class="row">
+              <div class="leftPanel">
+                <fieldset id="classificationPanel" style="width:265px" disabled class="visible">
+                  <legend>Classification</legend>     
+                          <input type="radio" id="btnSelectNormal" name="btnRadioNormal" value="normal" checked />
+                          <label for="btnSelectNormal">Normal</label>
+                  
+                          <input type="radio" id="btnSelectAnomalous" name="btnRadioNormal" value="anomalous" />
+                          <label for="btnSelectAnomalous">Anomalous</label> &nbsp; &nbsp;
+                          <br>
+                          <label for="confidence">Confidence:</label>
+                          <select id="confidence">
+                              <option value="very low" >Very low</option>
+                              <option value="low"      >Low</option>
+                              <option value="medium"   >Medium</option>
+                              <option value="high"     >High</option>
+                              <option value="very high">Very high</option>
+                          </select>&nbsp; &nbsp;
+                          <button id="btnSaveClassif"  onclick="btnClassifAnomaly();">Save</button>
+                          
+                </fieldset>
+              </div>
+              <div class="rightPanel">
+                <br><br>
+                <button type="button" id="btnFinish" onclick="finishTrajectoryAnalysis();" style="background-color: rgb(141, 163, 236);"disabled>Finish</button>
+              </div>
+            </div>  
         </fieldset>  
       </div>  
       
@@ -310,8 +325,13 @@ div.space05 {
 
 <script>
   var latInfGrid, latSupGrid, lonInfGrid, lonSupGrid, latMedGrid;
+  var expertID;
+  var expertPassword;
+  var expertFileName;
+  var polygon_CSV
   //const modal = document.querySelector("dialog");  //funciona
   const modalAbout = document.getElementById("aboutPage");
+  const modalLogin = document.getElementById("loginPage"); // novo 18fev
   const modalInstructions = document.getElementById("instructionsPage");
 
   console.log("distancia = ", getDistanceFromLatLng(30, -90, 31, -90));
@@ -342,18 +362,27 @@ div.space05 {
 		maxZoom: 19, attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 	}).addTo(mapaAIS);
 
-  var markersLayerGroup = new L.LayerGroup(); // novo
-  markersLayerGroup.addTo(mapa); //novo
+  var markersLayerGroup = new L.LayerGroup(); 
+  markersLayerGroup.addTo(mapa); 
 
-  var cellsLayerGroup = new L.LayerGroup(); // novo
-  cellsLayerGroup.addTo(mapa); //novo
+  var cellsLayerGroup = new L.LayerGroup(); 
+  cellsLayerGroup.addTo(mapa); 
 
-  var pathFileAISdata = ""; //novo 12Jan
-  var pathDatasetFile = ""; //novo 30jan
-  var aisAOI_ArrayFiltered = []; // novo 12jan
+  var trajectoryLayerGroup = new L.LayerGroup(); // novo 26fev
+  trajectoryLayerGroup.addTo(mapa); //novo 26fev
+  var displayedPointsLayerGroup = new L.LayerGroup(); // novo 26fev
+  displayedPointsLayerGroup.addTo(mapa); //novo 26fev
+
+  var pathFileAISdata = ""; 
+  var pathDatasetFile = ""; 
+  var aisAOI_ArrayFiltered = []; 
   var trajectoryPointIndex = 0;
+  let trajetoriaArray = [];
+  var totalTraj = 0;
+  var aisAOI_trajSelected = [];
 
   exibeAboutPage();
+  
 
     //////////////////////////////////// FUNCTIONS ////////////////////////////////
 
@@ -480,6 +509,18 @@ div.space05 {
       removeArea();//TESTE 24JAN
     }
     pontos = JSON.parse(locations);
+    ///teste 23 fev /////
+    var csv = 'LAT,LONG\n';  
+          
+        //merge the data with CSV  
+        pontos.forEach(function(row) {  
+                csv += row.join(',');  
+                csv += "\n";  
+        });  
+        polygon_CSV = csv;
+
+
+    //////////////////
     const [latInfAOI, latSupAOI, lonInfAOI, lonSupAOI, latMedAOI] = findMinMax(pontos);
     gerarPoligono();
     mapa.setView([latMedAOI, (lonInfAOI + lonSupAOI)/2], 8);
@@ -496,7 +537,8 @@ div.space05 {
                 csv += row.join(',');  
                 csv += "\n";  
         });  
-        //display the created CSV data on the web browser   
+        polygon_CSV = csv;
+        //display the created CSV data on the web browser
         //document.write(csv);  
         var hiddenElement = document.createElement('a');  
         hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);  
@@ -598,6 +640,7 @@ div.space05 {
 
   function btnClassifAnomaly(){
     //console.log("Retorno do flask = ", {{ ulat }});
+    saveClassificationFile();
     
   }
   
@@ -610,16 +653,104 @@ div.space05 {
     }
 
   function exibeAboutPage(){
-    //const modal = document.querySelector("dialog")
+    
     modalAbout.showModal()
   }
   function fechaAboutPage(){
-    //const buttonFecha = document.querySelector("dialog button")
     modalAbout.close()
+    exibeLoginPage();
   }
+
+  function exibeLoginPage(){
+    modalLogin.showModal();
+  }
+  function fechaLoginPage(){
+    
+    expertID = document.getElementById("inputTxtName").value;
+    expertPassword = document.getElementById("inputTxtPassword").value;
+    var dado = JSON.stringify(expertID);
+    //var dado = JSON.parse(expertID);
+    console.log("nome do expert = ", expertID);
+    $.ajax({
+            url: "{{ url_for('checkLoginName') }}",
+            type: "POST",
+            dataType: 'json',
+            contentType: 'application/json',
+            data: dado,
+            success: validaLogin,
+            error: function(){
+              alert("erro execução login no Back-end");
+            }
+        });
+  }
+  function validaLogin(retorno){
+
+    expertFileName = retorno;
+    console.log("depois do ajax - expertFileName = ", expertFileName);
+    //var comp = expertFileName.localeCompare(str);
+    if (expertFileName == 'none') {
+      console.log("valor none");
+      alert("The name, password or both are unknown. Please try again.");
+    } else {
+      modalLogin.close();
+    }
+    //loadExpertFile();
+    
+  }
+  function loadExpertFile(){
+    $.ajax({
+            url: "{{ url_for('loadExpertFile') }}",
+            type: "GET",
+            dataType: 'json',
+            success: function(retorno){ 
+              alert("Arquivo de classificação carregado");
+            },
+            error: function(){
+              alert("error execution loadExpertFile no back-end");
+            }
+    });
+  }
+
+  function saveClassificationFile(){
+
+    const d = new Date();
+    let strDate = d.toLocaleDateString();
+    let strTime = d.toLocaleTimeString();
+    
+    var typeTraj = ""
+    var trajetoria = document.getElementById("listBoxTrajectories").value;
+    var clustering = document.getElementById("clustering").value;
+    
+    var confidence = document.getElementById("confidence").value;
+    var normalState  = document.getElementById("btnSelectNormal");
+    if (normalState.checked){
+        typeTraj = "normal"
+    } else {
+        typeTraj = "anomalous"
+    }
+
+    var dados = JSON.stringify([trajetoria, clustering, typeTraj, confidence,strDate,strTime]);
+    console.log("dados do post saveClassification = ", dados);
+    
+    $.ajax({
+            url: "{{ url_for('saveClassification') }}",
+            type: "POST",
+            dataType: 'json',
+            contentType: 'application/json',
+            data: dados,
+            success: function(retorno){ 
+              alert("Arquivo de classificação salvo");
+            },
+            error: function(){
+              alert("error execution saveClassification no back-end");
+            }
+    });
+  
+  }
+
+
   function exibeInstructions(){
     modalInstructions.showModal()
-    
   }
   function fechaInstructions(){
     modalInstructions.close()
@@ -647,12 +778,11 @@ div.space05 {
     pathFileAISdata = retorno; // novo
     var btn = document.getElementById("btnPlot");
     btn.disabled = false;
-    
   }
  
   function AISplotPanel(){
     //var dados = JSON.stringify({llon : -75.7, ulon : -74.8, llat : 38.6, ulat : 39.6});
-    var dados = JSON.stringify([latInfGrid, latSupGrid, lonInfGrid, lonSupGrid, pathFileAISdata]);
+    var dados = JSON.stringify([latInfGrid, latSupGrid, lonInfGrid, lonSupGrid, pathFileAISdata, polygon_CSV]);
     console.log("front variável dados = ", dados);
     $.ajax({
       url: "{{ url_for('openFileAndFilterAOI') }}",
@@ -672,7 +802,9 @@ div.space05 {
   function plotAisDataPanel(retorno){
     //alert("funcionou o post do AIS data Panel");
     console.log(retorno);
-    ret = JSON.parse(retorno);
+    ret = JSON.parse(retorno[0]); // alterado 25fev
+    totalTraj = JSON.parse(retorno[1]); // novo 25fev
+    console.log("total de traj = ", totalTraj);
     var len = ret.length;
     
     if (len > 0){
@@ -707,10 +839,6 @@ div.space05 {
     console.log(aisAOI_ArrayFiltered);
   }
 
- // function aisDataWindow(){
-   // var btn = $('#btnSelectAIS_File');
-   // btn.disabled = false;
-  //}
   function aisPlotFile(){
     alert("This action may be extended for one or more minutes after closing this message. At the end another message will inform the status.");  
     $("#windRosePanel").removeClass("visible");
@@ -737,10 +865,16 @@ div.space05 {
     btn = document.getElementById("btnNext");
     btn.disabled = false;
 
+
+    loadExpertFile();//novo 20Fev23
+
+
   }
   function classificationWindow(){
    
     var btn = document.getElementById("classificationPanel");
+    btn.disabled = false;
+    btn = document.getElementById("btnFinish");
     btn.disabled = false;
     
     $("#aisPlotPanel").removeClass("visible");
@@ -751,8 +885,9 @@ div.space05 {
 
     $("#windRosePanel").removeClass("not-visible");
     $("#windRosePanel").addClass("visible");
-    
+        
     exibeWindRose();
+    
   }
   function applyClustering(){
     
@@ -773,6 +908,8 @@ div.space05 {
         
       }  
       enableTrajectoryPanel();
+      
+      loadSelectBoxTrajectories(totalTraj);//(trajetoriaArray); // or .apply(this, trajetoriaArray)
 
     } else {
       alert("Botao apply - arquivo selecionado não possui dados de AIS no Grid/AOI selecionada");
@@ -780,22 +917,75 @@ div.space05 {
   }
 
   function showTrajectory(){
+    ///////// novo 26fev23
+    var listBoxTraj = document.getElementById("listBoxTrajectories");
+    idTrajetory = listBoxTraj.value;
+    //var count_idTrajetory = 1; //concluir contagem
+    len = aisAOI_ArrayFiltered.length;
+
+    while (aisAOI_trajSelected.length) { //remove all the elements inside the array
+      aisAOI_trajSelected.pop(); 
+    }
+    
+    for (index=0; index < len; index++){
+
+      //if (count_idTrajetory <= idTrajetory){
+        if (idTrajetory == aisAOI_ArrayFiltered[index][20]){
+          aisAOI_trajSelected.push(aisAOI_ArrayFiltered[index]);
+        }
+
+      //}
+    }
+    console.log("tamanho do aisAOI-trajSelected = ", aisAOI_trajSelected.length);
+    console.log("aisAOI_trajSelected conteudo = ", aisAOI_trajSelected);
+    plotSelectedTrajectory();
+
+    //////
     classificationWindow();
-    drawGridCell(0); // show the first AIS point of the trajectory
+    trajectoryPointIndex = 0
+    drawGridCell(trajectoryPointIndex); // show the first AIS point of the trajectory
   }
+  function plotSelectedTrajectory(){
+
+    var len = aisAOI_trajSelected.length;
+    if (len > 0){
+      
+      mapa.removeLayer(trajectoryLayerGroup); //novo
+      trajectoryLayerGroup.clearLayers();
+      mapa.removeLayer(displayedPointsLayerGroup); //novo
+      displayedPointsLayerGroup.clearLayers();
+
+            
+      for (var i = 0; i < len; i++) {
+        
+          var circle = L.circle([aisAOI_trajSelected[i][2], aisAOI_trajSelected[i][3]], {
+            color: 'yellow',
+            fillColor: '#f03',
+            fillOpacity: 0.5,
+            radius: 50
+          }).addTo(trajectoryLayerGroup)  //(mapa);
+        
+      }  
+      mapa.addLayer(trajectoryLayerGroup); // novo 26fev
+    }
+  }
+  
   function drawGridCell(index){
+    
     mapa.removeLayer(polygonCell); // teste
-    var lat  = aisAOI_ArrayFiltered[index][2];
-    var long = aisAOI_ArrayFiltered[index][3];
+    
+    var lat  = aisAOI_trajSelected[index][2];
+    var long = aisAOI_trajSelected[index][3];
     var circle = L.circle([lat, long], {color: 'blue', fillColor: '#f03', fillOpacity: 0.5, radius: 50
-          }).addTo(mapa);
+          }).addTo(displayedPointsLayerGroup); // alterado 26fev
+    mapa.addLayer(displayedPointsLayerGroup); // novo 26fev
     vertices = calcVerticesCell(lat, long, latInfGrid, lonInfGrid, larguraCelula, alturaCelula); //novo teste
     polygonCell = L.polygon(vertices, {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "red", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", 			"noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 1}
                   ).addTo(mapa);
 
     var textFieldSpeed = $('#inputTxtSpeed');
     textFieldSpeed.disabled = false;
-    textFieldSpeed.val(aisAOI_ArrayFiltered[index][4]);
+    textFieldSpeed.val(aisAOI_trajSelected[index][4]);
     var bg = document.getElementById("inputTxtSpeed");
     bg.style.color = "green";
     
@@ -803,9 +993,8 @@ div.space05 {
     
     var textFieldCourse = $('#inputTxtCourse');
     textFieldCourse.disabled = false;
-    textFieldCourse.val(aisAOI_ArrayFiltered[index][5] + " " + cardinalLetter);
-    console.log("MMSI = ", aisAOI_ArrayFiltered[index][0], " Course = ", aisAOI_ArrayFiltered[index][5], " Heading = ", aisAOI_ArrayFiltered[index][6])
-
+    textFieldCourse.val(aisAOI_trajSelected[index][5] + " " + cardinalLetter);
+    console.log("MMSI = ", aisAOI_trajSelected[index][0], " Course = ", aisAOI_trajSelected[index][5], " Heading = ", aisAOI_trajSelected[index][6])
   }
 
   function btnPrevious(){
@@ -816,8 +1005,11 @@ div.space05 {
   }
 
   function btnNext(){
-    trajectoryPointIndex = trajectoryPointIndex + 1;
-    drawGridCell(trajectoryPointIndex);
+    if (trajectoryPointIndex < aisAOI_trajSelected.length -1){
+      trajectoryPointIndex = trajectoryPointIndex + 1;
+      //displayedPointsLayerGroup.removeLayer(circle); nao testado
+      drawGridCell(trajectoryPointIndex);
+    } 
   }
   function selectDatasetFile(){
     $.ajax({
@@ -853,6 +1045,33 @@ div.space05 {
     btn = document.getElementById("btnApply");
     btn.disabled = false;
   }
+
+  function downloadClassificationFile(){
+    $.ajax({
+            url: "{{ url_for('downloadClassification') }}",
+            type: "GET",
+            //dataType: 'json',
+            success: function(retorno){ 
+              alert("Download finished");
+            },
+            error: function(){
+              alert("error execution downloadClassification in the back-end");
+            }
+    });
+
+  }
+  function loadSelectBoxTrajectories(total_traj) {
+    var listBoxTraj = document.getElementById("listBoxTrajectories");
+    //var len_Traj_Array = trajArray.length;
+    
+    for  (var k = 1; k <= total_traj; k++){ 
+        var option = document.createElement("option");
+        option.text = k;
+        console.log("option text = ", option.text);
+        listBoxTraj.add(option);
+    }
+  }
+
 
 </script>
 
