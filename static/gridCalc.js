@@ -33,8 +33,8 @@ function calcVerticesCell(latNavio,lonNavio, latInfAOI, lonInfAOI, larguraCelula
     //[Grid, k, j] = GridNavio2(latNavio,lonNavio); // k: cell axis X    J: cell axis Y
     var distLat = parseFloat(latNavio) - parseFloat(latInfAOI);
     var distLon = parseFloat(lonNavio) - parseFloat(lonInfAOI);
-    var k = posXGridNavio = parseInt(distLon / larguraCelula);// + 1;
-    var j = posYGridNavio = parseInt(distLat / alturaCelula);// + 1;
+    var k = parseInt(distLon / larguraCelula);//= posXGridNavio /// + 1 ?;
+    var j = parseInt(distLat / alturaCelula);// = posYGridNavio // + 1 ?;
     //var gridNavio = posXGridNavio + (posYGridNavio - 1) * qtdeCelulasX;
     //console.log("larguraCel = ", larguraCelula, " alturaCel = ", alturaCelula);
     //console.log("k = ", k, " j = ", j);

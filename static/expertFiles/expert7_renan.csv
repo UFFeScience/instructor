@@ -5,3 +5,8 @@ traj3,renan,DBSCAN lat-long-speed,anomalous,high,22/02/2023,21:04:18
 traj-01,renan,none - density plots,normal,very low,23/02/2023,20:41:32
 traj-03,renan,other,anomalous,medium,23/02/2023,20:41:56
 traj-02,renan,DBSCAN lat-long,normal,high,23/02/2023,21:33:39
+1,renan,none - density plots,normal,very low,01/03/2023,01:25:05
+13,renan,none - density plots,normal,very low,29/03/2023,23:45:42
+13,renan,none - density plots,normal,very low,29/03/2023,23:46:06
+13,renan,none - density plots,anomalous,very low,29/03/2023,23:46:14
+5,renan,1,normal,very low,02/04/2023,00:14:04

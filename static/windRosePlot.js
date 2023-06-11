@@ -1,35 +1,44 @@
+var r1_Array = [];
+var theta_Array = ["North", "N-E", "East", "S-E", "South", "S-W", "West", "N-W"];
+
 var data = [{
-    r: [2.5, 72.5, 70.0, 45.0, 22.5, 42.5, 40.0, 62.5],
+//    r: r1_Array,
+//    theta: ["North", "N-E", "East", "S-E", "South", "S-W", "West", "N-W"],
+//    name: "% Points",
+//    marker: {color: "black"},
+//    type: "barpolar"
+//    }, {
+    r: [0, 0, 0, 0, 0, 0, 0, 0],
     theta: ["North", "N-E", "East", "S-E", "South", "S-W", "West", "N-W"],
-    name: "< 2 knots",
-    marker: {color: "black"},
+    name: "< 3 knots",
+    marker: {color: "grey"},
     type: "barpolar"
     }, {
-    r: [7.5, 50.0, 45.0, 35.0, 20.0, 22.5, 37.5, 55.0],
+    r: [0, 0, 0, 0, 0, 0, 0, 0],
     theta: ["North", "N-E", "East", "S-E", "South", "S-W", "West", "N-W"],
-    name: "2-5 knots",
-    marker: {color: "rgb(158,154,200)"},
-    type: "barpolar"
-    }, {
-    r: [13.0, 30.0, 30.0, 35.0, 7.5, 7.5, 32.5, 40.0],
-    theta: ["North", "N-E", "East", "S-E", "South", "S-W", "West", "N-W"],
-    name: "5-9 knots",
+    name: "3-7 knots",
     marker: {color: "blue"},
     type: "barpolar"
     }, {
-    r: [19.0, 7.5, 15.0, 22.5, 2.5, 2.5, 12.5, 22.5],
+    r: [0, 0, 0, 0, 0, 0, 0, 0],
     theta: ["North", "N-E", "East", "S-E", "South", "S-W", "West", "N-W"],
-    name: "9-12 knots",
+    name: "7-11 knots",
     marker: {color: "green"},
     type: "barpolar"
     }, {
-    r: [27.0, 30.0, 30.0, 35.0, 7.5, 7.5, 32.5, 40.0],
+    r: [0, 0, 0, 0, 0, 0, 0, 0],
     theta: ["North", "N-E", "East", "S-E", "South", "S-W", "West", "N-W"],
-    name: "12-15 knots",
+    name: "11-15 knots",
     marker: {color: "yellow"},
     type: "barpolar"
     }, {
-    r: [30.0, 7.5, 15.0, 22.5, 2.5, 2.5, 12.5, 22.5],
+    r: [0, 0, 0, 0, 0, 0, 0, 0],
+    theta: ["North", "N-E", "East", "S-E", "South", "S-W", "West", "N-W"],
+    name: "15-20 knots",
+    marker: {color: "orange"},
+    type: "barpolar"
+    }, {
+    r: [0, 0, 0, 0, 0, 0, 0, 0],
     theta: ["North", "N-E", "East", "S-E", "South", "S-W", "West", "N-W"],
     name: "20+ knots",
     marker: {color: "red"},
@@ -38,7 +47,7 @@ var data = [{
 
 var layout = {
     showlegend: false,
-    title: "Vessels Speed",
+    title: "Vessels Speed (historical)",
     font: {size: 14},
     //legend: {
         
@@ -47,7 +56,8 @@ var layout = {
     polar: {
         barmode: "stack",//"group", //"stack",//"overlay",
         bargap: -1,
-        radialaxis: {ticksuffix: "%", angle: 45, dtick: 200},
+        //radialaxis: {ticksuffix: "%", angle: 45, dtick: 200},
+        radialaxis: {angle: 45, dtick: 10},
         angularaxis: {direction: "clockwise"}
     }
 }
@@ -56,7 +66,21 @@ var config = {
     staticPlot: true
 }
 
-function exibeWindRose(){
+function exibeWindRose(s3, s7, s11, s15, s20, s99){
+    //data[0].r = [600, 400, 30, 30, 26, 40, 30, 20];
+                //data[0].theta = theta_Array;
+                // data[1].theta = theta_Array;
+    
+    //data[5].r = data20Plus;
+    //data[6].r = [30, 20, 15, 15, 13, 20, 15, 10];
+    data[0].r = s3;
+    data[1].r = s7;
+    data[2].r = s11;
+    data[3].r = s15;
+    data[4].r = s20;
+    data[5].r = s99;
+    console.log ("windRose arrays - dentro do js = \n", s3, "\n", s7, "\n", s11, "\n", s15, "\n", s20, "\n",s99);
+
     Plotly.newPlot("vesselsSpeed", data, layout, config)
 }
 

@@ -33,8 +33,13 @@ div.space05 {
 <body>
 
 <dialog id="aboutPage">
-    <h2>About this Site</h2>
-    <p>The purpose of this website is to provide a tool to develop algorithms
+    <h2>About this tool</h2>
+    <h1 style="color:rgb(92, 113, 173);">INSTRUCTOR</h1>
+    <h3><u style="color:rgb(92, 113, 173);">I</u>de<u style="color:rgb(92, 113, 173);">n</u>tification of anomalous ve<u style="color:rgb(92, 113, 173);">s</u>sel 
+        <u style="color:rgb(92, 113, 173);">tr</u>ajectory <u style="color:rgb(92, 113, 173);">u</u>sing <u style="color:rgb(92, 113, 173);">c</u>lus<u style="color:rgb(92, 113, 173);">t</u>ers 
+        <u style="color:rgb(92, 113, 173);">o</u>f t<u style="color:rgb(92, 113, 173);">r</u>ajectories</h3>
+
+    <p>The purpose of this academic development tool is to provide an environment for the application of algorithms
          to detect anomalous behaviors in the marine traffic.</p>
 
     <p>Through a visual interface the user can plot an Area of Interest (AOI) and save it for further loading. 
@@ -43,11 +48,20 @@ div.space05 {
 
     <p>Instructions for the usage of this aplication can be found in the Help menu.</p>
 
-    <p>The source code is available to be download at XXXXX.</p>
+    <p>The source code is available to be download at GitHub.</p>
 
     <p>The site was developed and designed by Claudio V. Ribeiro as part of studies in his P.H.D. course.</p>
 
     <button onclick="fechaAboutPage();" style="display:block; margin: 0 auto; background-color: rgb(141, 163, 236);">Close</button>
+</dialog>
+
+<dialog class="dialogoAlert" id="AlertMsg">
+  <div style="text-align: left;">
+    <img src="/static/waiting-icon-star.gif" style="float: inline-start;" width="50" height="50">
+    <h3>&nbsp; &nbsp; Please wait for the processing.</h3>
+  </div>
+   
+  <button onclick="fechaAlertMsg();" style="display:block; margin: 0 auto; background-color: rgb(141, 163, 236);">Ok</button>
 </dialog>
 
 <dialog class="dialogoLogin" id="loginPage">
@@ -110,7 +124,7 @@ div.space05 {
 </dialog>
 
 <div class="header">
-  <h1>Vessel Trajectory Classifier Toll</h1>
+  <h1>INSTRUCTOR</h1>
 </div>
 
 <!---------------------------------------- MENU----------------------------------->
@@ -128,7 +142,7 @@ div.space05 {
     </div>
   </div> 	
   <div class="subnav">
-    <button class="subnavbtn">Area of Interest <i class="fa fa-caret-down"></i></button>
+    <button class="subnavbtn">Area of Interest (AOI) <i class="fa fa-caret-down"></i></button>
     <div class="subnav-content">
     <!----  <a href="#" onclick="excluirUltPonto();">Remove Last Marker</a>-->
       <a href="#" onclick="removeArea();" id="removeArea">Remove </a>
@@ -158,8 +172,10 @@ div.space05 {
   <div class="subnav">
     <button class="subnavbtn">Trajectory Data <i class="fa fa-caret-down"></i></button>
     <div class="subnav-content">
-      <a href="#" onclick="createCompiledFile();">Create File</a>
-      <a href="#" onclick="loadCompiledFile();" id="loadCompiledFile">Load File</a>
+      <a href="#" onclick="enable_AIS_File_btn();">Start Clustering</a>
+      
+      <a href="#" onclick="concat_AIS_Files();" id="concat_Files">Build File</a>
+      
       <a href="#" onclick="downloadClassificationFile();" id="downloadClassification">Download Classifications</a>
     </div>
   </div>
@@ -173,7 +189,7 @@ div.space05 {
     </div>
   </div>
 </div>
-<!---------------------------------  PANELS -------------------------------------->
+<!-------*******************  PANELS *************************************-------->
 <div class="row">
   <div class="leftcolumn">
     <div class="card">
@@ -182,41 +198,58 @@ div.space05 {
     </div>
   </div>
   <div class="rightcolumn">
-    <div class="card" id="cardSuperior" style="width: 100.0%; height:275px;">
+    <div class="card" id="cardSuperior" style="width: 100.0%; height:300px;">
       
       <div id="aisData">
         <fieldset id="aisDataPanel" class="visible">
-          <legend>Trajectory Data Processing</legend>
-              <!--<div class="space"> -->
+          <legend>Historical Trajectories - AIS Data Clustering</legend>
+            <div class="space">
               <div>    
-                <button type="button" id="btnSelectAIS_File" disabled onclick="selectAIS_File();">AIS File</button>
+                
+                <button type="button" id="btnSelectAIS_File" disabled onclick="selectAIS_File();">Select File</button>
+                <!--
+                <button type="button" id="btnSelectAOI_AIS_File" disabled onclick="select_AOI_AIS_File();">AOI only</button>
+                
+                <input type="checkbox" id="historicalAOI">
+                <label for="historicalAOI">AOI only</label>-->
+                
+                
                 <input type="text" id="inputTxtFileName" name="Name" disabled/>
                 <button id="btnPlot" onclick="aisPlotFile();" disabled>Plot</button>
+                <!---
                 <button id="btnCompileAndSave" onclick="compileAndSaveFile();" disabled>Save Dataset</button>
-                <br>
+                --> <br>
+
+                <label for="clustering">Clustering:</label>
+                    <select id="clustering" disabled>
+                        <option value="1">None (Density plots only)</option>
+                        <option value="2">DBSCAN (Lat, Long)</option>
+                        <option value="3">DBSCAN (Lat, Long, Speed)</option>
+                        <option value="4">K-Means</option>
+                        <option value="5">Spectral Clustering</option>
+                        <option value="6">K-Means Ensemble</option>
+                        <option value="7">Ensemble Clustering</option>
+
+                    </select><br>
+                    eps/other: <input type="text" id="inputParameter1" disabled value="0.04"  name="parameter1" size="4"/>&nbsp;
+                    MinPts/Nr. Clusters: <input type="text" id="inputParameter2" disabled value="18" name="parameter2" size="3"/>&nbsp;
+                    <button type="button" id="btnApply" onclick="applyClustering();" disabled>Apply </button>
+                    <br>
               </div>
-               
-              <!--</div> -->
+            </div>
         </fieldset>
       </div> 
 
       <div id="trajectory">
         <fieldset id="trajectoryPanel" class="visible">
-              <legend>Trajectory Analysis</legend>
+              <legend>New Trajectories - AIS Data Analysis</legend>
                   <div class="space">
-                    <button type="button" id="btnLoadDatasets_File" onclick="selectDatasetFile();">Select Dataset </button>
+                    
+                    <button type="button" id="btnLoadDatasets_File" onclick="selectDatasetFile();" disabled>Select Dataset </button>
                     <input type="text" id="inputDataSetsFileName" name="datasetsName" disabled/>
                     <button id="btnLoadDataset" onclick="loadDatasetFile();" disabled>Load</button>
                     <br>
-                    <label for="clustering">Clustering:</label>
-                    <select id="clustering" disabled>
-                        <option value="none - density plots">None (Density plots only)</option>
-                        <option value="DBSCAN lat-long">DBSCAN (Lat, Long)</option>
-                        <option value="DBSCAN lat-long-speed">DBSCAN (Lat, Long, Speed)</option>
-                        <option value="other">other</option>
-                    </select>    
-                    <button type="button" id="btnApply" onclick="applyClustering();" disabled>Apply </button>
-                    <br>
+
                     <label for="listBoxTrajectories">Trajectory:</label>
                     <select id="listBoxTrajectories" disabled>
                         <!--<option value="0" selected>Select</option> 
@@ -272,7 +305,7 @@ div.space05 {
     </div>
 
     <div class="card" id="cardInferior" >
-      <div id="aisPlotPanel" style="width: 100.0%; height:445px;" class="visible">
+      <div id="aisPlotPanel" style="width: 100.0%; height:410px;" class="visible">
       </div>
       
       <div id="AISpointGridPanel" class="not-visible"> 
@@ -291,7 +324,7 @@ div.space05 {
       <div id="windRosePanel" class="not-visible">
         <div class="row">
           <div class="leftSubColumn">
-            <div id="vesselsSpeed" style="width: 100.0%; height:395px;">
+            <div id="vesselsSpeed" style="width: 100.0%; height:370px;">
             </div>
           </div>
           <div class="rightSubColumn"> 
@@ -299,13 +332,16 @@ div.space05 {
                 
                 <div style="text-align: left;">
                   <font size="-1">
-                    <span style="color: black;  background-color: black;">X</span> 0-2<br>
-                    <span style="color: gray;   background-color: gray;">X</span> 2-6<br>
-                    <span style="color: blue;   background-color: blue;">X</span> 6-9<br>
-                    <span style="color: green;  background-color: green;">X</span> 9-12<br>
-                    <span style="color: yellow; background-color: yellow;">X</span> 12-15<br>
+                    Speed<br>
+                    <span style="color: red;    background-color: rgb(255,0,0);">X</span> 20+<br>
                     <span style="color: orange; background-color: orange;">X</span> 15-20<br>
-                    <span style="color: red;    background-color: red;">X</span> 20+ <br>
+                    <span style="color: yellow; background-color: #FFFF00;">X</span> 11-15<br>
+                    <span style="color: green;  background-color: green;">X</span> 7-11<br>
+                    <span style="color: blue;   background-color: blue;">X</span> 3-7<br>
+                    <span style="color: gray;   background-color: gray;">X</span> 0-3<br>
+                    <!--<br>
+                    Course<br>
+                    <span style="color: black;  background-color: black;">X</span> % Pts<br> -->
                   </font> 
                 </div>
             
@@ -318,7 +354,7 @@ div.space05 {
 
 
 <div class="footer">
-  <p>&copy; 2022 - Claudio V. Ribeiro</p>
+  <p>&copy; Instructor 2022-2023 &nbsp;&nbsp; Claudio V. Ribeiro</p>
 </div>
 
 <!------------------------  SCRIPT ---------------------------------------->
@@ -333,6 +369,7 @@ div.space05 {
   const modalAbout = document.getElementById("aboutPage");
   const modalLogin = document.getElementById("loginPage"); // novo 18fev
   const modalInstructions = document.getElementById("instructionsPage");
+  const modalAlert = document.getElementById("AlertMsg");
 
   console.log("distancia = ", getDistanceFromLatLng(30, -90, 31, -90));
   cellSize = 2000 ; //valor default
@@ -341,6 +378,7 @@ div.space05 {
   //var new_mark;
   var qtdeCel_X, qtdeCel_Y, larguraCelula, alturaCelula;
   var polygon;
+  var polylinha; // novo 23Mai
   var flagPolygon = false;
   var flagGridCreation = false; // novo
   let pontos = [[0.0,0.0][0.0,0.0]]    
@@ -373,16 +411,29 @@ div.space05 {
   var displayedPointsLayerGroup = new L.LayerGroup(); // novo 26fev
   displayedPointsLayerGroup.addTo(mapa); //novo 26fev
 
-  var pathFileAISdata = ""; 
+  var legendLayerGroup = new L.LayerGroup(); // novo 14Mai
+  legendLayerGroup.addTo(mapa); // novo 14Mai
+
+  var pathHistoricalFileAISdata = ""; 
   var pathDatasetFile = ""; 
-  var aisAOI_ArrayFiltered = []; 
+  var ais_Historical_AOI_ArrayFiltered = []; 
+  var ais_Trajectory_AOI_ArrayFiltered = [];
   var trajectoryPointIndex = 0;
   let trajetoriaArray = [];
   var totalTraj = 0;
   var aisAOI_trajSelected = [];
-
-  exibeAboutPage();
+  var gridCell_array = [];
+  var flagLegendExist = false; // novo 21Abr
+  //var legend; novo 14Mai   comentado
   
+  var global_df_ClusterColorTable = []; //novo 01Mai
+  var perc_pointsNotMatch = 0.0; 
+  var df_ClusterTotalMatch = [];
+
+  var firstShowAboutPage_flag = true;
+  exibeAboutPage();
+  //exibeAlertMsg();
+  //displayMapLegend();
 
     //////////////////////////////////// FUNCTIONS ////////////////////////////////
 
@@ -394,6 +445,9 @@ div.space05 {
     new_mark.addTo(markersLayerGroup); //novo
     mapa.addLayer(markersLayerGroup); //novo
 
+    //////////////////
+    //var label = new L.marker();
+    
     new_mark.dragging.disable();//enable
     new_mark.on('dblclick', function(e){ 
     //  console.log(e.target);
@@ -478,7 +532,7 @@ div.space05 {
         pontos.pop(); 
       }
       mapa.removeLayer(polygon);
-      mapa.removeLayer(polylinha); //TESTE
+      //mapa.removeLayer(polylinha); //TESTE  removido em 23Mai
       flagPolygon = false;
       
       if (flagGridCreation == true){
@@ -567,7 +621,11 @@ div.space05 {
     console.log("cell size = ", cellSize);
   }  
   function gridCreation(){
+    exibeAlertMsg();
+    alert("The Grid construction takes a few seconds depending on the area size");
+    
     if (flagPolygon == true){
+        //exibeAlertMsg();
         const [latInfAOI, latSupAOI, lonInfAOI, lonSupAOI, latMedAOI] = findMinMax(pontos);
         latInfGrid = latInfAOI; //, latSupAOI, lonInfAOI, lonSupAOI, latMedAOI = findMinMax(pontos);
         latSupGrid = latSupAOI;
@@ -621,21 +679,32 @@ div.space05 {
         mapa.addLayer(cellsLayerGroup); //novo
        // console.log("ponto dentro ? ",polygon.contains(10,10));//parseFloat(latInfAOI) + 0.2, parseFloat(lonInfAOI) + 0.2));
         flagGridCreation = true;
-        
+        //fechaAlertMsg();
         //var btn = $("#btnSelectAIS_File");
         //var btn = document.getElementById("btnSelectAIS_File");// novo 28jan
         //btn.disabled = false; // novo 28jan
 
-    } else {alert("To create a Grid it would have an Area of Interest.")};
+    } else {
+      //fechaAlertMsg();
+      alert("To create a Grid it would have an Area of Interest.")};
+    fechaAlertMsg(); ///////
   }  
   function exibirAreaLimGrid(pontosGrid){
        
     polylinha = L.polyline(pontosGrid, {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "red", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", 			"noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 1}
                     ).addTo(mapa);
   }
-  function createCompiledFile(){
-    var btn = document.getElementById("btnSelectAIS_File");
-    btn.disabled = false;
+  function enable_AIS_File_btn(){
+
+    if (flagGridCreation == true){
+      var btn = document.getElementById("btnSelectAIS_File");
+      btn.disabled = false;  
+    }
+    else {
+      alert("It must have a Grid created.")
+    }
+    //var btn = document.getElementById("btnSelectAIS_File");
+    //btn.disabled = false;
   }
 
   function btnClassifAnomaly(){
@@ -651,14 +720,23 @@ div.space05 {
             data: {"name" : "Jim"},
         })
     }
-
+  
+  function exibeAlertMsg(){
+    modalAlert.showModal()
+  }
+  function fechaAlertMsg(){
+    modalAlert.close()
+  }
+  
   function exibeAboutPage(){
-    
     modalAbout.showModal()
   }
   function fechaAboutPage(){
     modalAbout.close()
-    exibeLoginPage();
+    if (firstShowAboutPage_flag == true){
+      exibeLoginPage();
+    }
+    firstShowAboutPage_flag = false;
   }
 
   function exibeLoginPage(){
@@ -703,7 +781,7 @@ div.space05 {
             type: "GET",
             dataType: 'json',
             success: function(retorno){ 
-              alert("Arquivo de classificação carregado");
+              //alert("Arquivo de classificação carregado");
             },
             error: function(){
               alert("error execution loadExpertFile no back-end");
@@ -747,8 +825,7 @@ div.space05 {
     });
   
   }
-
-
+  
   function exibeInstructions(){
     modalInstructions.showModal()
   }
@@ -775,17 +852,18 @@ div.space05 {
     var textField = $('#inputTxtFileName');
     textField.disabled = false;
     textField.val(retorno);
-    pathFileAISdata = retorno; // novo
+    pathHistoricalFileAISdata = retorno; // novo
     var btn = document.getElementById("btnPlot");
     btn.disabled = false;
   }
  
   function AISplotPanel(){
     //var dados = JSON.stringify({llon : -75.7, ulon : -74.8, llat : 38.6, ulat : 39.6});
-    var dados = JSON.stringify([latInfGrid, latSupGrid, lonInfGrid, lonSupGrid, pathFileAISdata, polygon_CSV]);
+    var dados = JSON.stringify([latInfGrid, latSupGrid, lonInfGrid, lonSupGrid,
+                                pathHistoricalFileAISdata, polygon_CSV, larguraCelula, alturaCelula, qtdeCel_X]);
     console.log("front variável dados = ", dados);
     $.ajax({
-      url: "{{ url_for('openFileAndFilterAOI') }}",
+      url: "{{ url_for('openHistoricalFileAndFilterAOI') }}",
       type: "POST",
       dataType: 'json',
       contentType: 'application/json',
@@ -794,6 +872,7 @@ div.space05 {
       data: dados,
       success: plotAisDataPanel,
       error: function(){
+        fechaAlertMsg();
         alert("erro execução Post para Open File");
       }
     });
@@ -802,9 +881,12 @@ div.space05 {
   function plotAisDataPanel(retorno){
     //alert("funcionou o post do AIS data Panel");
     console.log(retorno);
-    ret = JSON.parse(retorno[0]); // alterado 25fev
-    totalTraj = JSON.parse(retorno[1]); // novo 25fev
-    console.log("total de traj = ", totalTraj);
+    var ret = JSON.parse(retorno[0]); // alterado Mar23
+    ///////////totalTraj = JSON.parse(retorno[1]); // novo 07abr
+    ///////////console.log("total de traj = ", totalTraj);
+    gridCell_array = JSON.parse(retorno[1]); // novo 03Jun
+    ///////////console.log("gridCell_array = ", gridCell_array); //novo 22Mar
+
     var len = ret.length;
     
     if (len > 0){
@@ -816,7 +898,7 @@ div.space05 {
       
       for (var i = 0; i < len; i++) {
         //if (isPointInPolygon(ret[i][2], ret[i][3], pontos)){ // function already done in the back-end
-          aisAOI_ArrayFiltered.push(ret[i]);
+          ais_Historical_AOI_ArrayFiltered.push(ret[i]);
 
           var circle = L.circle([ret[i][2], ret[i][3]], {
             color: 'red',
@@ -826,21 +908,29 @@ div.space05 {
           }).addTo(mapaAIS);
         //}
       }  
-      //var btn = document.getElementById("clustering");
-     // btn.disabled = false;
+      fechaAlertMsg(); //novo 10Jun
+      alert("The plotting processing has been done."); 
+      var btn = document.getElementById("clustering");
+      btn.disabled = false;
       
-     // btn = document.getElementById("btnApply");
-     // btn.disabled = false;
-      alert("The plotting processing has been done.");  
+      btn = document.getElementById("inputParameter1");
+      btn.disabled = false;
+      btn = document.getElementById("inputParameter2");
+      btn.disabled = false;
+
+      btn = document.getElementById("btnApply");
+      btn.disabled = false;
+
     } else {
       alert("arquivo selecionado não possui dados de AIS no Grid/AOI selecionada");
     } 
-    console.log("tamanho aisAOI_Array = ", aisAOI_ArrayFiltered.length);
-    console.log(aisAOI_ArrayFiltered);
+    console.log("tamanho aisAOI_Array = ", ais_Historical_AOI_ArrayFiltered.length);
+    console.log(ais_Historical_AOI_ArrayFiltered);
   }
 
   function aisPlotFile(){
     alert("This action may be extended for one or more minutes after closing this message. At the end another message will inform the status.");  
+    exibeAlertMsg();
     $("#windRosePanel").removeClass("visible");
     $("#windRosePanel").addClass("not-visible");
     $("#aisPlotPanel").removeClass("not-visible");
@@ -848,7 +938,7 @@ div.space05 {
 
     polygon = L.polygon(pontos, {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", 			"noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 1}
                     ).addTo(mapaAIS);
-                    const [latInfAOI, latSupAOI, lonInfAOI, lonSupAOI, latMedAOI] = findMinMax(pontos);
+    const [latInfAOI, latSupAOI, lonInfAOI, lonSupAOI, latMedAOI] = findMinMax(pontos);
     
     mapaAIS.setView([latMedAOI, (lonInfAOI + lonSupAOI)/2], 6);
     AISplotPanel();
@@ -858,17 +948,14 @@ div.space05 {
    
     var btn = document.getElementById("listBoxTrajectories");
     btn.disabled = false;
-    btn = document.getElementById("btnShow");
-    btn.disabled = false;
+    //btn = document.getElementById("btnShow"); // novo 21Mai
+    //btn.disabled = false;
     btn = document.getElementById("btnPrevious");
     btn.disabled = false;
     btn = document.getElementById("btnNext");
     btn.disabled = false;
-
-
+    
     loadExpertFile();//novo 20Fev23
-
-
   }
   function classificationWindow(){
    
@@ -880,40 +967,125 @@ div.space05 {
     $("#aisPlotPanel").removeClass("visible");
     $("#aisPlotPanel").addClass("not-visible");
     
-    $("#AISpointGridPanel").removeClass("not-visible"); //novo 22jan
+    $("#AISpointGridPanel").removeClass("not-visible"); 
     $("#AISpointGridPanel").addClass("visible");
 
     $("#windRosePanel").removeClass("not-visible");
     $("#windRosePanel").addClass("visible");
-        
-    exibeWindRose();
-    
   }
   function applyClustering(){
     
-    var len = aisAOI_ArrayFiltered.length;
-    if (len > 0){
+    var listBoxClustering = document.getElementById("clustering");
+    idClustering = parseInt(listBoxClustering.value);
+    /// novo 21Mai
+    var param1 = document.getElementById("inputParameter1").value;
+    var param2 = document.getElementById("inputParameter2").value;
+    var dados = JSON.stringify([idClustering, latInfGrid, latSupGrid, lonInfGrid, lonSupGrid, param1, param2]);
+    
+    console.log("front variável dados = ", dados);
+    console.log("Clustering = ", idClustering);
+
+    var len = ais_Historical_AOI_ArrayFiltered.length;
+    if (len == 0){
       //mapa.removeLayer(markersLayerGroup); //novo
       //mapa.removeLayer(cellsLayerGroup);
+      alert("Botao apply - arquivo selecionado não possui dados de AIS no Grid/AOI selecionada");
+      return;
+    }  
+    exibeAlertMsg(); //novo 10Jun
+    //seleciona o clustering
+    if (idClustering == 1){
+      applyNoneClustering(len);
+    } else {
+      $.ajax({
+        url: "{{ url_for('applyClustering') }}",
+        type: "POST",
+        dataType: 'json',
+        contentType: 'application/json',
+        data: dados,
+        success: plot_Clustering_LatLon,
+        error: function(){
+          fechaAlertMsg();
+          alert("erro execução Post para applyClustering");
+        }
+      });
+    }
+    enableTrajectoryPanel();
+        
+  }
+  function applyNoneClustering(length){
+
+    for (var i = 0; i < length; i++) {
+      
+      var circle = L.circle([ais_Historical_AOI_ArrayFiltered[i][2], ais_Historical_AOI_ArrayFiltered[i][3]], {
+        color: 'red',
+        fillColor: '#f03',
+        fillOpacity: 0.5,
+        radius: 50
+      }).addTo(mapa);
+    } 
+  }
+  
+  function plot_Clustering_LatLon(retorno){
+    console.log(retorno);
+    var df_Clusters_LatLon = JSON.parse(retorno[0]); 
+    var df_ClusterColorTable  = JSON.parse(retorno[1]); 
+
+  // novo 15Mai
+    lenGlobal = df_ClusterColorTable.length;
+    while (global_df_ClusterColorTable.length) { //remove all the elements inside the array
+      global_df_ClusterColorTable.pop(); 
+    }
+    for (index=0; index < lenGlobal; index++){
+      global_df_ClusterColorTable.push(df_ClusterColorTable[index]); // make a global copy
+    }
+
+    //global_df_ClusterColorTable = df_ClusterColorTable.slice(0);  // novo 01Mai
+    var len = df_Clusters_LatLon.length;
+    var clusterColor = "";
+    var numCluster = 0;
+    var opacity_value = 0.5;  // default value
+
+    if (len > 0){
+      mapa.removeLayer(markersLayerGroup); //novo
+      //mapa.removeLayer(new_mark); //novo
+      mapa.removeLayer(cellsLayerGroup);
       
       //flagGridCreation = false;
-      for (var i = 0; i < len; i++) {
-        
-          var circle = L.circle([aisAOI_ArrayFiltered[i][2], aisAOI_ArrayFiltered[i][3]], {
-            color: 'red',
-            fillColor: '#f03',
-            fillOpacity: 0.5,
-            radius: 50
-          }).addTo(mapa);
-        
-      }  
-      enableTrajectoryPanel();
       
-      loadSelectBoxTrajectories(totalTraj);//(trajetoriaArray); // or .apply(this, trajetoriaArray)
-
+      for (var i = 0; i < len; i++) {
+     
+          numCluster = parseInt(df_Clusters_LatLon[i][7]); // novo 21Mai antes era 6
+        
+          if (numCluster == -1){
+            clusterColor = '#000000';
+            opacity_value = 1;
+          } else{
+            clusterColor = df_ClusterColorTable[numCluster][1];
+            opacity_value = 0.5;
+            //clusterColor = df_ClusterColorTable[i][1];
+          }
+          
+          var circle = L.circle([df_Clusters_LatLon[i][1], df_Clusters_LatLon[i][2]], {
+            color: clusterColor,
+            fillColor: clusterColor,//'#f03',
+            fillOpacity: opacity_value,
+            radius: 30
+          }).addTo(mapa);
+        //}
+      }  
+      fechaAlertMsg(); //novo 10Jun
+      alert("The Clustering plotting processing has been done."); 
+      var btn = document.getElementById("btnLoadDatasets_File");
+      btn.disabled = false;
+      
     } else {
-      alert("Botao apply - arquivo selecionado não possui dados de AIS no Grid/AOI selecionada");
+      alert("erro na execução plotDBSCAN_LAT-LON");
     } 
+    console.log("tamanho df_Clusters_LatLon = ", df_Clusters_LatLon.length);
+    console.log(df_Clusters_LatLon);
+
+
   }
 
   function showTrajectory(){
@@ -921,7 +1093,7 @@ div.space05 {
     var listBoxTraj = document.getElementById("listBoxTrajectories");
     idTrajetory = listBoxTraj.value;
     //var count_idTrajetory = 1; //concluir contagem
-    len = aisAOI_ArrayFiltered.length;
+    len = ais_Trajectory_AOI_ArrayFiltered.length;
 
     while (aisAOI_trajSelected.length) { //remove all the elements inside the array
       aisAOI_trajSelected.pop(); 
@@ -930,8 +1102,8 @@ div.space05 {
     for (index=0; index < len; index++){
 
       //if (count_idTrajetory <= idTrajetory){
-        if (idTrajetory == aisAOI_ArrayFiltered[index][20]){
-          aisAOI_trajSelected.push(aisAOI_ArrayFiltered[index]);
+        if (idTrajetory == ais_Trajectory_AOI_ArrayFiltered[index][20]){
+          aisAOI_trajSelected.push(ais_Trajectory_AOI_ArrayFiltered[index]);
         }
 
       //}
@@ -944,6 +1116,7 @@ div.space05 {
     classificationWindow();
     trajectoryPointIndex = 0
     drawGridCell(trajectoryPointIndex); // show the first AIS point of the trajectory
+    displayMapLegend();  // novo 21Abr23
   }
   function plotSelectedTrajectory(){
 
@@ -955,7 +1128,6 @@ div.space05 {
       mapa.removeLayer(displayedPointsLayerGroup); //novo
       displayedPointsLayerGroup.clearLayers();
 
-            
       for (var i = 0; i < len; i++) {
         
           var circle = L.circle([aisAOI_trajSelected[i][2], aisAOI_trajSelected[i][3]], {
@@ -987,14 +1159,73 @@ div.space05 {
     textFieldSpeed.disabled = false;
     textFieldSpeed.val(aisAOI_trajSelected[index][4]);
     var bg = document.getElementById("inputTxtSpeed");
-    bg.style.color = "green";
+    bg.style.color = "green"; // CORRIGIR
     
-    var cardinalLetter = "SW";
+    var cardinalLetter = aisAOI_trajSelected[index][19]; // alterado 23Mar
+    var gridCellNumber = aisAOI_trajSelected[index][21];
     
     var textFieldCourse = $('#inputTxtCourse');
     textFieldCourse.disabled = false;
     textFieldCourse.val(aisAOI_trajSelected[index][5] + " " + cardinalLetter);
-    console.log("MMSI = ", aisAOI_trajSelected[index][0], " Course = ", aisAOI_trajSelected[index][5], " Heading = ", aisAOI_trajSelected[index][6])
+    console.log("MMSI = ", aisAOI_trajSelected[index][0], " Course = ", aisAOI_trajSelected[index][5],
+     " Heading = ", aisAOI_trajSelected[index][6], " Cell = ", gridCellNumber);
+
+    // windrose data
+    const [s3_array, s7_array, s11_array, s15_array, s20_array, s99_array] = buildWindRose_array(gridCellNumber);
+    exibeWindRose(s3_array, s7_array, s11_array, s15_array, s20_array, s99_array); // novo 25mar
+    //var dado = [50, 50, 15, 15, 30, 30, 15, 15]; /////////////////
+    //exibeWindRose(dado);
+
+  }
+  function buildWindRose_array(gridCellID){
+    //gridCell_array
+    var s3  = [0, 0, 0, 0, 0, 0, 0, 0];
+    var s7  = [0, 0, 0, 0, 0, 0, 0, 0];
+    var s11 = [0, 0, 0, 0, 0, 0, 0, 0];
+    var s15 = [0, 0, 0, 0, 0, 0, 0, 0];
+    var s20 = [0, 0, 0, 0, 0, 0, 0, 0];
+    var s99 = [0, 0, 0, 0, 0, 0, 0, 0];
+    var index = 0;
+    var speedBIN = 0;
+    var freq = "";
+
+    var len = gridCell_array.length;
+    for (index = 0; index < len; index++) {
+      if (gridCellID == gridCell_array[index][0]){
+        break;
+      }
+    }
+    for (; index < len; index++) {
+      if (gridCellID == gridCell_array[index][0]){
+        
+        courseBIN_number = parseInt(gridCell_array[index][1].charAt(0));
+        speedBIN = gridCell_array[index][2];
+        freq = gridCell_array[index][3];
+
+        if (speedBIN == 3){
+          s3[courseBIN_number] = freq;
+        }
+        if (speedBIN == 7){
+          s7[courseBIN_number] = freq;
+        }
+        if (speedBIN == 11){
+          s11[courseBIN_number] = freq;
+        }
+        if (speedBIN == 15){
+          s15[courseBIN_number] = freq;
+        }
+        if (speedBIN == 20){
+          s20[courseBIN_number] = freq;
+        }
+        if (speedBIN == 99){
+          s99[courseBIN_number] = freq;
+        }
+      }else {
+        break;
+      }
+    }
+    console.log ("windRose arrays = \n", s3, "\n", s7, "\n", s11, "\n", s15, "\n", s20, "\n",s99);
+    return [s3, s7, s11, s15, s20, s99];
   }
 
   function btnPrevious(){
@@ -1035,16 +1266,69 @@ div.space05 {
     var btn = document.getElementById("btnLoadDataset");
     btn.disabled = false;
   }
-
-
+  /////////////////////////////////////////////////////////////////////////////////////////
   function loadDatasetFile(){
-    // if ....
-    var btn = document.getElementById("clustering");
-    btn.disabled = false;
-    
-    btn = document.getElementById("btnApply");
-    btn.disabled = false;
+    alert("This action may be extended for one or more minutes after closing this message. At the end another message will inform the status.");  
+    exibeAlertMsg(); ////// novo 10Jun
+    //var dados = JSON.stringify({llon : -75.7, ulon : -74.8, llat : 38.6, ulat : 39.6});
+    var dados = JSON.stringify([latInfGrid, latSupGrid, lonInfGrid, lonSupGrid,
+                                pathDatasetFile, polygon_CSV, larguraCelula, alturaCelula, qtdeCel_X]);
+    console.log("front variável dados = ", dados);
+    $.ajax({
+      url: "{{ url_for('openTrajectoryFileAndFilterAOI') }}",
+      type: "POST",
+      dataType: 'json',
+      contentType: 'application/json',
+      //data: {llon : -75.7, ulon : -74.8, llat : 38.6, ulat : 39.6},
+      //data: {"llon" : lonInfAOI, "ulon" : lonSupAOI, "llat" : latInfAOI, "ulat" : latInfAOI},
+      data: dados,
+      success: getArrayData_forTrajectories,
+      error: function(){
+        fechaAlertMsg();
+        alert("erro execução Post para Open Dataset File");
+        
+      }
+    });
   }
+  function getArrayData_forTrajectories(retorno){
+    console.log(retorno);
+    var ret = JSON.parse(retorno[0]); // alterado Mar23
+    totalTraj = JSON.parse(retorno[1]); // novo 25fev
+    console.log("total de traj = ", totalTraj);
+    //gridCell_array = JSON.parse(retorno[2]); // novo 03Junr
+    //console.log("gridCell_array = ", gridCell_array); //novo 03Jun
+
+    var len = ret.length;
+    
+    if (len > 0){
+      //mapa.removeLayer(markersLayerGroup); //novo
+      //mapa.removeLayer(new_mark); //novo
+      //mapa.removeLayer(cellsLayerGroup);
+      
+      //flagGridCreation = false;
+      
+      for (var i = 0; i < len; i++) {
+        //if (isPointInPolygon(ret[i][2], ret[i][3], pontos)){ // function already done in the back-end
+          ais_Trajectory_AOI_ArrayFiltered.push(ret[i]);
+      }  
+      loadSelectBoxTrajectories(totalTraj); // novo 07abr
+      fechaAlertMsg();
+      alert("The AIS data processing has been done."); 
+      
+    } else {
+      fechaAlertMsg();
+      alert("arquivo selecionado não possui dados de AIS no Grid/AOI selecionada");
+    } 
+    console.log("tamanho aisAOI_Array = ", ais_Trajectory_AOI_ArrayFiltered.length);
+    console.log(ais_Trajectory_AOI_ArrayFiltered);
+    //var btn = document.getElementById("btnLoadDataset"); // novo 21Mai
+    //btn.disabled = false;
+    btn = document.getElementById("btnShow"); // novo 21Mai
+    btn.disabled = false;
+
+  }
+
+///////////////////////////////////////////////////////////////////////////////
 
   function downloadClassificationFile(){
     $.ajax({
@@ -1070,6 +1354,115 @@ div.space05 {
         console.log("option text = ", option.text);
         listBoxTraj.add(option);
     }
+  }
+///// Map Legend
+  function displayMapLegend(){
+    var colorCluster = "";
+    var percentage = 0;
+    var idCluster = 0;
+    get_PercentageMatchCells();
+    alert("The Matching Cells calculation has been done.");
+    /*Legend specific*/
+    if (flagLegendExist == true){
+      //mapa.removeLayer(legendLayerGroup); // novo 21Abr 14Mai
+      //legendLayerGroup.clearLayers(); // novo 14mai
+      //mapa.removeLayer(legend);
+      //legend.removeFrom(mapa);
+      //delete mapa.legend; // not work
+      mapa.removeControl(legend);///////
+    
+    }
+    legend = L.control({ position: "topright" }); // modified 14Mai
+    
+    legend.onAdd = function(mapa) {
+      var div = L.DomUtil.create("div", "legend");
+      
+      div.innerHTML += "<h4>Matching Cells</br>Trajectory x Cluster</h4>";
+      
+      console.log("df_ClusterTotalMatch.length = ", df_ClusterTotalMatch.length);
+      console.log("perc_pointsNotMatch = ", perc_pointsNotMatch);
+
+      for (var i=0; i < df_ClusterTotalMatch.length; i++){
+        
+        //colorCluster = global_df_ClusterColorTable[i][1];
+        percentage = df_ClusterTotalMatch[i][2];
+        idCluster = df_ClusterTotalMatch[i][0];
+        
+        if (percentage != 0 && idCluster != -1 ){ 
+          colorCluster = global_df_ClusterColorTable[idCluster][1];
+                    
+          console.log("percentage = ", percentage);
+          console.log("colorCluster = ", colorCluster);
+
+          div.innerHTML += '<i style="background:' + colorCluster + '; width:' +
+            parseInt(percentage*2) + 'px"></i>' + '(' + idCluster + ') ' + percentage + '%</br>';
+            
+        }
+      }
+      div.innerHTML += '<i style="background: #FFFFFF; width:' +
+            parseInt(perc_pointsNotMatch*2) + 'px"></i>Not Match ' + perc_pointsNotMatch + '%</br>';
+
+      div.innerHTML += "(Black dots are not clustered points)";
+      //div.innerHTML += '<i style="background: #477AC2; width:100px"></i>50%</br>';
+      //div.innerHTML += '<i style="background: #ffffff; width:60px"></i>30% Not Match';
+      return div;
+    };
+
+    legend.addTo(mapa); //legendLayerGroup); // 14Mai    // mapa);
+    //mapa.addLayer(legendLayerGroup); // 14Mai
+    
+    flagLegendExist = true;
+  }
+////////////////////////////////////
+
+  function get_PercentageMatchCells(){
+    console.log("js Tamanho aisAOI_trajSelected = ", aisAOI_trajSelected.length)
+    var dado = JSON.stringify(aisAOI_trajSelected);
+        
+    $.ajax({
+            url: "{{ url_for('calc_ClusterMatch') }}",
+            type: "POST",
+            dataType: 'json',
+            contentType: 'application/json',
+            data: dado,
+            success: get_PercentageMatch,
+            error: function(){
+              alert("erro execução get_PercentageMatchCells function");
+            }
+        });
+  }
+  function get_PercentageMatch(retorno){
+
+    perc_pointsNotMatch  = JSON.parse(retorno[0]);
+    df_ClusterTotalMatch = JSON.parse(retorno[1]);
+    console.log("perc_pointsNotMatch = ", perc_pointsNotMatch);
+    console.log("df_ClusterTotalMatch = \n", df_ClusterTotalMatch);
+  
+  }
+  
+  function concat_AIS_Files(){
+
+    if (flagGridCreation == false){
+      alert("It must have a Grid created.");
+      return;
+    }
+    //var dados = JSON.stringify({llon : -75.7, ulon : -74.8, llat : 38.6, ulat : 39.6});
+    var dados = JSON.stringify([latInfGrid, latSupGrid, lonInfGrid, lonSupGrid,
+                                polygon_CSV, larguraCelula, alturaCelula, qtdeCel_X]);
+    console.log("front variável dados = ", dados);
+    $.ajax({
+      url: "{{ url_for('concat_AIS_Files') }}",
+      type: "POST",
+      dataType: 'json',
+      contentType: 'application/json',
+      data: dados,
+      success: function(){
+        alert("Ais Files concatenation has been done successfull");},
+      error: function(){
+        alert("error AIS Files concatenation");
+      }
+    });
+  
   }
 
 

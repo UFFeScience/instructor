@@ -10,12 +10,9 @@ from tkinter import filedialog as fd
 import os
 import shutil
 import io
+import numpy as np
 
-
-
-
-def teste():
-    print ("teste do python")
+import clustering as clt
 
 app = Flask(__name__)
 
@@ -57,102 +54,268 @@ def selectDatasetFile():
     resposta.headers.add("Access-Control-Allow-Origin", "*")
     return resposta
 
-@app.route('/openFileAndFilterAOI', methods=['POST'])
-def openFileAndFilterAOI():
+# Identificacao posicao do navio no Grid - gridNavio
+def GridNavio2(latNavio,lonNavio, latInfAOI, lonInfAOI, larguraCelula, alturaCelula, qtdeCelulasX): 
+
+    distLat = float(latNavio) - float(latInfAOI)
+    distLon = float(lonNavio) - float(lonInfAOI)
+    posXGridNavio = int(distLon / larguraCelula) + 1
+    posYGridNavio = int(distLat / alturaCelula) + 1
+    gridNavio = posXGridNavio + (posYGridNavio - 1) * qtdeCelulasX
+    return int(gridNavio) #, posXGridNavio, posYGridNavio
+
+@app.route('/openTrajectoryFileAndFilterAOI', methods=['POST'])
+def openTrajectoryFileAndFilterAOI():
     #global locations_dfBuffer
-    llon = ulon = llat = ulat = 0.0
+    #llon = ulon = llat = ulat = 0.0
 
     if request.method == 'POST':
        
-       dados = request.get_json()
-       ais_df = pd.read_csv(dados[4]); #novo
-       locations_dfBuffer = pd.read_csv(io.StringIO(dados[5]), sep=",")  #novo 23fev
-       
-       print ("print dados locations_dfBuffer inicio da funcao",locations_dfBuffer)
-       print("variável do post = ", dados)
-       
-       ais_df.dropna(subset=['LAT', 'LON', 'MMSI'], inplace=True) #novo
-       
-       llat = float(dados[0])
-       ulat = float(dados[1])
-       llon = float(dados[2])
-       ulon = float(dados[3])
+       dadosAIS = request.get_json()
 
-       print ("Tam array ais antes exclusao fora do Grid = ",ais_df.shape)
-       ######### filtro
-       ais_df = ais_df[(ais_df['LON'] > llon)]
-       ais_df = ais_df[(ais_df['LON'] < ulon)]
-       ais_df = ais_df[(ais_df['LAT'] > llat)]
-       ais_df = ais_df[(ais_df['LAT'] < ulat)]
-
-       print ("Tam array ais depois exclusao fora do Grid = ",ais_df.shape)
-
-       #### NOVO 05fev #####################################
-       ais_df['insideAOI']  = False  #novo
-       print ("shape depois da inclusao da coluna insideAOI ",ais_df.shape)
-       
-       print ("dataframe locations_dfBuffer ", locations_dfBuffer.shape)
-       lat = 0
-       lon = 0
-       print ("print dados locations_dfBuffer ",locations_dfBuffer)
-       ais_df = ais_df.reset_index(drop=True) # novo 05Fev
-
-       for i in range(0, len(ais_df)):
-            
-            lat = ais_df["LAT"][i]
-            lon = ais_df["LON"][i]
-            b_pontoInsidAOI = isPointInPolygon(lat, lon, locations_dfBuffer)
-            if b_pontoInsidAOI:
-                ais_df.loc[i,"insideAOI"]  = True
-
-       ais_df = ais_df[(ais_df['insideAOI'] == True)]
-       
-       print ("Tam array ais_df deletando pontos fora da AOI = ", ais_df.shape)    
-       ############################################################
-
-       ais_df = ais_df.sort_values(by=['MMSI', 'BaseDateTime'])#NOVO
-       ais_df = ais_df.reset_index(drop=True) # novo
-       ais_df['speedBIN']  = ""  #novo
-       ais_df['courseBIN'] = ""  #novo
-       ais_df['TrajID'] = ""  #novo 
-
-       vSpeed = 0
-       vCourse = 0
-
-       #########
-       ais_df.to_csv("d:ais_orig.csv", index=False)
-       MMSI_previous = ais_df["MMSI"][0]
-       id_TrajID = 1 
-       
-       for i in range(0, len(ais_df)):
-            
-            vSpeed  = ais_df["SOG"][i]
-            vCourse = ais_df["COG"][i]
-            ########
-            MMSI_actual = ais_df['MMSI'][i]
-            #if vSpeed < 1:
-            #    index_Traj = index_Traj + 1
-                        
-            if MMSI_previous != MMSI_actual:
-                MMSI_previous = MMSI_actual
-                id_TrajID = id_TrajID + 1
-
-            speed, course = geracaoBINs(vSpeed, vCourse)
-            ais_df.loc[i,"speedBIN"]  = speed
-            ais_df.loc[i,"courseBIN"] = course
-            ais_df.loc[i,"TrajID"] = id_TrajID
-            
-       ais_df.to_csv("d:ais_trajID.csv", index=False)
-
-       print ("Tam array ais depois = ",ais_df.shape)
-       print(ais_df.head(10))
-       #ais_df_em_json = [x.to_json() for x in ais_df]
-       #resposta = jsonify(ais_df_em_json)
+       ais_df, id_TrajID = openFileAndFilterAOI(dadosAIS)
+       #ais_df_gridCells = gridCellsData_for_RoseWind(ais_df)  # novo 03Jun
+       #ais_df_gridCells_json = ais_df_gridCells.to_json(orient='values') #novo 03Jun
        ais_df_json = ais_df.to_json(orient='values')
-       resposta = jsonify(ais_df_json, id_TrajID)
+
+       #resposta = jsonify(ais_df_json, id_TrajID, ais_df_gridCells_json) #novo 03Junr
+       resposta = jsonify(ais_df_json, id_TrajID) # novo 03Jun
+
        resposta.headers.add("Access-Control-Allow-Origin", "*")
        return resposta #("", 204)
+
+@app.route('/openHistoricalFileAndFilterAOI', methods=['POST'])
+def openHistoricalFileAndFilterAOI():
+    global global_Historical_AIS_df
+    #llon = ulon = llat = ulat = 0.0
+
+    if request.method == 'POST':
+       
+       dadosAIS = request.get_json()
+
+       global_Historical_AIS_df, id_TrajID = openFileAndFilterAOI(dadosAIS) # id_TrajId not used
+       global_Historical_AIS_df['NumCluster'] = 999 # incluido 08br
+       ais_df_gridCells = gridCellsData_for_RoseWind(global_Historical_AIS_df)
+       
+       ais_df_gridCells_json = ais_df_gridCells.to_json(orient='values')
+       global_Historical_AIS_df_json = global_Historical_AIS_df.to_json(orient='values')
+       resposta = jsonify(global_Historical_AIS_df_json, id_TrajID, ais_df_gridCells_json) #novo 03Jun
+       resposta = jsonify(global_Historical_AIS_df_json, ais_df_gridCells_json) #novo 03Jun
+       resposta.headers.add("Access-Control-Allow-Origin", "*")
+
+       return resposta #("", 204)
     
+@app.route('/applyClustering', methods=['POST'])
+def applyClustering():
+    global global_df_Cluster
+
+    if request.method == 'POST':
+       
+       data = request.get_json()
+       #historicalAIS_data = data[0]
+       id_clustering = data[0]
+       llat= data[1]
+       ulat= data[2] 
+       llon= data[3]
+       ulon= data[4]
+       parameter1 = float(data[5]) # eps
+       parameter2 = int(data[6]) #minPts
+
+       ais_clustered_df, clusterTable_df = clt.select_and_applyclustering(global_Historical_AIS_df, id_clustering, 
+                                                                    llon, ulon, llat, ulat, parameter1, parameter2)
+       
+       global_df_Cluster = ais_clustered_df.copy()  #################### novo 30ABR
+       global_df_Cluster = global_df_Cluster.reset_index(drop=True) 
+
+       ais_clustered_df_json = ais_clustered_df.to_json(orient='values')
+       clusterTable_df_json = clusterTable_df.to_json(orient='values')
+       resposta = jsonify(ais_clustered_df_json, clusterTable_df_json)
+       resposta.headers.add("Access-Control-Allow-Origin", "*")
+       return resposta
+
+@app.route('/calc_ClusterMatch', methods=['POST'])
+def calc_ClusterMatch():
+
+    if request.method == 'POST':
+       df_trajectory  = request.get_json()
+       df_trajectory = pd.Series((v[21] for v in df_trajectory))
+       
+       #df_trajectory = pd.read_csv(io.StringIO(aux_df_trajectory), sep=",")  #novo 29abr
+       print("*** INICIO TRAJETORIA ARRAY *** \n", df_trajectory)
+       print("*** FIM TRAJETORIA ARRAY ***") 
+
+       print("##### global_df_Cluster #### \n", global_df_Cluster) 
+
+       perc_pointsNotMatch, df_ClusterTotalMatch = clt.calcPercentageCellsMatch(global_df_Cluster, df_trajectory)
+       #perc_pointsNotMatch_json = perc_pointsNotMatch.to_json()
+       df_ClusterTotalMatch_json = df_ClusterTotalMatch.to_json(orient='values')
+       
+       resposta = jsonify(perc_pointsNotMatch, df_ClusterTotalMatch_json)
+       resposta.headers.add("Access-Control-Allow-Origin", "*")
+       return resposta
+
+def gridCellsData_for_RoseWind(dadosAIS):
+    
+    ais_df_gridCells = dadosAIS[["GridCell", "courseBIN", "speedBIN"]] 
+    ais_df_gridCells.head(10)
+    ais_df_gridCells = ais_df_gridCells.sort_values(by=['GridCell','courseBIN', 'speedBIN'])
+    #ais_df_gridCells['courseBIN'].value_counts()
+    ais_df_gridCells['Freq'] = ais_df_gridCells.groupby(['GridCell','courseBIN','speedBIN'])['speedBIN'].transform('count')
+    print ("tam ais_df_gridCells antes = ", len(ais_df_gridCells))
+    ais_df_gridCells = ais_df_gridCells.drop_duplicates()
+    print ("tam ais_df_gridCells depois de eliminar duplicatas = ", len(ais_df_gridCells))
+    print (ais_df_gridCells.head(20))
+    ais_df_gridCells.to_csv("d:ais_df_gridCells.csv", index=False)
+
+    return ais_df_gridCells
+
+def ORIGINAL_openFileAndFilterAOI(dados): # ORIGINAL VERSION - NOT USED
+    
+    llat = float(dados[0])
+    ulat = float(dados[1])
+    llon = float(dados[2])
+    ulon = float(dados[3])
+
+    ais_df = pd.read_csv(dados[4]); #novo
+    locations_dfBuffer = pd.read_csv(io.StringIO(dados[5]), sep=",")  #novo 23fev
+
+    largCell = float(dados[6])
+    altCell  = float(dados[7])
+    qtdeCel_X= float(dados[8])
+    
+    print ("print dados locations_dfBuffer inicio da funcao",locations_dfBuffer)
+    print("variável do post = ", dados)
+    
+    ais_df.dropna(subset=['LAT', 'LON', 'MMSI'], inplace=True) #novo
+    
+    print ("Tam array ais antes exclusao fora do Grid = ",ais_df.shape)
+    ######### filtro
+    ais_df = ais_df[(ais_df['LON'] > llon)]
+    ais_df = ais_df[(ais_df['LON'] < ulon)]
+    ais_df = ais_df[(ais_df['LAT'] > llat)]
+    ais_df = ais_df[(ais_df['LAT'] < ulat)]
+
+    print ("Tam array ais depois exclusao fora do Grid = ",ais_df.shape)
+
+    #### NOVO 05fev #####################################
+    ais_df['insideAOI']  = False  #novo
+    print ("shape depois da inclusao da coluna insideAOI ",ais_df.shape)
+    #print ("dataframe locations_dfBuffer ", locations_dfBuffer.shape)
+    #lat = 0
+    #lon = 0
+    print ("print dados locations_dfBuffer ",locations_dfBuffer)
+    ais_df = ais_df.reset_index(drop=True) # novo 05Fev
+
+    for i in range(0, len(ais_df)):
+        
+        lat = ais_df["LAT"][i]
+        lon = ais_df["LON"][i]
+        b_pontoInsidAOI = isPointInPolygon(lat, lon, locations_dfBuffer)
+        if b_pontoInsidAOI:
+            ais_df.loc[i,"insideAOI"]  = True
+
+    ais_df = ais_df[(ais_df['insideAOI'] == True)]
+    
+    print ("Tam array ais_df deletando pontos fora da AOI = ", ais_df.shape)    
+    ############################################################
+
+    ais_df = ais_df.sort_values(by=['MMSI', 'BaseDateTime'])#NOVO
+    ais_df = ais_df.reset_index(drop=True) # novo
+    ais_df['speedBIN']  = ""  #novo
+    ais_df['courseBIN'] = ""  #novo
+    ais_df['TrajID'] = ""  #novo 
+    ais_df['GridCell'] = ""  #novo 28fev
+
+    vSpeed = 0
+    vCourse = 0
+
+    #########
+    ais_df.to_csv("d:ais_orig.csv", index=False)
+    MMSI_previous = ais_df["MMSI"][0]
+    id_TrajID = 1 
+    
+    for i in range(0, len(ais_df)):
+        
+        lat = ais_df["LAT"][i]
+        lon = ais_df["LON"][i]
+        vSpeed  = ais_df["SOG"][i]
+        vCourse = ais_df["COG"][i]
+
+        ########
+        MMSI_actual = ais_df['MMSI'][i]
+        #if vSpeed < 1:
+        #    index_Traj = index_Traj + 1
+                    
+        if MMSI_previous != MMSI_actual:
+            MMSI_previous = MMSI_actual
+            id_TrajID = id_TrajID + 1
+
+        gridCell = GridNavio2(lat,lon, llat, llon, largCell, altCell, qtdeCel_X)
+        speed, course = geracaoBINs(vSpeed, vCourse)
+        ais_df.loc[i,"speedBIN"]  = speed
+        ais_df.loc[i,"courseBIN"] = course
+        ais_df.loc[i,"TrajID"] = id_TrajID
+        ais_df.loc[i,"GridCell"] = gridCell
+        
+    ais_df.to_csv("d:ais_trajID.csv", index=False)
+
+    print ("Tam array ais depois = ",ais_df.shape)
+    print(ais_df.head(10))
+    
+    return ais_df, id_TrajID
+
+def openFileAndFilterAOI(dados): # NEW VERSION
+    
+    llat = float(dados[0])
+    llon = float(dados[2])
+    ais_df = pd.read_csv(dados[4]); #novo
+    largCell = float(dados[6])
+    altCell  = float(dados[7])
+    qtdeCel_X= float(dados[8])
+        
+    ais_df.dropna(subset=['LAT', 'LON', 'MMSI'], inplace=True) #novo
+    
+    ais_df['insideAOI']  = True  #novo
+    ais_df = ais_df.sort_values(by=['MMSI', 'BaseDateTime'])#NOVO
+    ais_df = ais_df.reset_index(drop=True) # novo
+    ais_df['speedBIN']  = ""  #novo
+    ais_df['courseBIN'] = ""  #novo
+    ais_df['TrajID'] = ""  #novo 
+    ais_df['GridCell'] = ""  #novo 28fev
+
+    vSpeed = 0
+    vCourse = 0
+
+    ais_df.to_csv("d:ais_orig.csv", index=False)
+    MMSI_previous = ais_df["MMSI"][0]
+    id_TrajID = 1 
+    
+    for i in range(0, len(ais_df)):
+        
+        lat = ais_df["LAT"][i]
+        lon = ais_df["LON"][i]
+        vSpeed  = ais_df["SOG"][i]
+        vCourse = ais_df["COG"][i]
+
+        MMSI_actual = ais_df['MMSI'][i]
+                            
+        if MMSI_previous != MMSI_actual:
+            MMSI_previous = MMSI_actual
+            id_TrajID = id_TrajID + 1
+
+        gridCell = GridNavio2(lat,lon, llat, llon, largCell, altCell, qtdeCel_X)
+        speed, course = geracaoBINs(vSpeed, vCourse)
+        ais_df.loc[i,"speedBIN"]  = speed
+        ais_df.loc[i,"courseBIN"] = course
+        ais_df.loc[i,"TrajID"] = id_TrajID
+        ais_df.loc[i,"GridCell"] = gridCell
+        
+    ais_df.to_csv("d:ais_trajID.csv", index=False)
+
+    print ("Tam array ais = ",ais_df.shape)
+    print(ais_df.head(10))
+    
+    return ais_df, id_TrajID
 
 def selectNameDir():
     root = tk.Tk()
@@ -197,7 +360,7 @@ def checkLoginName():
         if loginName == nameLoginFileCSV:
             print ("linha 160 nome = ", nameLoginFileCSV)
             fileNameExpert = expertsID_df["filename"][i]
-                
+        
     print("filename = ", fileNameExpert)
     resposta = jsonify(fileNameExpert)
     #resposta = fileNameExpert
@@ -220,14 +383,6 @@ def loadExpertFile():
 @app.route('/downloadClassification',  methods=["GET"])
 def downloadClassification():
     
-    #arquivos = []
-    #for nome_do_arquivo in os.listdir(strDirectory):
-     #   endereco_do_arquivo = os.path.join(strDirectory, nome_do_arquivo)
-
-      #  if(os.path.isfile(endereco_do_arquivo)):
-       #     arquivos.append(nome_do_arquivo)
-
-    #print("lista de arquivos = ", arquivos)
     strDirName = selectNameDir()
     src1 = 'static/expertFiles/' + fileNameExpert
     src2 = 'static/expertFiles/' + 'expert_full.csv'
@@ -290,23 +445,28 @@ def saveClassification():
 
 def geracaoBINs(speed, course):
     speedBIN = ""
-    vCourse = ['N','NE', 'NE', 'E','E', 'SE', 'SE', 'S', 'S', 'SW', 'SW', 'W', 'W','NW','NW', 'N']
-    index = int(course // 22.5) # each cardinal and colateral point has a segment of 45 degrees (2 x 22.5)
+    vCourse = ['0N','1NE', '1NE', '2E','2E', '3SE', '3SE', '4S', '4S', '5SW', '5SW', '6W', '6W','7NW','7NW', '0N']
+    #if course < 0: # novo 23Mar
+    #    course = course + 360  #for negative values
+    
+    course_Positive = (course + 360) % 360  # convert to positive values if necessary
+
+    index = int(course_Positive // 22.5) # each cardinal and colateral point has a segment of 45 degrees (2 x 22.5)
     
     courseBIN = vCourse[index]
     
     if speed   <= 3:
-        speedBIN = "0-3"
+        speedBIN = 3 #"0-3"
     elif speed <= 7:
-        speedBIN = "3-7"
+        speedBIN = 7 #"3-7"
     elif speed <= 11:
-        speedBIN = "7-11"
+        speedBIN = 11 #"7-11"
     elif speed <= 15:
-        speedBIN = "11-15"
+        speedBIN = 15 #"11-15"
     elif speed <= 20:
-        speedBIN = "15-20"
+        speedBIN = 20 #"15-20"
     else: 
-        speedBIN = "20+"
+        speedBIN = 99 #"20+"
 
     return speedBIN, courseBIN
 
@@ -351,6 +511,98 @@ def isPointInPolygon (latitude, longitude, polygon):
         j = i
         #print("depois j = ", j)
     return inside
+
+@app.route('/concat_AIS_Files', methods=['POST'])
+def concat_AIS_Files():
+    
+    if request.method == 'POST':
+       
+       name_combined_File = 'combined_csv.csv'
+       dados = request.get_json()
+       llat = float(dados[0])
+       ulat = float(dados[1])
+       llon = float(dados[2])
+       ulon = float(dados[3])
+       locations_dfBuffer = pd.read_csv(io.StringIO(dados[4]), sep=",") 
+
+       fileNames = select_Files_for_concatenation()
+
+       if not fileNames:
+           return ("", 204)
+                  
+       ######### filtro
+       df_combined_csv = pd.read_csv('static/auxilary_Directory/df_ais_parcial.csv')
+
+       k = 0
+       for f in fileNames:
+           k = k + 1
+           n = str(k)
+           df_ais_aux = pd.read_csv(f)
+           df_ais_aux['insideAOI']  = False  ############novo
+           print ("Tam array ais antes exclusao fora do Grid = ",df_ais_aux.shape)
+           df_ais_aux = df_ais_aux[(df_ais_aux['LON'] > llon)]
+           df_ais_aux = df_ais_aux[(df_ais_aux['LON'] < ulon)]
+           df_ais_aux = df_ais_aux[(df_ais_aux['LAT'] > llat)]
+           df_ais_aux = df_ais_aux[(df_ais_aux['LAT'] < ulat)]
+           
+           df_ais_aux = df_ais_aux.reset_index(drop=True) 
+
+           for i in range(0, len(df_ais_aux)):
+                
+                lat = df_ais_aux["LAT"][i]
+                lon = df_ais_aux["LON"][i]
+                b_pontoInsidAOI = isPointInPolygon(lat, lon, locations_dfBuffer)
+                if b_pontoInsidAOI:
+                    df_ais_aux.loc[i,"insideAOI"]  = True
+
+           df_ais_aux = df_ais_aux[(df_ais_aux['insideAOI'] == True)]
+           df_ais_aux = df_ais_aux.drop(columns=['insideAOI'])
+    
+           print ("Tam array df_ais_aux deletando pontos fora da AOI = ", df_ais_aux.shape)  
+                      
+           df_ais_aux.to_csv('d:\df' + n + '.csv', index=False, encoding='utf-8-sig')
+           
+           df_combined_csv = pd.concat([df_combined_csv, df_ais_aux])
+
+       saving_Path = ask_name_File_to_save()
+
+       if saving_Path:    
+            df_combined_csv.to_csv(saving_Path, index=False, encoding='utf-8-sig')
+       else: # user cancel the file browser window
+            print("No file chosen")  
+
+       return ("", 204)
+    
+
+def ask_name_File_to_save():
+    root = tk.Tk()
+    root.geometry("500x400") # not working
+    root.wm_attributes('-topmost', 1)   
+    root.lift()     # to work with others OS which are not windows
+    root.withdraw()
+
+    get_path_and_name_file = fd.asksaveasfilename(parent=root, title='Give a name for a file to save data', initialfile = 'AOI grid .csv',
+                defaultextension=".csv",filetypes=[("CSV files", ".csv")])
+
+    print("path and name of file = ", get_path_and_name_file)
+    root.destroy()
+ 
+    return get_path_and_name_file
+
+
+def select_Files_for_concatenation():
+    root = tk.Tk()
+    root.geometry("500x400") # not working
+    root.wm_attributes('-topmost', 1)   
+    root.lift()     # to work with others OS which are not windows
+    root.withdraw()
+   
+    filepaths = fd.askopenfilenames(parent=root, title='Select one or more files to concatenate', filetypes=[("CSV files", ".csv")])
+    print(filepaths)
+    root.destroy()
+ 
+    return filepaths
+
 
 
 if __name__ == "__main__":
