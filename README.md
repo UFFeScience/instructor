@@ -22,4 +22,4 @@ Through a visual interface the user can plot an Area of Interest (AOI) and save 
 
 Claudio Vasconcelos Ribeiro
 
-https://www.linkedin.com/in/xxxxx
+https://www.linkedin.com/in/claudio-ribeiro-0b1377131
