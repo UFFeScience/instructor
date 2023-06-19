@@ -20,7 +20,7 @@ def homepage():
 
     return render_template("mapaW3-v6-Alt4.html")
 
-@app.route('/create_file', methods=['POST'])
+@app.route('/create_file', methods=['POST']) # Not used
 def create_file():
     if request.method == 'POST':
         #print (request.form)
@@ -31,7 +31,13 @@ def create_file():
 @app.route('/loadFileAOI', methods=['GET'])
 def loadFileAOI():
     
-    locations_df = pd.read_csv(selectNameFile())
+    nameFile = selectNameFile()
+    if nameFile == "" :
+        resposta = jsonify("")
+        resposta.headers.add("Access-Control-Allow-Origin", "*")
+        return resposta
+    
+    locations_df = pd.read_csv(nameFile)    # selectNameFile())
     locations_dfBuffer = locations_df.copy() # novo 05fev
     locations_df_json = locations_df.to_json(orient='values')
     
@@ -317,13 +323,18 @@ def openFileAndFilterAOI(dados): # NEW VERSION
     return ais_df, id_TrajID
 
 def selectNameDir():
+    dirPath = ""
     root = tk.Tk()
     root.geometry("500x400") # not working
     root.wm_attributes('-topmost', 1)   
     root.lift()     # to work with others OS which are not windows
     root.withdraw()
    
-    dirPath = fd.askdirectory(parent=root, title='Select a directory')
+    try:
+        dirPath = fd.askdirectory(parent=root, title='Select a directory')
+
+    except:
+        dirPath = ""
     #dirPath = fd.askopenfilename(parent=root, title='Select a file', filetypes=[("CSV files", ".csv")])
     print(dirPath)
     root.destroy()
@@ -331,14 +342,20 @@ def selectNameDir():
     return dirPath
 
 def selectNameFile():
+    filepath = ""
     root = tk.Tk()
     root.geometry("500x400") # not working
     root.wm_attributes('-topmost', 1)   
     root.lift()     # to work with others OS which are not windows
     root.withdraw()
    
-    filepath = fd.askopenfilename(parent=root, title='Select a file', filetypes=[("CSV files", ".csv")])
-    print(filepath)
+    try:
+        filepath = fd.askopenfilename(parent=root, title='Select a file', filetypes=[("CSV files", ".csv")])
+    
+    except:
+        filepath = ""  
+
+    print("filepah = ", filepath)
     root.destroy()
  
     return filepath
@@ -381,17 +398,18 @@ def loadExpertFile():
 
 @app.route('/downloadClassification',  methods=["GET"])
 def downloadClassification():
-    
+    #resposta = ""
+    #str = ""
     strDirName = selectNameDir()
-    src1 = 'static/expertFiles/' + fileNameExpert
-    src2 = 'static/expertFiles/' + 'expert_full.csv'
-    destination1 = strDirName + '/' + fileNameExpert
-    destination2 = strDirName + '/' + 'expert_full.csv'
+    if strDirName != "":
+        src1 = 'static/expertFiles/' + fileNameExpert
+        src2 = 'static/expertFiles/' + 'expert_full.csv'
+        destination1 = strDirName + '/' + fileNameExpert
+        destination2 = strDirName + '/' + 'expert_full.csv'
 
-    shutil.copyfile(src1, destination1)
-    shutil.copyfile(src2, destination2)
-    
-    resposta = jsonify(src1)# response useless
+        shutil.copyfile(src1, destination1)
+        shutil.copyfile(src2, destination2)
+    resposta = jsonify(strDirName)# response useless
     resposta.headers.add("Access-Control-Allow-Origin", "*")
     return resposta
 

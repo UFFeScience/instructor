@@ -560,6 +560,10 @@ div.space05 {
   }
   function plotLoadedArea(locations){
     //pontos = locations;
+    if (locations == "") {
+      return;
+    }
+    
     if (flagPolygon == true){
       removeArea();//TESTE 24JAN
     }
@@ -850,6 +854,7 @@ div.space05 {
     console.log(retorno);
     //ret = JSON.parse(retorno);
     
+
     var textField = $('#inputTxtFileName');
     textField.disabled = false;
     textField.val(retorno);
@@ -1260,6 +1265,10 @@ div.space05 {
     console.log(retorno);
     //ret = JSON.parse(retorno);
     
+    if (retorno == ""){
+      return;
+    }
+
     var textField = $('#inputDataSetsFileName');
     textField.disabled = false;
     textField.val(retorno);
@@ -1337,7 +1346,9 @@ div.space05 {
             type: "GET",
             //dataType: 'json',
             success: function(retorno){ 
-              alert("Download finished");
+              if (retorno != ""){
+                alert("Download finished");
+              } else {alert("Download Canceled by the user.")}
             },
             error: function(){
               alert("error execution downloadClassification in the back-end");
