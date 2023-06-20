@@ -145,7 +145,6 @@ div.space05 {
   <div class="subnav">
     <button class="subnavbtn">Area of Interest (AOI) <i class="fa fa-caret-down"></i></button>
     <div class="subnav-content">
-    <!----  <a href="#" onclick="excluirUltPonto();">Remove Last Marker</a>-->
       <a href="#" onclick="removeArea();" id="removeArea">Remove </a>
       <a href="#" onclick="loadArea();" id="loadAOI">Load </a>
       <a href="#" onclick="gerarPoligono();" id="geraAOI">Create </a>
@@ -208,18 +207,9 @@ div.space05 {
               <div>    
                 
                 <button type="button" id="btnSelectAIS_File" disabled onclick="selectAIS_File();">Select File</button>
-                <!--
-                <button type="button" id="btnSelectAOI_AIS_File" disabled onclick="select_AOI_AIS_File();">AOI only</button>
-                
-                <input type="checkbox" id="historicalAOI">
-                <label for="historicalAOI">AOI only</label>-->
-                
-                
                 <input type="text" id="inputTxtFileName" name="Name" disabled/>
                 <button id="btnPlot" onclick="aisPlotFile();" disabled>Plot</button>
-                <!---
-                <button id="btnCompileAndSave" onclick="compileAndSaveFile();" disabled>Save Dataset</button>
-                --> <br>
+                <br>
 
                 <label for="clustering">Clustering:</label>
                     <select id="clustering" disabled>
@@ -258,15 +248,7 @@ div.space05 {
                         <option value="traj2">traj2</option>
                         <option value="traj3">traj3</option> -->
                     </select>&nbsp;&nbsp;
-                    <!--                  
-                    <label for="listBoxVesselSelect">Vessel:</label>
-                    <select id="listBoxVesselSelect" disabled>
-                        <option value="0" selected>Select</option>
-                        <option value="1">Loyd</option>
-                        <option value="2">P12</option>
-                        <option value="3">Barca Rio-Niteroi</option>
-                    </select>&nbsp;
-                    -->
+                    
                     <button type="button" id="btnShow" onclick="showTrajectory();" disabled>Show </button>
                   </div> 
                   <div class="space05">
@@ -340,19 +322,14 @@ div.space05 {
                     <span style="color: green;  background-color: green;">X</span> 7-11<br>
                     <span style="color: blue;   background-color: blue;">X</span> 3-7<br>
                     <span style="color: gray;   background-color: gray;">X</span> 0-3<br>
-                    <!--<br>
-                    Course<br>
-                    <span style="color: black;  background-color: black;">X</span> % Pts<br> -->
                   </font> 
                 </div>
-            
           </div>
         </div>
       </div>
     </div>
   </div>
 </div>
-
 
 <div class="footer">
   <p>&copy; Instructor 2022-2023 &nbsp;&nbsp; Claudio V. Ribeiro</p>
@@ -368,7 +345,7 @@ div.space05 {
   var polygon_CSV
   //const modal = document.querySelector("dialog");  //funciona
   const modalAbout = document.getElementById("aboutPage");
-  const modalLogin = document.getElementById("loginPage"); // novo 18fev
+  const modalLogin = document.getElementById("loginPage"); 
   const modalInstructions = document.getElementById("instructionsPage");
   const modalAlert = document.getElementById("AlertMsg");
 
@@ -376,17 +353,16 @@ div.space05 {
   cellSize = 2000 ; //valor default
   var vertA_Cel, vertB_Cel, vertC_Cel, vertD_Cel;
   var vertices;
-  //var new_mark;
+  
   var qtdeCel_X, qtdeCel_Y, larguraCelula, alturaCelula;
   var polygon;
-  var polylinha; // novo 23Mai
+  var polylinha; 
   var flagPolygon = false;
-  var flagGridCreation = false; // novo
+  var flagGridCreation = false; 
   let pontos = [[0.0,0.0][0.0,0.0]]    
 	
 	pontos.pop()
-  //document.getElementById("geraAOI").disabled = true;
-  	
+    	
 	var mapa = L.map('mapa').setView([-14,-38], 4);
   L.control.scale().addTo(mapa);
 
@@ -407,13 +383,13 @@ div.space05 {
   var cellsLayerGroup = new L.LayerGroup(); 
   cellsLayerGroup.addTo(mapa); 
 
-  var trajectoryLayerGroup = new L.LayerGroup(); // novo 26fev
-  trajectoryLayerGroup.addTo(mapa); //novo 26fev
-  var displayedPointsLayerGroup = new L.LayerGroup(); // novo 26fev
-  displayedPointsLayerGroup.addTo(mapa); //novo 26fev
+  var trajectoryLayerGroup = new L.LayerGroup(); 
+  trajectoryLayerGroup.addTo(mapa); 
+  var displayedPointsLayerGroup = new L.LayerGroup(); 
+  displayedPointsLayerGroup.addTo(mapa); 
 
-  var legendLayerGroup = new L.LayerGroup(); // novo 14Mai
-  legendLayerGroup.addTo(mapa); // novo 14Mai
+  var legendLayerGroup = new L.LayerGroup(); 
+  legendLayerGroup.addTo(mapa); 
 
   var pathHistoricalFileAISdata = ""; 
   var pathDatasetFile = ""; 
@@ -424,18 +400,15 @@ div.space05 {
   var totalTraj = 0;
   var aisAOI_trajSelected = [];
   var gridCell_array = [];
-  var flagLegendExist = false; // novo 21Abr
-  //var legend; novo 14Mai   comentado
-  
-  var global_df_ClusterColorTable = []; //novo 01Mai
+  var flagLegendExist = false; 
+    
+  var global_df_ClusterColorTable = []; 
   var perc_pointsNotMatch = 0.0; 
   var df_ClusterTotalMatch = [];
 
   var firstShowAboutPage_flag = true;
   exibeAboutPage();
-  //exibeAlertMsg();
-  //displayMapLegend();
-
+  
     //////////////////////////////////// FUNCTIONS ////////////////////////////////
 
   function newMarker(e){
@@ -443,12 +416,9 @@ div.space05 {
     var new_mark;
     //new_mark = L.marker().setLatLng(e.latlng).addTo(mapa);
     new_mark = new L.marker().setLatLng(e.latlng).addTo(mapa);
-    new_mark.addTo(markersLayerGroup); //novo
-    mapa.addLayer(markersLayerGroup); //novo
+    new_mark.addTo(markersLayerGroup); 
+    mapa.addLayer(markersLayerGroup); 
 
-    //////////////////
-    //var label = new L.marker();
-    
     new_mark.dragging.disable();//enable
     new_mark.on('dblclick', function(e){ 
     //  console.log(e.target);
@@ -458,8 +428,6 @@ div.space05 {
         if ((latUltPonto == e.latlng.lat.toFixed(5)) && (lonUltPonto == e.latlng.lng.toFixed(5))){
           mapa.removeLayer(new_mark);//(e.target);
           pontos.pop();
-          
-          //gerarPoligono(); //novo
         };
     })
     var lat = e.latlng.lat.toFixed(5), lng = e.latlng.lng.toFixed(5);
@@ -493,7 +461,7 @@ div.space05 {
       polygon = L.polygon(pontos, {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", 			"noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 1}
               ).addTo(mapa);
           console.table(pontos);
-      mapa.removeLayer(markersLayerGroup); //novo
+      mapa.removeLayer(markersLayerGroup);
       flagPolygon = true;
     }
     else {
@@ -506,8 +474,7 @@ div.space05 {
   }
 		
 	function centralizarMapa(local){
-    //var latCentral = document.getElementById("LatitudeCentral").value;
-		//var lonCentral = document.getElementById("LongitudeCentral").value;
+    
     var localZoom = local;
     if (localZoom == 1){
       mapa.setView([-14, -38], 4);
@@ -527,13 +494,12 @@ div.space05 {
   };
   function removeArea(){
     if (flagPolygon == true){
-      mapa.removeLayer(markersLayerGroup); //novo
-      markersLayerGroup.clearLayers();// novo 24jan
+      mapa.removeLayer(markersLayerGroup); 
+      markersLayerGroup.clearLayers();
       while (pontos.length) { //remove all the elements inside the array
         pontos.pop(); 
       }
       mapa.removeLayer(polygon);
-      //mapa.removeLayer(polylinha); //TESTE  removido em 23Mai
       flagPolygon = false;
       
       if (flagGridCreation == true){
@@ -565,26 +531,23 @@ div.space05 {
     }
     
     if (flagPolygon == true){
-      removeArea();//TESTE 24JAN
+      removeArea();
     }
     pontos = JSON.parse(locations);
-    ///teste 23 fev /////
     var csv = 'LAT,LONG\n';  
           
-        //merge the data with CSV  
-        pontos.forEach(function(row) {  
-                csv += row.join(',');  
-                csv += "\n";  
-        });  
-        polygon_CSV = csv;
+    //merge the data with CSV  
+    pontos.forEach(function(row) {  
+            csv += row.join(',');  
+            csv += "\n";  
+    });  
+    polygon_CSV = csv;
 
-
-    //////////////////
     const [latInfAOI, latSupAOI, lonInfAOI, lonSupAOI, latMedAOI] = findMinMax(pontos);
     gerarPoligono();
     mapa.setView([latMedAOI, (lonInfAOI + lonSupAOI)/2], 8);
   }
-    //create a user-defined function to download CSV file   
+   //create a user-defined function to download CSV file   
   function download_csv_file() {  
         
     if (pontos.length > 2) {
@@ -606,7 +569,7 @@ div.space05 {
         //provide the name for the CSV file to be downloaded  
         hiddenElement.download = 'LatLongAOI.csv';  
         hiddenElement.click(); 
-        // novo 04out  - limpa polígono
+        
     } else {alert("It would have at least three locations in the map to save these.")}; 
 
   }
@@ -630,9 +593,9 @@ div.space05 {
     alert("The Grid construction takes a few seconds depending on the area size");
     
     if (flagPolygon == true){
-        //exibeAlertMsg();
+        
         const [latInfAOI, latSupAOI, lonInfAOI, lonSupAOI, latMedAOI] = findMinMax(pontos);
-        latInfGrid = latInfAOI; //, latSupAOI, lonInfAOI, lonSupAOI, latMedAOI = findMinMax(pontos);
+        latInfGrid = latInfAOI; 
         latSupGrid = latSupAOI;
         lonInfGrid = lonInfAOI;
         lonSupGrid = lonSupAOI;
@@ -645,15 +608,15 @@ div.space05 {
         var coordGrid = [pontoA, pontoB, pontoC, pontoD, pontoA];
 
         if (flagGridCreation == true){
-          mapa.removeLayer(markersLayerGroup); //novo
+          mapa.removeLayer(markersLayerGroup);
           mapa.removeLayer(cellsLayerGroup);
-          cellsLayerGroup.clearLayers(); //recente
-          mapa.removeLayer(polylinha); // novo 24jan 23h
+          cellsLayerGroup.clearLayers(); 
+          mapa.removeLayer(polylinha); 
           flagGridCreation = false;
         }
         
         exibirAreaLimGrid(coordGrid);
-        //calculaGridParametros(31.5083, 32.39377708333334, 32.7862, -80.9059, -79.0851, 5000);
+        
         [qtdeCel_X, qtdeCel_Y, larguraCelula, alturaCelula] = calculaGridParametros(latInfAOI, latMedAOI, latSupAOI, lonInfAOI, lonSupAOI, cellSize);
         for (var j = 0; j < qtdeCel_Y; j++) {
           for (var k = 0; k < qtdeCel_X; k++) {   
@@ -680,19 +643,12 @@ div.space05 {
             }
           }  
         }   
-        //polygonCell.addTo(cellsLayerGroup); //novo
-        mapa.addLayer(cellsLayerGroup); //novo
-       // console.log("ponto dentro ? ",polygon.contains(10,10));//parseFloat(latInfAOI) + 0.2, parseFloat(lonInfAOI) + 0.2));
+        
+        mapa.addLayer(cellsLayerGroup); 
         flagGridCreation = true;
-        //fechaAlertMsg();
-        //var btn = $("#btnSelectAIS_File");
-        //var btn = document.getElementById("btnSelectAIS_File");// novo 28jan
-        //btn.disabled = false; // novo 28jan
-
     } else {
-      //fechaAlertMsg();
       alert("To create a Grid it would have an Area of Interest.")};
-    fechaAlertMsg(); ///////
+      fechaAlertMsg();
   }  
   function exibirAreaLimGrid(pontosGrid){
        
@@ -708,14 +664,10 @@ div.space05 {
     else {
       alert("It must have a Grid created.")
     }
-    //var btn = document.getElementById("btnSelectAIS_File");
-    //btn.disabled = false;
   }
 
   function btnClassifAnomaly(){
-    //console.log("Retorno do flask = ", {{ ulat }});
     saveClassificationFile();
-    
   }
   
   function performPost() {
@@ -752,7 +704,7 @@ div.space05 {
     expertID = document.getElementById("inputTxtName").value;
     expertPassword = document.getElementById("inputTxtPassword").value;
     var dado = JSON.stringify(expertID);
-    //var dado = JSON.parse(expertID);
+    
     console.log("nome do expert = ", expertID);
     $.ajax({
             url: "{{ url_for('checkLoginName') }}",
@@ -770,15 +722,13 @@ div.space05 {
 
     expertFileName = retorno;
     console.log("depois do ajax - expertFileName = ", expertFileName);
-    //var comp = expertFileName.localeCompare(str);
+    
     if (expertFileName == 'none') {
       console.log("valor none");
       alert("The name, password or both are unknown. Please try again.");
     } else {
       modalLogin.close();
     }
-    //loadExpertFile();
-    
   }
   function loadExpertFile(){
     $.ajax({
@@ -850,21 +800,19 @@ div.space05 {
   }
 
   function openFileAIS(retorno){
-    //alert("funcionou o get");
-    console.log(retorno);
-    //ret = JSON.parse(retorno);
     
-
+    console.log("retorno = ", retorno);
+    
     var textField = $('#inputTxtFileName');
     textField.disabled = false;
     textField.val(retorno);
-    pathHistoricalFileAISdata = retorno; // novo
+    pathHistoricalFileAISdata = retorno; 
     var btn = document.getElementById("btnPlot");
     btn.disabled = false;
   }
  
   function AISplotPanel(){
-    //var dados = JSON.stringify({llon : -75.7, ulon : -74.8, llat : 38.6, ulat : 39.6});
+    
     var dados = JSON.stringify([latInfGrid, latSupGrid, lonInfGrid, lonSupGrid,
                                 pathHistoricalFileAISdata, polygon_CSV, larguraCelula, alturaCelula, qtdeCel_X]);
     console.log("front variável dados = ", dados);
@@ -873,8 +821,6 @@ div.space05 {
       type: "POST",
       dataType: 'json',
       contentType: 'application/json',
-      //data: {llon : -75.7, ulon : -74.8, llat : 38.6, ulat : 39.6},
-      //data: {"llon" : lonInfAOI, "ulon" : lonSupAOI, "llat" : latInfAOI, "ulat" : latInfAOI},
       data: dados,
       success: plotAisDataPanel,
       error: function(){
@@ -885,25 +831,21 @@ div.space05 {
   }
 
   function plotAisDataPanel(retorno){
-    //alert("funcionou o post do AIS data Panel");
+    
     console.log(retorno);
-    var ret = JSON.parse(retorno[0]); // alterado Mar23
-    ///////////totalTraj = JSON.parse(retorno[1]); // novo 07abr
-    ///////////console.log("total de traj = ", totalTraj);
-    gridCell_array = JSON.parse(retorno[1]); // novo 03Jun
-    ///////////console.log("gridCell_array = ", gridCell_array); //novo 22Mar
-
+    var ret = JSON.parse(retorno[0]); 
+    gridCell_array = JSON.parse(retorno[1]); 
+    
     var len = ret.length;
     
     if (len > 0){
-      mapa.removeLayer(markersLayerGroup); //novo
-      //mapa.removeLayer(new_mark); //novo
+      mapa.removeLayer(markersLayerGroup); 
       mapa.removeLayer(cellsLayerGroup);
       
       flagGridCreation = false;
       
       for (var i = 0; i < len; i++) {
-        //if (isPointInPolygon(ret[i][2], ret[i][3], pontos)){ // function already done in the back-end
+        
           ais_Historical_AOI_ArrayFiltered.push(ret[i]);
 
           var circle = L.circle([ret[i][2], ret[i][3]], {
@@ -912,9 +854,8 @@ div.space05 {
             fillOpacity: 0.5,
             radius: 30
           }).addTo(mapaAIS);
-        //}
       }  
-      fechaAlertMsg(); //novo 10Jun
+      fechaAlertMsg(); 
       alert("The plotting processing has been done."); 
       var btn = document.getElementById("clustering");
       btn.disabled = false;
@@ -954,14 +895,12 @@ div.space05 {
    
     var btn = document.getElementById("listBoxTrajectories");
     btn.disabled = false;
-    //btn = document.getElementById("btnShow"); // novo 21Mai
-    //btn.disabled = false;
     btn = document.getElementById("btnPrevious");
     btn.disabled = false;
     btn = document.getElementById("btnNext");
     btn.disabled = false;
     
-    loadExpertFile();//novo 20Fev23
+    loadExpertFile();
   }
   function classificationWindow(){
    
@@ -983,7 +922,7 @@ div.space05 {
     
     var listBoxClustering = document.getElementById("clustering");
     idClustering = parseInt(listBoxClustering.value);
-    /// novo 21Mai
+    
     var param1 = document.getElementById("inputParameter1").value;
     var param2 = document.getElementById("inputParameter2").value;
     var dados = JSON.stringify([idClustering, latInfGrid, latSupGrid, lonInfGrid, lonSupGrid, param1, param2]);
@@ -993,12 +932,10 @@ div.space05 {
 
     var len = ais_Historical_AOI_ArrayFiltered.length;
     if (len == 0){
-      //mapa.removeLayer(markersLayerGroup); //novo
-      //mapa.removeLayer(cellsLayerGroup);
       alert("Botao apply - arquivo selecionado não possui dados de AIS no Grid/AOI selecionada");
       return;
     }  
-    exibeAlertMsg(); //novo 10Jun
+    exibeAlertMsg(); 
     //seleciona o clustering
     if (idClustering == 1){
       applyNoneClustering(len);
@@ -1037,7 +974,6 @@ div.space05 {
     var df_Clusters_LatLon = JSON.parse(retorno[0]); 
     var df_ClusterColorTable  = JSON.parse(retorno[1]); 
 
-  // novo 15Mai
     lenGlobal = df_ClusterColorTable.length;
     while (global_df_ClusterColorTable.length) { //remove all the elements inside the array
       global_df_ClusterColorTable.pop(); 
@@ -1046,22 +982,18 @@ div.space05 {
       global_df_ClusterColorTable.push(df_ClusterColorTable[index]); // make a global copy
     }
 
-    //global_df_ClusterColorTable = df_ClusterColorTable.slice(0);  // novo 01Mai
     var len = df_Clusters_LatLon.length;
     var clusterColor = "";
     var numCluster = 0;
     var opacity_value = 0.5;  // default value
 
     if (len > 0){
-      mapa.removeLayer(markersLayerGroup); //novo
-      //mapa.removeLayer(new_mark); //novo
+      mapa.removeLayer(markersLayerGroup); 
       mapa.removeLayer(cellsLayerGroup);
-      
-      //flagGridCreation = false;
       
       for (var i = 0; i < len; i++) {
      
-          numCluster = parseInt(df_Clusters_LatLon[i][7]); // novo 21Mai antes era 6
+          numCluster = parseInt(df_Clusters_LatLon[i][7]); 
         
           if (numCluster == -1){
             clusterColor = '#000000';
@@ -1069,7 +1001,6 @@ div.space05 {
           } else{
             clusterColor = df_ClusterColorTable[numCluster][1];
             opacity_value = 0.5;
-            //clusterColor = df_ClusterColorTable[i][1];
           }
           
           var circle = L.circle([df_Clusters_LatLon[i][1], df_Clusters_LatLon[i][2]], {
@@ -1078,9 +1009,8 @@ div.space05 {
             fillOpacity: opacity_value,
             radius: 30
           }).addTo(mapa);
-        //}
       }  
-      fechaAlertMsg(); //novo 10Jun
+      fechaAlertMsg(); 
       alert("The Clustering plotting processing has been done."); 
       var btn = document.getElementById("btnLoadDatasets_File");
       btn.disabled = false;
@@ -1095,7 +1025,7 @@ div.space05 {
   }
 
   function showTrajectory(){
-    ///////// novo 26fev23
+    
     var listBoxTraj = document.getElementById("listBoxTrajectories");
     idTrajetory = listBoxTraj.value;
     //var count_idTrajetory = 1; //concluir contagem
@@ -1117,21 +1047,19 @@ div.space05 {
     console.log("tamanho do aisAOI-trajSelected = ", aisAOI_trajSelected.length);
     console.log("aisAOI_trajSelected conteudo = ", aisAOI_trajSelected);
     plotSelectedTrajectory();
-
-    //////
     classificationWindow();
     trajectoryPointIndex = 0
     drawGridCell(trajectoryPointIndex); // show the first AIS point of the trajectory
-    displayMapLegend();  // novo 21Abr23
+    displayMapLegend(); 
   }
   function plotSelectedTrajectory(){
 
     var len = aisAOI_trajSelected.length;
     if (len > 0){
       
-      mapa.removeLayer(trajectoryLayerGroup); //novo
+      mapa.removeLayer(trajectoryLayerGroup); 
       trajectoryLayerGroup.clearLayers();
-      mapa.removeLayer(displayedPointsLayerGroup); //novo
+      mapa.removeLayer(displayedPointsLayerGroup); 
       displayedPointsLayerGroup.clearLayers();
 
       for (var i = 0; i < len; i++) {
@@ -1141,23 +1069,23 @@ div.space05 {
             fillColor: '#f03',
             fillOpacity: 0.5,
             radius: 50
-          }).addTo(trajectoryLayerGroup)  //(mapa);
+          }).addTo(trajectoryLayerGroup) 
         
       }  
-      mapa.addLayer(trajectoryLayerGroup); // novo 26fev
+      mapa.addLayer(trajectoryLayerGroup); 
     }
   }
   
   function drawGridCell(index){
     
-    mapa.removeLayer(polygonCell); // teste
+    mapa.removeLayer(polygonCell); 
     
     var lat  = aisAOI_trajSelected[index][2];
     var long = aisAOI_trajSelected[index][3];
     var circle = L.circle([lat, long], {color: 'blue', fillColor: '#f03', fillOpacity: 0.5, radius: 50
-          }).addTo(displayedPointsLayerGroup); // alterado 26fev
-    mapa.addLayer(displayedPointsLayerGroup); // novo 26fev
-    vertices = calcVerticesCell(lat, long, latInfGrid, lonInfGrid, larguraCelula, alturaCelula); //novo teste
+          }).addTo(displayedPointsLayerGroup); 
+    mapa.addLayer(displayedPointsLayerGroup); 
+    vertices = calcVerticesCell(lat, long, latInfGrid, lonInfGrid, larguraCelula, alturaCelula); 
     polygonCell = L.polygon(vertices, {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "red", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", 			"noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 1}
                   ).addTo(mapa);
 
@@ -1167,7 +1095,7 @@ div.space05 {
     var bg = document.getElementById("inputTxtSpeed");
     bg.style.color = "green"; // CORRIGIR
     
-    var cardinalLetter = aisAOI_trajSelected[index][19]; // alterado 23Mar
+    var cardinalLetter = aisAOI_trajSelected[index][19]; 
     var gridCellNumber = aisAOI_trajSelected[index][21];
     
     var textFieldCourse = $('#inputTxtCourse');
@@ -1178,10 +1106,7 @@ div.space05 {
 
     // windrose data
     const [s3_array, s7_array, s11_array, s15_array, s20_array, s99_array] = buildWindRose_array(gridCellNumber);
-    exibeWindRose(s3_array, s7_array, s11_array, s15_array, s20_array, s99_array); // novo 25mar
-    //var dado = [50, 50, 15, 15, 30, 30, 15, 15]; /////////////////
-    //exibeWindRose(dado);
-
+    exibeWindRose(s3_array, s7_array, s11_array, s15_array, s20_array, s99_array); 
   }
   function buildWindRose_array(gridCellID){
     //gridCell_array
@@ -1261,10 +1186,8 @@ div.space05 {
   }
 
   function openDatasetFile(retorno){
-    //alert("funcionou o get");
-    console.log(retorno);
-    //ret = JSON.parse(retorno);
     
+    //console.log(retorno);
     if (retorno == ""){
       return;
     }
@@ -1272,15 +1195,15 @@ div.space05 {
     var textField = $('#inputDataSetsFileName');
     textField.disabled = false;
     textField.val(retorno);
-    pathDatasetFile = retorno; // novo
+    pathDatasetFile = retorno; 
     var btn = document.getElementById("btnLoadDataset");
     btn.disabled = false;
   }
-  /////////////////////////////////////////////////////////////////////////////////////////
+  
   function loadDatasetFile(){
     alert("This action may be extended for one or more minutes after closing this message. At the end another message will inform the status.");  
-    exibeAlertMsg(); ////// novo 10Jun
-    //var dados = JSON.stringify({llon : -75.7, ulon : -74.8, llat : 38.6, ulat : 39.6});
+    exibeAlertMsg(); 
+    
     var dados = JSON.stringify([latInfGrid, latSupGrid, lonInfGrid, lonSupGrid,
                                 pathDatasetFile, polygon_CSV, larguraCelula, alturaCelula, qtdeCel_X]);
     console.log("front variável dados = ", dados);
@@ -1289,8 +1212,6 @@ div.space05 {
       type: "POST",
       dataType: 'json',
       contentType: 'application/json',
-      //data: {llon : -75.7, ulon : -74.8, llat : 38.6, ulat : 39.6},
-      //data: {"llon" : lonInfAOI, "ulon" : lonSupAOI, "llat" : latInfAOI, "ulat" : latInfAOI},
       data: dados,
       success: getArrayData_forTrajectories,
       error: function(){
@@ -1302,26 +1223,18 @@ div.space05 {
   }
   function getArrayData_forTrajectories(retorno){
     console.log(retorno);
-    var ret = JSON.parse(retorno[0]); // alterado Mar23
-    totalTraj = JSON.parse(retorno[1]); // novo 25fev
+    var ret = JSON.parse(retorno[0]); 
+    totalTraj = JSON.parse(retorno[1]); 
     console.log("total de traj = ", totalTraj);
-    //gridCell_array = JSON.parse(retorno[2]); // novo 03Junr
-    //console.log("gridCell_array = ", gridCell_array); //novo 03Jun
-
+    
     var len = ret.length;
     
     if (len > 0){
-      //mapa.removeLayer(markersLayerGroup); //novo
-      //mapa.removeLayer(new_mark); //novo
-      //mapa.removeLayer(cellsLayerGroup);
-      
-      //flagGridCreation = false;
-      
+            
       for (var i = 0; i < len; i++) {
-        //if (isPointInPolygon(ret[i][2], ret[i][3], pontos)){ // function already done in the back-end
-          ais_Trajectory_AOI_ArrayFiltered.push(ret[i]);
+        ais_Trajectory_AOI_ArrayFiltered.push(ret[i]);
       }  
-      loadSelectBoxTrajectories(totalTraj); // novo 07abr
+      loadSelectBoxTrajectories(totalTraj);
       fechaAlertMsg();
       alert("The AIS data processing has been done."); 
       
@@ -1331,14 +1244,10 @@ div.space05 {
     } 
     console.log("tamanho aisAOI_Array = ", ais_Trajectory_AOI_ArrayFiltered.length);
     console.log(ais_Trajectory_AOI_ArrayFiltered);
-    //var btn = document.getElementById("btnLoadDataset"); // novo 21Mai
-    //btn.disabled = false;
+    
     btn = document.getElementById("btnShow"); // novo 21Mai
     btn.disabled = false;
-
   }
-
-///////////////////////////////////////////////////////////////////////////////
 
   function downloadClassificationFile(){
     $.ajax({
@@ -1358,8 +1267,7 @@ div.space05 {
   }
   function loadSelectBoxTrajectories(total_traj) {
     var listBoxTraj = document.getElementById("listBoxTrajectories");
-    //var len_Traj_Array = trajArray.length;
-    
+        
     for  (var k = 1; k <= total_traj; k++){ 
         var option = document.createElement("option");
         option.text = k;
@@ -1367,7 +1275,7 @@ div.space05 {
         listBoxTraj.add(option);
     }
   }
-///// Map Legend
+  ///// Map Legend
   function displayMapLegend(){
     var colorCluster = "";
     var percentage = 0;
@@ -1376,16 +1284,9 @@ div.space05 {
     alert("The Matching Cells calculation has been done.");
     /*Legend specific*/
     if (flagLegendExist == true){
-      //mapa.removeLayer(legendLayerGroup); // novo 21Abr 14Mai
-      //legendLayerGroup.clearLayers(); // novo 14mai
-      //mapa.removeLayer(legend);
-      //legend.removeFrom(mapa);
-      //delete mapa.legend; // not work
       mapa.removeControl(legend);///////
-    
     }
-    legend = L.control({ position: "topright" }); // modified 14Mai
-    
+    legend = L.control({ position: "topright" }); 
     legend.onAdd = function(mapa) {
       var div = L.DomUtil.create("div", "legend");
       
@@ -1420,13 +1321,10 @@ div.space05 {
       return div;
     };
 
-    legend.addTo(mapa); //legendLayerGroup); // 14Mai    // mapa);
-    //mapa.addLayer(legendLayerGroup); // 14Mai
-    
+    legend.addTo(mapa); 
     flagLegendExist = true;
   }
-////////////////////////////////////
-
+  
   function get_PercentageMatchCells(){
     console.log("js Tamanho aisAOI_trajSelected = ", aisAOI_trajSelected.length)
     var dado = JSON.stringify(aisAOI_trajSelected);
@@ -1458,7 +1356,7 @@ div.space05 {
       alert("It must have a Grid created.");
       return;
     }
-    //var dados = JSON.stringify({llon : -75.7, ulon : -74.8, llat : 38.6, ulat : 39.6});
+    
     var dados = JSON.stringify([latInfGrid, latSupGrid, lonInfGrid, lonSupGrid,
                                 polygon_CSV, larguraCelula, alturaCelula, qtdeCel_X]);
     console.log("front variável dados = ", dados);
@@ -1474,9 +1372,7 @@ div.space05 {
         alert("error AIS Files concatenation");
       }
     });
-  
   }
-
 
 </script>
 

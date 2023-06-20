@@ -23,7 +23,7 @@ def homepage():
 @app.route('/create_file', methods=['POST']) # Not used
 def create_file():
     if request.method == 'POST':
-        #print (request.form)
+        
         with open(f"{request.form.get('name')}.txt", "w") as f:
             f.write('FILE CREATED AND SUCCESSFULL POST REQUEST!')
         return ('', 204)
@@ -37,8 +37,8 @@ def loadFileAOI():
         resposta.headers.add("Access-Control-Allow-Origin", "*")
         return resposta
     
-    locations_df = pd.read_csv(nameFile)    # selectNameFile())
-    locations_dfBuffer = locations_df.copy() # novo 05fev
+    locations_df = pd.read_csv(nameFile)    
+    locations_dfBuffer = locations_df.copy() 
     locations_df_json = locations_df.to_json(orient='values')
     
     resposta = jsonify(locations_df_json)
@@ -71,41 +71,34 @@ def GridNavio2(latNavio,lonNavio, latInfAOI, lonInfAOI, larguraCelula, alturaCel
 
 @app.route('/openTrajectoryFileAndFilterAOI', methods=['POST'])
 def openTrajectoryFileAndFilterAOI():
-    #global locations_dfBuffer
-    #llon = ulon = llat = ulat = 0.0
-
+    
     if request.method == 'POST':
        
        dadosAIS = request.get_json()
 
        ais_df, id_TrajID = openFileAndFilterAOI(dadosAIS)
-       #ais_df_gridCells = gridCellsData_for_RoseWind(ais_df)  # novo 03Jun
-       #ais_df_gridCells_json = ais_df_gridCells.to_json(orient='values') #novo 03Jun
        ais_df_json = ais_df.to_json(orient='values')
 
-       #resposta = jsonify(ais_df_json, id_TrajID, ais_df_gridCells_json) #novo 03Junr
-       resposta = jsonify(ais_df_json, id_TrajID) # novo 03Jun
-
+       resposta = jsonify(ais_df_json, id_TrajID)
        resposta.headers.add("Access-Control-Allow-Origin", "*")
        return resposta #("", 204)
 
 @app.route('/openHistoricalFileAndFilterAOI', methods=['POST'])
 def openHistoricalFileAndFilterAOI():
     global global_Historical_AIS_df
-    #llon = ulon = llat = ulat = 0.0
-
+    
     if request.method == 'POST':
        
        dadosAIS = request.get_json()
 
        global_Historical_AIS_df, id_TrajID = openFileAndFilterAOI(dadosAIS) # id_TrajId not used
-       global_Historical_AIS_df['NumCluster'] = 999 # incluido 08br
+       global_Historical_AIS_df['NumCluster'] = 999 
        ais_df_gridCells = gridCellsData_for_RoseWind(global_Historical_AIS_df)
        
        ais_df_gridCells_json = ais_df_gridCells.to_json(orient='values')
        global_Historical_AIS_df_json = global_Historical_AIS_df.to_json(orient='values')
-       resposta = jsonify(global_Historical_AIS_df_json, id_TrajID, ais_df_gridCells_json) #novo 03Jun
-       resposta = jsonify(global_Historical_AIS_df_json, ais_df_gridCells_json) #novo 03Jun
+       resposta = jsonify(global_Historical_AIS_df_json, id_TrajID, ais_df_gridCells_json)
+       resposta = jsonify(global_Historical_AIS_df_json, ais_df_gridCells_json) 
        resposta.headers.add("Access-Control-Allow-Origin", "*")
 
        return resposta #("", 204)
@@ -117,7 +110,7 @@ def applyClustering():
     if request.method == 'POST':
        
        data = request.get_json()
-       #historicalAIS_data = data[0]
+       
        id_clustering = data[0]
        llat= data[1]
        ulat= data[2] 
@@ -129,7 +122,7 @@ def applyClustering():
        ais_clustered_df, clusterTable_df = clt.select_and_applyclustering(global_Historical_AIS_df, id_clustering, 
                                                                     llon, ulon, llat, ulat, parameter1, parameter2)
        
-       global_df_Cluster = ais_clustered_df.copy()  #################### novo 30ABR
+       global_df_Cluster = ais_clustered_df.copy() 
        global_df_Cluster = global_df_Cluster.reset_index(drop=True) 
 
        ais_clustered_df_json = ais_clustered_df.to_json(orient='values')
@@ -145,14 +138,13 @@ def calc_ClusterMatch():
        df_trajectory  = request.get_json()
        df_trajectory = pd.Series((v[21] for v in df_trajectory))
        
-       #df_trajectory = pd.read_csv(io.StringIO(aux_df_trajectory), sep=",")  #novo 29abr
        print("*** INICIO TRAJETORIA ARRAY *** \n", df_trajectory)
        print("*** FIM TRAJETORIA ARRAY ***") 
 
        print("##### global_df_Cluster #### \n", global_df_Cluster) 
 
        perc_pointsNotMatch, df_ClusterTotalMatch = clt.calcPercentageCellsMatch(global_df_Cluster, df_trajectory)
-       #perc_pointsNotMatch_json = perc_pointsNotMatch.to_json()
+       
        df_ClusterTotalMatch_json = df_ClusterTotalMatch.to_json(orient='values')
        
        resposta = jsonify(perc_pointsNotMatch, df_ClusterTotalMatch_json)
@@ -164,7 +156,7 @@ def gridCellsData_for_RoseWind(dadosAIS):
     ais_df_gridCells = dadosAIS[["GridCell", "courseBIN", "speedBIN"]] 
     ais_df_gridCells.head(10)
     ais_df_gridCells = ais_df_gridCells.sort_values(by=['GridCell','courseBIN', 'speedBIN'])
-    #ais_df_gridCells['courseBIN'].value_counts()
+    
     ais_df_gridCells['Freq'] = ais_df_gridCells.groupby(['GridCell','courseBIN','speedBIN'])['speedBIN'].transform('count')
     print ("tam ais_df_gridCells antes = ", len(ais_df_gridCells))
     ais_df_gridCells = ais_df_gridCells.drop_duplicates()
@@ -278,15 +270,15 @@ def openFileAndFilterAOI(dados): # NEW VERSION
     altCell  = float(dados[7])
     qtdeCel_X= float(dados[8])
         
-    ais_df.dropna(subset=['LAT', 'LON', 'MMSI'], inplace=True) #novo
+    ais_df.dropna(subset=['LAT', 'LON', 'MMSI'], inplace=True) 
     
-    ais_df['insideAOI']  = True  #novo
-    ais_df = ais_df.sort_values(by=['MMSI', 'BaseDateTime'])#NOVO
-    ais_df = ais_df.reset_index(drop=True) # novo
-    ais_df['speedBIN']  = ""  #novo
-    ais_df['courseBIN'] = ""  #novo
-    ais_df['TrajID'] = ""  #novo 
-    ais_df['GridCell'] = ""  #novo 28fev
+    ais_df['insideAOI']  = True  
+    ais_df = ais_df.sort_values(by=['MMSI', 'BaseDateTime'])
+    ais_df = ais_df.reset_index(drop=True) 
+    ais_df['speedBIN']  = ""  
+    ais_df['courseBIN'] = ""  
+    ais_df['TrajID'] = ""  
+    ais_df['GridCell'] = ""  
 
     vSpeed = 0
     vCourse = 0
@@ -335,7 +327,7 @@ def selectNameDir():
 
     except:
         dirPath = ""
-    #dirPath = fd.askopenfilename(parent=root, title='Select a file', filetypes=[("CSV files", ".csv")])
+    
     print(dirPath)
     root.destroy()
  
@@ -379,7 +371,6 @@ def checkLoginName():
         
     print("filename = ", fileNameExpert)
     resposta = jsonify(fileNameExpert)
-    #resposta = fileNameExpert
     resposta.headers.add("Access-Control-Allow-Origin", "*")
     return resposta
 
@@ -398,8 +389,7 @@ def loadExpertFile():
 
 @app.route('/downloadClassification',  methods=["GET"])
 def downloadClassification():
-    #resposta = ""
-    #str = ""
+    
     strDirName = selectNameDir()
     if strDirName != "":
         src1 = 'static/expertFiles/' + fileNameExpert
@@ -501,32 +491,20 @@ def isPointInPolygon (latitude, longitude, polygon):
     j = lenPoligono - 1
     #print("antes j = ", j)
     
-    
-    #for (i = 0, j = polygon.length - 1; i < polygon.length; j = i++):
     for i in range(0, lenPoligono):
-        #print("i = ", i, "j = ", j)
-        
-       # yi = float(polygon[i][0])
-       # xi = float(polygon[i][1])
-
-        #yj = float(polygon[j][0])
-        #xj = float(polygon[j][1])
-
+       
         yi = float(polygon["LAT"][i])
         xi = float(polygon["LONG"][i])
 
         yj = float(polygon["LAT"][j])
         xj = float(polygon["LONG"][j])
 
-
-        #print ("xi yi xj yj = ", xi, yi, xj, yj)
-
         intersect = ((yi > y) != (yj > y)) and (x < (xj - xi) * (y - yi) / (yj - yi) + xi)
 
         if (intersect):
             inside = not inside
         j = i
-        #print("depois j = ", j)
+        
     return inside
 
 @app.route('/concat_AIS_Files', methods=['POST'])
@@ -555,7 +533,7 @@ def concat_AIS_Files():
            k = k + 1
            n = str(k)
            df_ais_aux = pd.read_csv(f)
-           df_ais_aux['insideAOI']  = False  ############novo
+           df_ais_aux['insideAOI']  = False  
            print ("Tam array ais antes exclusao fora do Grid = ",df_ais_aux.shape)
            df_ais_aux = df_ais_aux[(df_ais_aux['LON'] > llon)]
            df_ais_aux = df_ais_aux[(df_ais_aux['LON'] < ulon)]
