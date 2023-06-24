@@ -214,13 +214,20 @@ div.space05 {
                 <label for="clustering">Clustering:</label>
                     <select id="clustering" disabled>
                         <option value="1">None (Density plots only)</option>
-                        <option value="2">DBSCAN (Lat, Long)</option>
-                        <option value="3">DBSCAN (Lat, Long, Speed)</option>
-                        <option value="4">K-Means</option>
-                        <option value="5">Spectral Clustering</option>
-                        <option value="6">K-Means Ensemble</option>
-                        <option value="7">Ensemble Clustering</option>
-
+                        <option value="2">Agglomerative Clustering</option>
+                        <option value="3">BIRCH</option>
+                        <option value="4">DBSCAN (Lat, Long)</option>
+                        <option value="5">DBSCAN (Lat, Long, Speed)</option>
+                        <option value="6">HDBSCAN</option>
+                        <option value="7">K-Means</option>
+                        <option value="8">Mean Shift</option>
+                        <option value="9">Mini-Batch K-Means</option>
+                        <option value="10">Mixture of Gaussians</option>
+                        <option value="11">OPCTICS</option>
+                        <option value="12">Spectral Clustering</option>
+                        <option value="13">K-Means Ensemble</option>
+                        <option value="14">Ensemble Clustering</option>
+                    
                     </select><br>
                     eps/other: <input type="text" id="inputParameter1" disabled value="0.04"  name="parameter1" size="4"/>&nbsp;
                     MinPts/Nr. Clusters: <input type="text" id="inputParameter2" disabled value="18" name="parameter2" size="3"/>&nbsp;

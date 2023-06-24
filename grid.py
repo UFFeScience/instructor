@@ -194,6 +194,12 @@ def ORIGINAL_openFileAndFilterAOI(dados): # ORIGINAL VERSION - NOT USED
 
     print ("Tam array ais depois exclusao fora do Grid = ",ais_df.shape)
 
+    ais_df = ais_df[(ais_df['LON'] <  180)]
+    ais_df = ais_df[(ais_df['LON'] > -180)]
+    ais_df = ais_df[(ais_df['LAT'] <  90)]
+    ais_df = ais_df[(ais_df['LAT'] > -90)]
+
+    print ("Tam array ais depois exclusao valores fora da faixa = ",ais_df.shape)
     #### NOVO 05fev #####################################
     ais_df['insideAOI']  = False  #novo
     print ("shape depois da inclusao da coluna insideAOI ",ais_df.shape)
@@ -307,7 +313,7 @@ def openFileAndFilterAOI(dados): # NEW VERSION
         ais_df.loc[i,"TrajID"] = id_TrajID
         ais_df.loc[i,"GridCell"] = gridCell
         
-    ais_df.to_csv("d:ais_trajID.csv", index=False)
+    #ais_df.to_csv("d:ais_trajID.csv", index=False)
 
     print ("Tam array ais = ",ais_df.shape)
     print(ais_df.head(10))
@@ -539,7 +545,15 @@ def concat_AIS_Files():
            df_ais_aux = df_ais_aux[(df_ais_aux['LON'] < ulon)]
            df_ais_aux = df_ais_aux[(df_ais_aux['LAT'] > llat)]
            df_ais_aux = df_ais_aux[(df_ais_aux['LAT'] < ulat)]
-           
+            ############
+           print ("Tam array ais depois exclusao fora do Grid = ",df_ais_aux.shape) 
+           df_ais_aux = df_ais_aux[(df_ais_aux['LON'] <  180)]
+           df_ais_aux = df_ais_aux[(df_ais_aux['LON'] > -180)]
+           df_ais_aux = df_ais_aux[(df_ais_aux['LAT'] <  90)]
+           df_ais_aux = df_ais_aux[(df_ais_aux['LAT'] > -90)]
+
+           print ("Tam array ais apos exclusao valores fora da faixa = ",df_ais_aux.shape)
+             #########
            df_ais_aux = df_ais_aux.reset_index(drop=True) 
 
            for i in range(0, len(df_ais_aux)):

@@ -2,7 +2,10 @@ import numpy as np
 import pandas as pd
 from scipy.sparse.csgraph import connected_components
 from scipy.spatial.distance import cdist
-from sklearn.cluster import DBSCAN, MiniBatchKMeans, KMeans, SpectralClustering
+from sklearn.cluster import DBSCAN, MiniBatchKMeans, KMeans, SpectralClustering, AgglomerativeClustering, Birch
+from sklearn.cluster import MeanShift, OPTICS
+from sklearn.mixture import GaussianMixture
+import hdbscan
 
 import sklearn.utils
 from sklearn.preprocessing import StandardScaler
@@ -29,46 +32,123 @@ def select_and_applyclustering(ais_Historical_df, id_clusteringType, llon, ulon,
     
     cluster_df['xm'] = xs.tolist() # add column xm
     cluster_df['ym'] = ys.tolist()
+
+    cluster_df_aux = cluster_df[["xm", "ym"]] # novo 24Jun
+    cluster_df_aux = StandardScaler().fit_transform(cluster_df_aux) # novo 24Jun
      
     match id_clusteringType:
-        case 1:
+        # None - already been treated
+        case 1: 
             print("case 1")
-            
-        case 2:  # DBSCAN (LAT, LON)
+        
+        # Agglomerative Clustering
+        # main parameters: 1 - estimate of the number of clusters
+        case 2:  
             print("case 2")
+            AC = AgglomerativeClustering(n_clusters=10)
+            #yhat = AC.fit_predict(cluster_df_aux)
+            #clusters = unique(yhat)
+            labels = AC.fit_predict(cluster_df_aux)
+            print ("AC clusters = ", labels)
+        
+
+        # BIRCH
+        # main parameters: 1- threshold; 2 - n_clusters 
+        case 3:  
+            print("case 3")
+            B = Birch(threshold=0.01, n_clusters=10)
+            B.fit(cluster_df_aux)
+            labels = B.predict(cluster_df_aux)
+            
+        # DBSCAN (LAT, LON)
+        # main parameters: 1 - eps; 2 - min_samples
+        case 4: 
+            print("case 4")
             cluster_df_aux = cluster_df[["xm", "ym"]]
             cluster_df_aux = StandardScaler().fit_transform(cluster_df_aux)
             db = DBSCAN(eps = paramater1, min_samples = parameter2).fit(cluster_df_aux)
             labels = db.labels_
 
-        case 3:  # DBSCAN (LAT, LON, SPEED)
-            print("case 3")
+        # DBSCAN (LAT, LON, SPEED)
+        # main parameters: 1 - eps; 2 - min_samples
+        case 5:  
+            print("case 5")
             cluster_df_aux = cluster_df[["xm", "ym", "SOG"]]
             cluster_df_aux = StandardScaler().fit_transform(cluster_df_aux)
             db = DBSCAN(eps = paramater1, min_samples = parameter2).fit(cluster_df_aux)
             labels = db.labels_
 
-        case 4:  # KMeans
-            print("case 4")
+        # HDBSCAN
+        # main parameters: ???
+        #HDBSCAN(algorithm='best', alpha=1.0, approx_min_span_tree=True,
+        #         gen_min_span_tree=False, leaf_size=40, memory=Memory(cachedir=None),
+        #         metric='euclidean', min_cluster_size=5, min_samples=None, p=None)
+        case 6:  
+            print("case 6")
+            HDB = hdbscan.HDBSCAN(cluster_selection_epsilon = 0.04, min_cluster_size=50, min_samples=30)
+            HDB.fit(cluster_df_aux)
+            labels = HDB.labels_
+
+        # KMeans
+        # main parameters: 1- n_clusters 
+        case 7: 
+            print("case 7")
             cluster_df_aux = cluster_df[["xm", "ym"]]
             cluster_df_aux = StandardScaler().fit_transform(cluster_df_aux) #novo 30Mai
             nr_clusters = parameter2
             clusterKmeans = KMeans(n_clusters= nr_clusters).fit_predict(cluster_df_aux)
             labels = clusterKmeans
+
+        # Mean Shift
+        # main parameters: 1 - bandwidth
+        case 8:  
+            print("case 8")
+            MS = MeanShift()
+            labels = MS.fit_predict(cluster_df_aux)
+
+        # Mini-Batch K-Means
+        # main parameters: 1 - n_clusters 
+        case 9:  
+            print("case 9")
+            MBK = MiniBatchKMeans(n_clusters=18)
+            MBK.fit(cluster_df_aux)
+            labels = MBK.predict(cluster_df_aux)
+
+        # Mixture of Gaussians
+        # main parameters: 1 - n_clusters
+        case 10: 
+            print("case 10")
+            GM = GaussianMixture(n_components=10)
+            GM.fit(cluster_df_aux)
+            labels = GM.predict(cluster_df_aux)
+
+        # OPTICS
+        # main parameters: 1 - eps; 2 - min_samples
+        case 11:  
+            print("case 11")
+            O = OPTICS(eps=0.04, min_samples=18)
+            labels = O.fit_predict(cluster_df_aux)
         
-        case 5:  # Spectral Clustering
+        # Spectral Clustering
+        # main parameters: 1 - n_clusters
+        case 12:  
             cluster_df_aux = cluster_df[["xm", "ym"]]
             cluster_df_aux = StandardScaler().fit_transform(cluster_df_aux) # novo 30Mai
             nr_clusters = parameter2
-            spectral = SpectralClustering(n_clusters= nr_clusters, assign_labels='cluster_qr').fit_predict(cluster_df_aux)
-            labels = spectral
+            try:
+                spectral = SpectralClustering(n_clusters= nr_clusters, assign_labels='cluster_qr').fit_predict(cluster_df_aux)
+                labels = spectral
+            except:
+                print("Error execution Spectral Clustering")
         
-        case 6:  # KMeans Ensemble
-            print("case 6")
+        # KMeans Ensemble
+        # main parameters: 1 - Number_Kmeans; 2 - Min_Probability; 3 - n_clusters
+        case 13:  
+            print("case 13")
             cluster_df_aux = cluster_df[["xm", "ym"]]
             cluster_df_aux = StandardScaler().fit_transform(cluster_df_aux) #novo 30Mai
-            Number_Kmeans = 50
-            Min_Probability = 0.9# paramater1
+            Number_Kmeans = 10
+            Min_Probability = 0.6# paramater1
             nr_clusters =  parameter2
 
             # Generating base models
@@ -89,17 +169,19 @@ def select_and_applyclustering(ais_Historical_df, id_clusteringType, llon, ulon,
             # similar to DBSCAN
             graph = (norm_sim_matrix>Min_Probability).astype(int)
 
-            # Extractin the connected components
+            # Extract the connected components
             n_clusters_ensemble, y_ensemble = connected_components( graph, directed=False, return_labels=True )
             
             print ("********* Nr of clusters final = ", n_clusters_ensemble)
             labels = y_ensemble
 
-        case 7:  # Ensemble Clusters
-            print("case 7")
+        # Ensemble Clusters
+        # main parameters: 1 - Number_Kmeans; 2 - n_clusters
+        case 14:  
+            print("case 14")
             cluster_df_aux = cluster_df[["xm", "ym"]]
             cluster_df_aux = StandardScaler().fit_transform(cluster_df_aux) #novo 30Mai
-            Number_Kmeans = 50
+            Number_Kmeans = 10
             #Min_Probability = 0.9# paramater1
             nr_clusters =  parameter2
             
