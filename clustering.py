@@ -15,7 +15,7 @@ from mpl_toolkits.basemap import Basemap
 import random
 
 
-def select_and_applyclustering(ais_Historical_df, id_clusteringType, llon, ulon, llat, ulat, paramater1, parameter2):
+def select_and_applyclustering(ais_Historical_df, id_clusteringType, llon, ulon, llat, ulat, parameter1, parameter2, parameter3):
 
     global db 
     global labels 
@@ -45,7 +45,7 @@ def select_and_applyclustering(ais_Historical_df, id_clusteringType, llon, ulon,
         # main parameters: 1 - estimate of the number of clusters
         case 2:  
             print("case 2")
-            AC = AgglomerativeClustering(n_clusters=10)
+            AC = AgglomerativeClustering(n_clusters=parameter1)
             #yhat = AC.fit_predict(cluster_df_aux)
             #clusters = unique(yhat)
             labels = AC.fit_predict(cluster_df_aux)
@@ -56,7 +56,7 @@ def select_and_applyclustering(ais_Historical_df, id_clusteringType, llon, ulon,
         # main parameters: 1- threshold; 2 - n_clusters 
         case 3:  
             print("case 3")
-            B = Birch(threshold=0.01, n_clusters=10)
+            B = Birch(threshold=parameter1, n_clusters=parameter2)
             B.fit(cluster_df_aux)
             labels = B.predict(cluster_df_aux)
             
@@ -64,18 +64,18 @@ def select_and_applyclustering(ais_Historical_df, id_clusteringType, llon, ulon,
         # main parameters: 1 - eps; 2 - min_samples
         case 4: 
             print("case 4")
-            cluster_df_aux = cluster_df[["xm", "ym"]]
-            cluster_df_aux = StandardScaler().fit_transform(cluster_df_aux)
-            db = DBSCAN(eps = paramater1, min_samples = parameter2).fit(cluster_df_aux)
+            #cluster_df_aux = cluster_df[["xm", "ym"]]
+            #cluster_df_aux = StandardScaler().fit_transform(cluster_df_aux)
+            db = DBSCAN(eps = parameter1, min_samples = parameter2).fit(cluster_df_aux)
             labels = db.labels_
 
         # DBSCAN (LAT, LON, SPEED)
         # main parameters: 1 - eps; 2 - min_samples
         case 5:  
             print("case 5")
-            cluster_df_aux = cluster_df[["xm", "ym", "SOG"]]
-            cluster_df_aux = StandardScaler().fit_transform(cluster_df_aux)
-            db = DBSCAN(eps = paramater1, min_samples = parameter2).fit(cluster_df_aux)
+            #cluster_df_aux = cluster_df[["xm", "ym", "SOG"]]
+            #cluster_df_aux = StandardScaler().fit_transform(cluster_df_aux)
+            db = DBSCAN(eps = parameter1, min_samples = parameter2).fit(cluster_df_aux)
             labels = db.labels_
 
         # HDBSCAN
@@ -85,7 +85,7 @@ def select_and_applyclustering(ais_Historical_df, id_clusteringType, llon, ulon,
         #         metric='euclidean', min_cluster_size=5, min_samples=None, p=None)
         case 6:  
             print("case 6")
-            HDB = hdbscan.HDBSCAN(cluster_selection_epsilon = 0.04, min_cluster_size=50, min_samples=30)
+            HDB = hdbscan.HDBSCAN(cluster_selection_epsilon = parameter1, min_samples=parameter2, min_cluster_size=parameter3)
             HDB.fit(cluster_df_aux)
             labels = HDB.labels_
 
@@ -95,7 +95,7 @@ def select_and_applyclustering(ais_Historical_df, id_clusteringType, llon, ulon,
             print("case 7")
             cluster_df_aux = cluster_df[["xm", "ym"]]
             cluster_df_aux = StandardScaler().fit_transform(cluster_df_aux) #novo 30Mai
-            nr_clusters = parameter2
+            nr_clusters = parameter1
             clusterKmeans = KMeans(n_clusters= nr_clusters).fit_predict(cluster_df_aux)
             labels = clusterKmeans
 
@@ -110,7 +110,7 @@ def select_and_applyclustering(ais_Historical_df, id_clusteringType, llon, ulon,
         # main parameters: 1 - n_clusters 
         case 9:  
             print("case 9")
-            MBK = MiniBatchKMeans(n_clusters=18)
+            MBK = MiniBatchKMeans(n_clusters=parameter1)
             MBK.fit(cluster_df_aux)
             labels = MBK.predict(cluster_df_aux)
 
@@ -118,7 +118,7 @@ def select_and_applyclustering(ais_Historical_df, id_clusteringType, llon, ulon,
         # main parameters: 1 - n_clusters
         case 10: 
             print("case 10")
-            GM = GaussianMixture(n_components=10)
+            GM = GaussianMixture(n_components=parameter1)
             GM.fit(cluster_df_aux)
             labels = GM.predict(cluster_df_aux)
 
@@ -126,7 +126,7 @@ def select_and_applyclustering(ais_Historical_df, id_clusteringType, llon, ulon,
         # main parameters: 1 - eps; 2 - min_samples
         case 11:  
             print("case 11")
-            O = OPTICS(eps=0.04, min_samples=18)
+            O = OPTICS(eps=parameter1, min_samples=parameter2)
             labels = O.fit_predict(cluster_df_aux)
         
         # Spectral Clustering
@@ -134,7 +134,7 @@ def select_and_applyclustering(ais_Historical_df, id_clusteringType, llon, ulon,
         case 12:  
             cluster_df_aux = cluster_df[["xm", "ym"]]
             cluster_df_aux = StandardScaler().fit_transform(cluster_df_aux) # novo 30Mai
-            nr_clusters = parameter2
+            nr_clusters = parameter1
             try:
                 spectral = SpectralClustering(n_clusters= nr_clusters, assign_labels='cluster_qr').fit_predict(cluster_df_aux)
                 labels = spectral
@@ -147,9 +147,9 @@ def select_and_applyclustering(ais_Historical_df, id_clusteringType, llon, ulon,
             print("case 13")
             cluster_df_aux = cluster_df[["xm", "ym"]]
             cluster_df_aux = StandardScaler().fit_transform(cluster_df_aux) #novo 30Mai
-            Number_Kmeans = 10
-            Min_Probability = 0.6# paramater1
-            nr_clusters =  parameter2
+            Number_Kmeans = parameter1
+            Min_Probability = parameter2
+            nr_clusters =  parameter3
 
             # Generating base models
             clustering_models = Number_Kmeans*[
@@ -181,7 +181,7 @@ def select_and_applyclustering(ais_Historical_df, id_clusteringType, llon, ulon,
             print("case 14")
             cluster_df_aux = cluster_df[["xm", "ym"]]
             cluster_df_aux = StandardScaler().fit_transform(cluster_df_aux) #novo 30Mai
-            Number_Kmeans = 10
+            Number_Kmeans = parameter1
             #Min_Probability = 0.9# paramater1
             nr_clusters =  parameter2
             

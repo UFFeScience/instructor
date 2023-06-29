@@ -212,7 +212,7 @@ div.space05 {
                 <br>
 
                 <label for="clustering">Clustering:</label>
-                    <select id="clustering" disabled>
+                    <select id="clustering" disabled onchange="GetSelectedClusteringValue(this)">
                         <option value="1">None (Density plots only)</option>
                         <option value="2">Agglomerative Clustering</option>
                         <option value="3">BIRCH</option>
@@ -223,16 +223,52 @@ div.space05 {
                         <option value="8">Mean Shift</option>
                         <option value="9">Mini-Batch K-Means</option>
                         <option value="10">Mixture of Gaussians</option>
-                        <option value="11">OPCTICS</option>
+                        <option value="11">OPTICS</option>
                         <option value="12">Spectral Clustering</option>
                         <option value="13">K-Means Ensemble</option>
                         <option value="14">Ensemble Clustering</option>
                     
-                    </select><br>
-                    eps/other: <input type="text" id="inputParameter1" disabled value="0.04"  name="parameter1" size="4"/>&nbsp;
-                    MinPts/Nr. Clusters: <input type="text" id="inputParameter2" disabled value="18" name="parameter2" size="3"/>&nbsp;
-                    <button type="button" id="btnApply" onclick="applyClustering();" disabled>Apply </button>
-                    <br>
+                    </select>
+                    Parameters:
+                    <label for="checkBox_Auto"></label> 
+                    <input type="checkbox" id="checkBox_Auto" onclick="checkBox_Auto_Function()">
+                    suggested<br>
+                    <fieldset id="parametersPanel" class="visible">  <!-- style="width:265px" -->
+                      <legend>Parameters</legend>    
+                        <label id="lbl_inputParameter1">-- No parameters --</label>
+                        <input type="text" id="inputParameter1" disabled value="0" class="not-visible" name="parameter1" size="3"/>&nbsp;
+                      
+                        <label id="lbl_inputParameter2"></label>
+                        <input type="text" id="inputParameter2" disabled value="0" class="not-visible" name="parameter2" size="3"/>&nbsp;
+                      
+                        <label id="lbl_inputParameter3"></label>
+                        <input type="text" id="inputParameter3" disabled value="0" class="not-visible" name="parameter3" size="3"/>&nbsp;
+                      
+                        <button type="button" id="btnApply" onclick="applyClustering();" disabled>Apply </button>
+                        
+                    
+                    </fieldset>  
+                    <!--
+                    eps:
+                    <input type="text" id="inputParameter1" disabled value="0.04"  name="parameter1" size="3"/>&nbsp;
+                    Min_Samples:
+                    <input type="text" id="inputParameter2" disabled value="18" name="parameter2" size="3"/>&nbsp;
+                    Nr_Clusters:
+                    <input type="text" id="inputParameter3" disabled  placeholder="nr clusters (e.g. 20)" name="parameter3" size="3"/>&nbsp;
+                    Threshold:
+                    <input type="text" id="inputParameter4" disabled value="18" name="parameter4" size="3"/>&nbsp;
+                    
+                    Bandwith:
+                    <input type="text" id="inputParameter5" disabled value="18" name="parameter5" size="3"/>&nbsp;
+                    Min_Probability:
+                    <input type="text" id="inputParameter6" disabled value="18" name="parameter6" size="3"/>&nbsp;
+                    Min_Cluster_Size:
+                    <input type="text" id="inputParameter7" disabled value="18" name="parameter7" size="3"/>&nbsp;
+                    Nr_KMeans:
+                    <input type="text" id="inputParameter8" disabled class="not-visible" value="18" name="parameter8" size="3"/>&nbsp;
+                    -->
+                    
+                   
               </div>
             </div>
         </fieldset>
@@ -264,7 +300,8 @@ div.space05 {
             <!-- alt-->
             <div class="row">
               <div class="leftPanel">
-                <fieldset id="classificationPanel" style="width:265px" disabled class="visible">
+                
+                <fieldset id="classificationPanel" disabled class="visible">  <!-- style="width:265px" -->
                   <legend>Classification</legend>     
                           <input type="radio" id="btnSelectNormal" name="btnRadioNormal" value="normal" checked />
                           <label for="btnSelectNormal">Normal</label>
@@ -284,10 +321,12 @@ div.space05 {
                           
                 </fieldset>
               </div>
+              <!--
               <div class="rightPanel">
                 <br><br>
                 <button type="button" id="btnFinish" onclick="finishTrajectoryAnalysis();" style="background-color: rgb(141, 163, 236);"disabled>Finish</button>
               </div>
+              -->
             </div>  
         </fieldset>  
       </div>  
@@ -417,6 +456,153 @@ div.space05 {
   exibeAboutPage();
   
     //////////////////////////////////// FUNCTIONS ////////////////////////////////
+
+  function GetSelectedClusteringValue(clustering) {
+    var selText = clustering.options[clustering.selectedIndex].innerHTML;
+    var selIndex = clustering.value;
+    //alert("Selected Text: " + selText + " Value: " + selIndex);
+    //var labelParameter1 = document.getElementById("lbl_inputParameter1");
+    //var labelParameter2 = document.getElementById("lbl_inputParameter2");
+    //var labelParameter3 = document.getElementById("lbl_inputParameter3");
+
+    //var inputParam1 = document.getElementById("inputParameter1");
+    //var inputParam2 = document.getElementById("inputParameter2");
+    //var inputParam3 = document.getElementById("inputParameter3");
+    
+    var labelParam1 = ""
+    var labelParam2 = ""
+    var labelParam3 = ""
+    
+    switch(selIndex) {
+      case "1":  // None (Density plots only)
+        //labelParam1 = "-- No parameters --";
+        show_Parameters_labels_inputs(false, false, false, "", 0, "", 0, "", 0 )
+        break;
+
+      case "2": // Agglomerative Clustering
+        labelParam1 = "n_clusters:";
+        show_Parameters_labels_inputs(true, false, false, labelParam1, 18, "", 0, "", 0)
+        break;
+
+      case "3": //BIRCH
+        labelParam1 = "Threshold:";
+        labelParam2 = "n_clusters:";
+        show_Parameters_labels_inputs(true, true, false, labelParam1, 0.1, labelParam2, 18, "", 0)
+        break;
+
+      case "4": // DBSCAN LAT, LON
+      case "5": // DBSCAN LAT, LON, SPEED
+        labelParam1 = "eps:";
+        labelParam2 = "Min Pts:";
+        show_Parameters_labels_inputs(true, true, false, labelParam1, 0.04, labelParam2, 18, "", 0)
+        break;
+
+      case "6": //HDBSCAN
+        labelParam1 = "eps:";
+        labelParam2 = "min_samples:";
+        labelParam3 = "min_cluster_size:";
+        show_Parameters_labels_inputs(true, true, true, labelParam1, 0.04, labelParam2, 18, labelParam3, 20)
+        break;
+
+      case "7":  // K-Means
+        labelParam1 = "n_clusters:";
+        show_Parameters_labels_inputs(true, false, false, labelParam1, 18, "", 0, "", 0)
+        break;
+
+      case "8": // Mean Shift
+        labelParam1 = "Bandwidth:";
+        show_Parameters_labels_inputs(true, false, false, labelParam1, 1, "", 0, "", 0)
+        break;
+
+      case "9": // Mini-Batch K-Means
+        labelParam1 = "n_clusters:";
+        show_Parameters_labels_inputs(true, false, false, labelParam1, 18, "", 0, "", 0)
+        break;
+
+      case "10": //Mixture of Gaussians
+        labelParam1 = "n_clusters:";
+        show_Parameters_labels_inputs(true, false, false, labelParam1, 18, "", 0, "", 0)
+        break;
+
+      case "11": // OPTICS
+        labelParam1 = "eps:";
+        labelParam2 = "min_samples:";
+        show_Parameters_labels_inputs(true, true, false, labelParam1, 0.04, labelParam2, 18, "", 0)
+        break;
+
+      case "12": // Spectral Clustering
+        labelParam1 = "n_clusters:";
+        show_Parameters_labels_inputs(true, false, false, labelParam1, 18, "", 0, "", 0)
+        break;
+
+      case "13": //KMeans Ensemble
+        labelParam1 = "n_Kmeans:";
+        labelParam2 = "Min_Probability:";
+        labelParam3 = "n_clusters:";
+        show_Parameters_labels_inputs(true, true, true, labelParam1, 16, labelParam2, 0.6, labelParam3, 18)
+        break;
+
+      case "14": // Ensemble Clusters
+        labelParam1 = "n_Kmeans:";
+        labelParam2 = "n_clusters:";
+        show_Parameters_labels_inputs(true, true, false, labelParam1, 16, labelParam2, 18, "", 0)
+        break;
+      
+      default:
+        // code block
+    } 
+
+  }
+
+  function show_Parameters_labels_inputs(p1, p2, p3, label_P1, value_P1, label_P2, value_P2, label_P3, value_P3){
+    
+    var labelParameter1 = document.getElementById("lbl_inputParameter1");
+    var labelParameter2 = document.getElementById("lbl_inputParameter2");
+    var labelParameter3 = document.getElementById("lbl_inputParameter3");
+
+    var value_inputParameter1 = $('#inputParameter1');
+    var value_inputParameter2 = $('#inputParameter2');
+    var value_inputParameter3 = $('#inputParameter3');
+
+    //value_inputParameter1.val(value_P1);
+    //value_inputParameter1.val(value_P2);
+    //value_inputParameter1.val(value_P3);
+
+    if (p3){
+      labelParameter3.innerHTML = label_P3;
+      $("#inputParameter3").removeClass("not-visible");
+      $("#inputParameter3").addClass("visible");
+      value_inputParameter3.val(value_P3);
+
+    } else{
+      labelParameter3.innerHTML = "";
+      $("#inputParameter3").removeClass("visible");
+      $("#inputParameter3").addClass("not-visible");
+    }
+    if (p2){
+      labelParameter2.innerHTML = label_P2;
+      $("#inputParameter2").removeClass("not-visible");
+      $("#inputParameter2").addClass("visible");
+      value_inputParameter2.val(value_P2);
+    } else{
+      labelParameter2.innerHTML = "";
+      $("#inputParameter2").removeClass("visible");
+      $("#inputParameter2").addClass("not-visible");
+    }
+    if (p1){
+      labelParameter1.innerHTML = label_P1
+      $("#inputParameter1").removeClass("not-visible");
+      $("#inputParameter1").addClass("visible");
+      value_inputParameter1.val(value_P1);
+    } else{
+      labelParameter1.innerHTML = "";
+      $("#inputParameter1").removeClass("visible");
+      $("#inputParameter1").addClass("not-visible");
+    }
+    if (!(p1 || p2 || p3)){
+      labelParameter1.innerHTML = "-- No parameters --"
+    }
+  }
 
   function newMarker(e){
     //var new_mark = L.marker().setLatLng(e.latlng).addTo(mapa);
@@ -871,6 +1057,8 @@ div.space05 {
       btn.disabled = false;
       btn = document.getElementById("inputParameter2");
       btn.disabled = false;
+      btn = document.getElementById("inputParameter3"); // novo 25Jun23
+      btn.disabled = false;
 
       btn = document.getElementById("btnApply");
       btn.disabled = false;
@@ -932,7 +1120,8 @@ div.space05 {
     
     var param1 = document.getElementById("inputParameter1").value;
     var param2 = document.getElementById("inputParameter2").value;
-    var dados = JSON.stringify([idClustering, latInfGrid, latSupGrid, lonInfGrid, lonSupGrid, param1, param2]);
+    var param3 = document.getElementById("inputParameter3").value; // novo 25Jun
+    var dados = JSON.stringify([idClustering, latInfGrid, latSupGrid, lonInfGrid, lonSupGrid, param1, param2, param3]);
     
     console.log("front variável dados = ", dados);
     console.log("Clustering = ", idClustering);
@@ -1380,6 +1569,15 @@ div.space05 {
       }
     });
   }
+  function checkBox_Auto_Function() {
+  var checkBox = document.getElementById("checkBox_Auto");
+  //var text = document.getElementById("text");
+  if (checkBox.checked == true){
+    //text.style.display = "block";
+  } else {
+     //text.style.display = "none";
+  }
+}
 
 </script>
 

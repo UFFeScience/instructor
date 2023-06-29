@@ -118,9 +118,10 @@ def applyClustering():
        ulon= data[4]
        parameter1 = float(data[5]) # eps
        parameter2 = int(data[6]) #minPts
+       parameter3 = int(data[7]) #
 
        ais_clustered_df, clusterTable_df = clt.select_and_applyclustering(global_Historical_AIS_df, id_clustering, 
-                                                                    llon, ulon, llat, ulat, parameter1, parameter2)
+                                                                    llon, ulon, llat, ulat, parameter1, parameter2, parameter3)
        
        global_df_Cluster = ais_clustered_df.copy() 
        global_df_Cluster = global_df_Cluster.reset_index(drop=True) 
