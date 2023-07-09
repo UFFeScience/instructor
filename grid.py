@@ -1,7 +1,7 @@
 import json
 import flask
 from flask import Flask, Response, render_template, request, redirect, url_for, jsonify,send_from_directory,send_file
-#from flask_cors import CORS, cross_origin 
+from flask_cors import CORS, cross_origin 
 
 import pandas as pd
 import tkinter as tk
@@ -15,7 +15,7 @@ import sys #
 import clustering as clt
 
 app = Flask(__name__)
-#CORS(app) # novo 09Jul23
+CORS(app) # novo 09Jul23
 
 @app.route('/') 
 def homepage():
