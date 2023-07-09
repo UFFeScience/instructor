@@ -10,6 +10,7 @@ import os
 import shutil
 import io
 import numpy as np
+import sys #
 
 import clustering as clt
 
@@ -18,8 +19,9 @@ CORS(app) # novo 09Jul23
 
 @app.route('/') 
 def homepage():
-
+    print(sys.path) #
     return render_template("mapaW3-v6-Alt4.html")
+
 
 @app.route('/create_file', methods=['POST']) # Not used
 def create_file():
