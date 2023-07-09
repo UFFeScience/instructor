@@ -14,6 +14,7 @@ import numpy as np
 import clustering as clt
 
 app = Flask(__name__)
+CORS(app) # novo 09Jul23
 
 @app.route('/') 
 def homepage():
