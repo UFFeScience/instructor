@@ -198,7 +198,7 @@ div.space05 {
     </div>
   </div>
   <div class="rightcolumn">
-    <div class="card" id="cardSuperior" style="width: 100.0%; height:300px;">
+    <div class="card" id="cardSuperior" style="width: 100.0%; height:345px;">
       
       <div id="aisData">
         <fieldset id="aisDataPanel" class="visible">
@@ -229,46 +229,26 @@ div.space05 {
                         <option value="14">Ensemble Clustering</option>
                     
                     </select>
+                    <!--
                     Parameters:
                     <label for="checkBox_Auto"></label> 
                     <input type="checkbox" id="checkBox_Auto" onclick="checkBox_Auto_Function()">
                     suggested<br>
+                    -->
                     <fieldset id="parametersPanel" class="visible">  <!-- style="width:265px" -->
                       <legend>Parameters</legend>    
                         <label id="lbl_inputParameter1">-- No parameters --</label>
-                        <input type="text" id="inputParameter1" disabled value="0" class="not-visible" name="parameter1" size="3"/>&nbsp;
+                        <input type="text" id="inputParameter1" disabled value="0" class="not-visible" name="parameter1" size="2"/>&nbsp;
                       
                         <label id="lbl_inputParameter2"></label>
-                        <input type="text" id="inputParameter2" disabled value="0" class="not-visible" name="parameter2" size="3"/>&nbsp;
+                        <input type="text" id="inputParameter2" disabled value="0" class="not-visible" name="parameter2" size="2"/>&nbsp;
                       
                         <label id="lbl_inputParameter3"></label>
-                        <input type="text" id="inputParameter3" disabled value="0" class="not-visible" name="parameter3" size="3"/>&nbsp;
+                        <input type="text" id="inputParameter3" disabled value="0" class="not-visible" name="parameter3" size="2"/>&nbsp;
                       
-                        <button type="button" id="btnApply" onclick="applyClustering();" disabled>Apply </button>
-                        
-                    
+                        <button type="button" id="btnApply" onclick="applyClustering();" disabled>Apply</button>
+                                   
                     </fieldset>  
-                    <!--
-                    eps:
-                    <input type="text" id="inputParameter1" disabled value="0.04"  name="parameter1" size="3"/>&nbsp;
-                    Min_Samples:
-                    <input type="text" id="inputParameter2" disabled value="18" name="parameter2" size="3"/>&nbsp;
-                    Nr_Clusters:
-                    <input type="text" id="inputParameter3" disabled  placeholder="nr clusters (e.g. 20)" name="parameter3" size="3"/>&nbsp;
-                    Threshold:
-                    <input type="text" id="inputParameter4" disabled value="18" name="parameter4" size="3"/>&nbsp;
-                    
-                    Bandwith:
-                    <input type="text" id="inputParameter5" disabled value="18" name="parameter5" size="3"/>&nbsp;
-                    Min_Probability:
-                    <input type="text" id="inputParameter6" disabled value="18" name="parameter6" size="3"/>&nbsp;
-                    Min_Cluster_Size:
-                    <input type="text" id="inputParameter7" disabled value="18" name="parameter7" size="3"/>&nbsp;
-                    Nr_KMeans:
-                    <input type="text" id="inputParameter8" disabled class="not-visible" value="18" name="parameter8" size="3"/>&nbsp;
-                    -->
-                    
-                   
               </div>
             </div>
         </fieldset>
@@ -334,7 +314,7 @@ div.space05 {
     </div>
 
     <div class="card" id="cardInferior" >
-      <div id="aisPlotPanel" style="width: 100.0%; height:410px;" class="visible">
+      <div id="aisPlotPanel" style="width: 100.0%; height:350px;" class="visible">
       </div>
       
       <div id="AISpointGridPanel" class="not-visible"> 
@@ -353,7 +333,7 @@ div.space05 {
       <div id="windRosePanel" class="not-visible">
         <div class="row">
           <div class="leftSubColumn">
-            <div id="vesselsSpeed" style="width: 100.0%; height:370px;">
+            <div id="vesselsSpeed" style="width: 100.0%; height:330px;">
             </div>
           </div>
           <div class="rightSubColumn"> 
@@ -460,15 +440,7 @@ div.space05 {
   function GetSelectedClusteringValue(clustering) {
     var selText = clustering.options[clustering.selectedIndex].innerHTML;
     var selIndex = clustering.value;
-    //alert("Selected Text: " + selText + " Value: " + selIndex);
-    //var labelParameter1 = document.getElementById("lbl_inputParameter1");
-    //var labelParameter2 = document.getElementById("lbl_inputParameter2");
-    //var labelParameter3 = document.getElementById("lbl_inputParameter3");
-
-    //var inputParam1 = document.getElementById("inputParameter1");
-    //var inputParam2 = document.getElementById("inputParameter2");
-    //var inputParam3 = document.getElementById("inputParameter3");
-    
+        
     var labelParam1 = ""
     var labelParam2 = ""
     var labelParam3 = ""
@@ -563,10 +535,6 @@ div.space05 {
     var value_inputParameter1 = $('#inputParameter1');
     var value_inputParameter2 = $('#inputParameter2');
     var value_inputParameter3 = $('#inputParameter3');
-
-    //value_inputParameter1.val(value_P1);
-    //value_inputParameter1.val(value_P2);
-    //value_inputParameter1.val(value_P3);
 
     if (p3){
       labelParameter3.innerHTML = label_P3;
@@ -1101,8 +1069,8 @@ div.space05 {
    
     var btn = document.getElementById("classificationPanel");
     btn.disabled = false;
-    btn = document.getElementById("btnFinish");
-    btn.disabled = false;
+    //btn = document.getElementById("btnFinish"); novo 29Jun
+    //btn.disabled = false;
     
     $("#aisPlotPanel").removeClass("visible");
     $("#aisPlotPanel").addClass("not-visible");
@@ -1135,6 +1103,7 @@ div.space05 {
     //seleciona o clustering
     if (idClustering == 1){
       applyNoneClustering(len);
+      fechaAlertMsg(); // novo 4Jul
     } else {
       $.ajax({
         url: "{{ url_for('applyClustering') }}",
@@ -1242,8 +1211,9 @@ div.space05 {
     }
     console.log("tamanho do aisAOI-trajSelected = ", aisAOI_trajSelected.length);
     console.log("aisAOI_trajSelected conteudo = ", aisAOI_trajSelected);
-    plotSelectedTrajectory();
+    //plotSelectedTrajectory();  // novo 29Jun
     classificationWindow();
+    plotSelectedTrajectory(); // novo 29Jun
     trajectoryPointIndex = 0
     drawGridCell(trajectoryPointIndex); // show the first AIS point of the trajectory
     displayMapLegend(); 
@@ -1552,7 +1522,9 @@ div.space05 {
       alert("It must have a Grid created.");
       return;
     }
-    
+    jQuery.ajaxSetup({async:false}); // novo 04Jul
+    exibeAlertMsg(); // novo 04Jul
+
     var dados = JSON.stringify([latInfGrid, latSupGrid, lonInfGrid, lonSupGrid,
                                 polygon_CSV, larguraCelula, alturaCelula, qtdeCel_X]);
     console.log("front variável dados = ", dados);
@@ -1568,6 +1540,8 @@ div.space05 {
         alert("error AIS Files concatenation");
       }
     });
+    jQuery.ajaxSetup({async:true}); // novo 04jul
+    fechaAlertMsg(); // novo 4Jul
   }
   function checkBox_Auto_Function() {
   var checkBox = document.getElementById("checkBox_Auto");

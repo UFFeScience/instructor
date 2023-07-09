@@ -118,7 +118,7 @@ def select_and_applyclustering(ais_Historical_df, id_clusteringType, llon, ulon,
         # main parameters: 1 - n_clusters
         case 10: 
             print("case 10")
-            GM = GaussianMixture(n_components=parameter1)
+            GM = GaussianMixture(n_components=int(parameter1))
             GM.fit(cluster_df_aux)
             labels = GM.predict(cluster_df_aux)
 

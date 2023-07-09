@@ -163,7 +163,7 @@ def gridCellsData_for_RoseWind(dadosAIS):
     ais_df_gridCells = ais_df_gridCells.drop_duplicates()
     print ("tam ais_df_gridCells depois de eliminar duplicatas = ", len(ais_df_gridCells))
     print (ais_df_gridCells.head(20))
-    ais_df_gridCells.to_csv("d:ais_df_gridCells.csv", index=False)
+    #ais_df_gridCells.to_csv("d:ais_df_gridCells.csv", index=False) #novo 09jul23
 
     return ais_df_gridCells
 
@@ -234,7 +234,7 @@ def ORIGINAL_openFileAndFilterAOI(dados): # ORIGINAL VERSION - NOT USED
     vCourse = 0
 
     #########
-    ais_df.to_csv("d:ais_orig.csv", index=False)
+    #ais_df.to_csv("d:ais_orig.csv", index=False) # novo 09Jul23
     MMSI_previous = ais_df["MMSI"][0]
     id_TrajID = 1 
     
@@ -261,7 +261,7 @@ def ORIGINAL_openFileAndFilterAOI(dados): # ORIGINAL VERSION - NOT USED
         ais_df.loc[i,"TrajID"] = id_TrajID
         ais_df.loc[i,"GridCell"] = gridCell
         
-    ais_df.to_csv("d:ais_trajID.csv", index=False)
+    #ais_df.to_csv("d:ais_trajID.csv", index=False) # novo 09Jul23
 
     print ("Tam array ais depois = ",ais_df.shape)
     print(ais_df.head(10))
@@ -290,7 +290,7 @@ def openFileAndFilterAOI(dados): # NEW VERSION
     vSpeed = 0
     vCourse = 0
 
-    ais_df.to_csv("d:ais_orig.csv", index=False)
+    #ais_df.to_csv("d:ais_orig.csv", index=False) # novo 09Jul23
     MMSI_previous = ais_df["MMSI"][0]
     id_TrajID = 1 
     
@@ -570,7 +570,7 @@ def concat_AIS_Files():
     
            print ("Tam array df_ais_aux deletando pontos fora da AOI = ", df_ais_aux.shape)  
                       
-           df_ais_aux.to_csv('d:\df' + n + '.csv', index=False, encoding='utf-8-sig')
+           #df_ais_aux.to_csv('d:\df' + n + '.csv', index=False, encoding='utf-8-sig') # novo 09Jul23
            
            df_combined_csv = pd.concat([df_combined_csv, df_ais_aux])
 
