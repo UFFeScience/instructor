@@ -4,8 +4,8 @@ from flask import Flask, Response, render_template, request, redirect, url_for, 
 from flask_cors import CORS, cross_origin 
 
 import pandas as pd
-import tkinter as tk
-from tkinter import filedialog as fd
+#import tkinter as tk
+#from tkinter import filedialog as fd
 import os
 import shutil
 import io
@@ -42,9 +42,11 @@ def loadFileAOI():
     
     locations_df = pd.read_csv(nameFile)    
     locations_dfBuffer = locations_df.copy() 
+    print("Loaded locations from file = ", locations_df) ## novo 11jul23
     locations_df_json = locations_df.to_json(orient='values')
     
     resposta = jsonify(locations_df_json)
+    print("Locations from variavel jsonify = ", resposta) ## novo 11jul
     resposta.headers.add("Access-Control-Allow-Origin", "*")
     return resposta
 
@@ -324,41 +326,41 @@ def openFileAndFilterAOI(dados): # NEW VERSION
     
     return ais_df, id_TrajID
 
-def selectNameDir():
+def selectNameDir(): #######################################
     dirPath = ""
-    root = tk.Tk()
-    root.geometry("500x400") # not working
-    root.wm_attributes('-topmost', 1)   
-    root.lift()     # to work with others OS which are not windows
-    root.withdraw()
+    #root = tk.Tk()
+    #root.geometry("500x400") # not working
+    #root.wm_attributes('-topmost', 1)   
+    #root.lift()     # to work with others OS which are not windows
+    #root.withdraw()
    
-    try:
-        dirPath = fd.askdirectory(parent=root, title='Select a directory')
+    #try:
+    #    dirPath = fd.askdirectory(parent=root, title='Select a directory')
 
-    except:
-        dirPath = ""
+    #except:
+    #    dirPath = ""
     
     print(dirPath)
-    root.destroy()
+    #root.destroy()
  
     return dirPath
 
-def selectNameFile():
+def selectNameFile(): ################################
     filepath = ""
-    root = tk.Tk()
-    root.geometry("500x400") # not working
-    root.wm_attributes('-topmost', 1)   
-    root.lift()     # to work with others OS which are not windows
-    root.withdraw()
+    #root = tk.Tk()
+    #root.geometry("500x400") # not working
+    #root.wm_attributes('-topmost', 1)   
+    #root.lift()     # to work with others OS which are not windows
+    #root.withdraw()
    
-    try:
-        filepath = fd.askopenfilename(parent=root, title='Select a file', filetypes=[("CSV files", ".csv")])
+    #try:
+    #    filepath = fd.askopenfilename(parent=root, title='Select a file', filetypes=[("CSV files", ".csv")])
     
-    except:
-        filepath = ""  
+    #except:
+    #    filepath = ""  
 
     print("filepah = ", filepath)
-    root.destroy()
+    #root.destroy()
  
     return filepath
 
@@ -588,33 +590,33 @@ def concat_AIS_Files():
     
 
 def ask_name_File_to_save():
-    root = tk.Tk()
-    root.geometry("500x400") # not working
-    root.wm_attributes('-topmost', 1)   
-    root.lift()     # to work with others OS which are not windows
-    root.withdraw()
+    #root = tk.Tk()
+    #root.geometry("500x400") # not working
+    #root.wm_attributes('-topmost', 1)   
+    #root.lift()     # to work with others OS which are not windows
+    #root.withdraw()
 
-    get_path_and_name_file = fd.asksaveasfilename(parent=root, title='Give a name for a file to save data', initialfile = 'AOI grid .csv',
-                defaultextension=".csv",filetypes=[("CSV files", ".csv")])
+    #get_path_and_name_file = fd.asksaveasfilename(parent=root, title='Give a name for a file to save data', initialfile = 'AOI grid .csv',
+    #            defaultextension=".csv",filetypes=[("CSV files", ".csv")])
 
-    print("path and name of file = ", get_path_and_name_file)
-    root.destroy()
+    #print("path and name of file = ", get_path_and_name_file)
+    #root.destroy()
  
-    return get_path_and_name_file
+    return #get_path_and_name_file
 
 
 def select_Files_for_concatenation():
-    root = tk.Tk()
-    root.geometry("500x400") # not working
-    root.wm_attributes('-topmost', 1)   
-    root.lift()     # to work with others OS which are not windows
-    root.withdraw()
+    #root = tk.Tk()
+    #root.geometry("500x400") # not working
+    #root.wm_attributes('-topmost', 1)   
+    #root.lift()     # to work with others OS which are not windows
+    #root.withdraw()
    
-    filepaths = fd.askopenfilenames(parent=root, title='Select one or more files to concatenate', filetypes=[("CSV files", ".csv")])
-    print(filepaths)
-    root.destroy()
+    #filepaths = fd.askopenfilenames(parent=root, title='Select one or more files to concatenate', filetypes=[("CSV files", ".csv")])
+    #print(filepaths)
+    #root.destroy()
  
-    return filepaths
+    return #filepaths
 
 
 

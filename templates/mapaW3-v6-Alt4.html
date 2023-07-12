@@ -20,6 +20,7 @@
     <script src="https://code.jquery.com/jquery-3.6.1.js"></script>
 
     <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
+    <script src="https://www.papaparse.com/resources/js/papaparse.js"></script> <!-- novo 11jul-->
 
 <style>
 div.space {
@@ -149,6 +150,7 @@ div.space05 {
       <a href="#" onclick="loadArea();" id="loadAOI">Load </a>
       <a href="#" onclick="gerarPoligono();" id="geraAOI">Create </a>
       <a href="#" onclick="download_csv_file();">Save </a>
+      <input type="file" class="fileInput" /> <!--novo 11jul-->
     </div>
   </div>
     
@@ -672,8 +674,34 @@ div.space05 {
       alert("There is no area to be removed.")
     }
   }
-    
+  
+  function loadArea2(){
+    const data = [];
+    const fileInput = document.querySelector('.fileInput');
+    //fileInput.addEventListener('change', () => {
+      Papa.parse(fileInput.files[0], {
+        download: true,
+        header: true,
+        keepEmptyRows: false,
+        skipEmptyLines: true,
+        step: function(row) {
+          data.push(row.data);
+        },
+        complete: function(results) {
+          data2 = JSON.stringify(data);//
+          //document.querySelector("code").innerHTML = JSON.stringify(data);
+          console.log("loadArea2 = ",data);
+        }
+      });
+    //});
+    pontos = data;
+    gerarPoligono();
+  }
+
+
   function loadArea(){
+    //loadArea2(); // novo 11jul
+    //alert("parada no comando loadArea"); //
     $.ajax({
             url: "{{ url_for('loadFileAOI') }}",
             type: "GET",
@@ -694,7 +722,9 @@ div.space05 {
     if (flagPolygon == true){
       removeArea();
     }
+    
     pontos = JSON.parse(locations);
+    console.log("locations from back end = ", pontos); // novo 11jul
     var csv = 'LAT,LONG\n';  
           
     //merge the data with CSV  
