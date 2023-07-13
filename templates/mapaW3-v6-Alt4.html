@@ -147,10 +147,10 @@ div.space05 {
     <button class="subnavbtn">Area of Interest (AOI) <i class="fa fa-caret-down"></i></button>
     <div class="subnav-content">
       <a href="#" onclick="removeArea();" id="removeArea">Remove </a>
-      <a href="#" onclick="loadArea();" id="loadAOI">Load </a>
+      <a href="#" onclick="loadArea2();" id="loadAOI">Load </a> <!--novo 12jul-->
       <a href="#" onclick="gerarPoligono();" id="geraAOI">Create </a>
       <a href="#" onclick="download_csv_file();">Save </a>
-      <input type="file" class="fileInput" /> <!--novo 11jul-->
+      <input type="file" id="myFile" /> <!--novo 11jul-->
     </div>
   </div>
     
@@ -676,26 +676,40 @@ div.space05 {
   }
   
   function loadArea2(){
-    const data = [];
-    const fileInput = document.querySelector('.fileInput');
-    //fileInput.addEventListener('change', () => {
-      Papa.parse(fileInput.files[0], {
-        download: true,
-        header: true,
-        keepEmptyRows: false,
-        skipEmptyLines: true,
-        step: function(row) {
-          data.push(row.data);
-        },
-        complete: function(results) {
-          data2 = JSON.stringify(data);//
-          //document.querySelector("code").innerHTML = JSON.stringify(data);
-          console.log("loadArea2 = ",data);
+    var fileSize = 0;
+    var theFile = document.getElementById("myFile");
+    //theFile.click();
+    var regex = /^([a-zA-Z0-9\s_\\.\-:])+(.csv|.txt)$/;
+    //var data_CSV = new array;
+    if (regex.test(theFile.value.toLowerCase())) {  //check if file is CSV
+     
+        if (typeof (FileReader) != "undefined") { //check if browser support FileReader
+        
+          var myReader = new FileReader(); // file reader object
+          myReader.onload = function(e) {  //get file contents, split them by line
+              
+              let data = myReader.result.split("\n");
+              for (let i in data) { //loop each row split them by "," and save it in array
+                data[i] = data[i].split(",");
+              }
+              data.shift(); // remove first element - the header
+              data.pop(); // remove last element - blank array
+              console.log(data);
+              plotLoadedArea(data);
+              //return data; // teste
+              
+          }
+          myReader.readAsText(theFile.files[0]);  //call file reader onload
         }
-      });
-    //});
-    pontos = data;
-    gerarPoligono();
+        else {
+           alert("This browser does not support HTML5.");
+        }
+    }
+    else {
+           alert("Please upload a valid CSV file.");
+    }
+    //console.log(data);
+    return false;    //plotLoadedArea(data2);
   }
 
 
@@ -722,8 +736,11 @@ div.space05 {
     if (flagPolygon == true){
       removeArea();
     }
-    
-    pontos = JSON.parse(locations);
+    console.log("locations 0 = ",locations[0]); //
+    //pontos = JSON.parse(locations); //novo 12jul
+    pontos = locations.map(function (obj){
+      return obj;
+    }); //novo 12 jul
     console.log("locations from back end = ", pontos); // novo 11jul
     var csv = 'LAT,LONG\n';  
           
@@ -733,6 +750,7 @@ div.space05 {
             csv += "\n";  
     });  
     polygon_CSV = csv;
+    console.log("polygon_CSV = ", polygon_CSV);
 
     const [latInfAOI, latSupAOI, lonInfAOI, lonSupAOI, latMedAOI] = findMinMax(pontos);
     gerarPoligono();
@@ -740,7 +758,7 @@ div.space05 {
   }
    //create a user-defined function to download CSV file   
   function download_csv_file() {  
-        
+    console.log("locations pontos dentro da funcao downloag = ", pontos); // novo 12jul
     if (pontos.length > 2) {
         //define the heading for each row of the data  
         var csv = 'LAT,LONG\n';  
@@ -996,8 +1014,14 @@ div.space05 {
     
     var textField = $('#inputTxtFileName');
     textField.disabled = false;
-    textField.val(retorno);
-    pathHistoricalFileAISdata = retorno; 
+
+    
+    //textField.val(retorno); novo 13jul
+    textField.val("data/AOI Delaware 08-05-23 Grid 2k.csv");
+
+    //pathHistoricalFileAISdata = retorno; // novo 13jul
+    pathHistoricalFileAISdata = "data/AOI Delaware 08-05-23 Grid 2k.csv"
+
     var btn = document.getElementById("btnPlot");
     btn.disabled = false;
   }
@@ -1382,7 +1406,8 @@ div.space05 {
   }
 
   function openDatasetFile(retorno){
-    
+    ////////////// novo 13jul
+    retorno = "data/AOI Delaware 09-05-23 Grid 2k.csv"
     //console.log(retorno);
     if (retorno == ""){
       return;
@@ -1390,8 +1415,13 @@ div.space05 {
 
     var textField = $('#inputDataSetsFileName');
     textField.disabled = false;
-    textField.val(retorno);
-    pathDatasetFile = retorno; 
+
+    //textField.val(retorno); novo 13jul
+    textField.val("data/AOI Delaware 09-05-23 Grid 2k.csv");
+    
+    //pathDatasetFile = retorno; // novo 13jul
+    pathDatasetFile = "data/AOI Delaware 09-05-23 Grid 2k.csv"
+    
     var btn = document.getElementById("btnLoadDataset");
     btn.disabled = false;
   }
