@@ -146,11 +146,12 @@ div.space05 {
   <div class="subnav">
     <button class="subnavbtn">Area of Interest (AOI) <i class="fa fa-caret-down"></i></button>
     <div class="subnav-content">
-      <a href="#" onclick="removeArea();" id="removeArea">Remove </a>
-      <a href="#" onclick="loadArea2();" id="loadAOI">Load </a> <!--novo 12jul-->
-      <a href="#" onclick="gerarPoligono();" id="geraAOI">Create </a>
-      <a href="#" onclick="download_csv_file();">Save </a>
-      <input type="file" id="myFile" /> <!--novo 11jul-->
+      <a href="#" onclick="removeArea();" id="removeArea">Remove</a>
+      <a href="#" onclick="select_AOI_File();" id="select_AOI_File">Select File</a>
+      <a href="#" onclick="loadArea2();" id="loadAOI">Load File</a> <!--novo 12jul-->
+      <a href="#" onclick="gerarPoligono();" id="geraAOI">Create</a>
+      <a href="#" onclick="download_csv_file();">Save into a File</a>
+      <input type="file" id="aoi_File" accept=".csv" class="not-visible" /> <!--novo 11jul-->
     </div>
   </div>
     
@@ -675,9 +676,15 @@ div.space05 {
     }
   }
   
+  function select_AOI_File(){
+
+    var AOI_File = document.getElementById("aoi_File");
+    AOI_File.click();
+  }
+
   function loadArea2(){
     var fileSize = 0;
-    var theFile = document.getElementById("myFile");
+    var theFile = document.getElementById("aoi_File");
     //theFile.click();
     var regex = /^([a-zA-Z0-9\s_\\.\-:])+(.csv|.txt)$/;
     //var data_CSV = new array;

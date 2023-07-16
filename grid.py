@@ -402,7 +402,8 @@ def loadExpertFile():
 @app.route('/downloadClassification',  methods=["GET"])
 def downloadClassification():
     
-    strDirName = selectNameDir()
+    #strDirName = selectNameDir()
+    strDirName = "d:"
     if strDirName != "":
         src1 = 'static/expertFiles/' + fileNameExpert
         src2 = 'static/expertFiles/' + 'expert_full.csv'
