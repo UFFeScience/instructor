@@ -1510,16 +1510,34 @@ div.space05 {
   }
   ///// Map Legend
   function displayMapLegend(){
+    exibeAlertMsg(); ///novo 16jul
+    //alert("The Matching Cells calculation has been started.");//
     var colorCluster = "";
     var percentage = 0;
     var idCluster = 0;
+    //const myTimeout = setTimeout(get_PercentageMatchCells, 5000);// novo 16jul
     get_PercentageMatchCells();
-    alert("The Matching Cells calculation has been done.");
+    exibeAlertMsg(); ///novo 16jul
+    ///////////////////////////////////////////////////
+    setTimeout(() => {
+            console.log("Hi, I am the console.log inside setTimeout 2sec")
+        },
+        1000
+    );
+    let currentTime = Date.now() / 1000;
+    let expectedTime = currentTime + 2;
+    while (currentTime < expectedTime) {
+        currentTime = Date.now() / 1000;
+    }
+    alert("The Matching Cells calculation has been started.");
+    //////////////////////////////////////////////////////////////////
+
     /*Legend specific*/
     if (flagLegendExist == true){
       mapa.removeControl(legend);///////
     }
     legend = L.control({ position: "topright" }); 
+
     legend.onAdd = function(mapa) {
       var div = L.DomUtil.create("div", "legend");
       
@@ -1554,8 +1572,11 @@ div.space05 {
       return div;
     };
 
+    
     legend.addTo(mapa); 
     flagLegendExist = true;
+    alert("The Matching Cells calculation has been done.");
+    fechaAlertMsg(); // novo 16Jul
   }
   
   function get_PercentageMatchCells(){
@@ -1568,10 +1589,18 @@ div.space05 {
             dataType: 'json',
             contentType: 'application/json',
             data: dado,
+            timeout: 5000, // novo 16jul
             success: get_PercentageMatch,
-            error: function(){
-              alert("erro execução get_PercentageMatchCells function");
+            error: function(xhr, textStatus, errorThrown) { //novo 16jul
+              if (textStatus == 'timeout') {
+                  alert("Error : Timeout for calc_ClusterMatch call!");
+              } else{
+                  alert("erro execução get_PercentageMatchCells function");
+              }
             }
+            //error: function(){
+             // alert("erro execução get_PercentageMatchCells function");
+            //}
         });
   }
   function get_PercentageMatch(retorno){
@@ -1589,7 +1618,7 @@ div.space05 {
       alert("It must have a Grid created.");
       return;
     }
-    jQuery.ajaxSetup({async:false}); // novo 04Jul
+    //jQuery.ajaxSetup({async:false}); // novo 04Jul
     exibeAlertMsg(); // novo 04Jul
 
     var dados = JSON.stringify([latInfGrid, latSupGrid, lonInfGrid, lonSupGrid,
@@ -1607,7 +1636,7 @@ div.space05 {
         alert("error AIS Files concatenation");
       }
     });
-    jQuery.ajaxSetup({async:true}); // novo 04jul
+    //jQuery.ajaxSetup({async:true}); // novo 04jul
     fechaAlertMsg(); // novo 4Jul
   }
   function checkBox_Auto_Function() {

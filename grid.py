@@ -455,8 +455,8 @@ def saveClassification():
     expert_full_df.loc[index_full,"Time"]  = hora
 
     print("expert_df = ", expert_df)
-    expert_df.to_csv(expertCSV_File, index=False)
-    expert_full_df.to_csv(expertCSC_FullFile, index=False)
+    #expert_df.to_csv(expertCSV_File, index=False)
+    #expert_full_df.to_csv(expertCSC_FullFile, index=False)
     
     resposta = jsonify(expertCSV_File)
     resposta.headers.add("Access-Control-Allow-Origin", "*")
