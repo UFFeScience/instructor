@@ -24,7 +24,7 @@
 
 <style>
 div.space {
-  line-height: 1.6;
+  line-height: 1.8;
 }
 div.space05 {
   line-height: 0.5;
@@ -56,7 +56,7 @@ div.space05 {
 
     <button onclick="fechaAboutPage();" style="display:block; margin: 0 auto; background-color: rgb(141, 163, 236);">Close</button>
 </dialog>
-
+<!--
 <dialog class="dialogoAlert" id="AlertMsg">
   <div style="text-align: left;">
     <img src="/static/waiting-icon-star.gif" style="float: inline-start;" width="50" height="50">
@@ -65,6 +65,16 @@ div.space05 {
    
   <button onclick="fechaAlertMsg();" style="display:block; margin: 0 auto; background-color: rgb(141, 163, 236);">Ok</button>
 </dialog>
+-->
+<dialog class="dialogoAlert" id="AlertMsg">
+  <div style="text-align: left;">
+    <img src="/static/waiting-icon-star.gif" style="float: inline-start;" width="50" height="50">
+    <h3>&nbsp; &nbsp; Please wait for the processing.</h3>
+  </div>
+   
+  
+</dialog>
+
 
 <dialog class="dialogoLogin" id="loginPage">
   <div style="text-align: center;">
@@ -158,13 +168,13 @@ div.space05 {
   <div class="subnav">
     <button class="subnavbtn">Grid Cell Size <i class="fa fa-caret-down"></i></button>
     <div class="subnav-content">
-      <a href="#" onclick="setSizeCell(100);">100 </a>
-      <a href="#" onclick="setSizeCell(200);">200 </a>
-      <a href="#" onclick="setSizeCell(300);">300 </a>
-      <a href="#" onclick="setSizeCell(500);">500 </a>
-      <a href="#" onclick="setSizeCell(1000);">1000 </a>
-      <a href="#" onclick="setSizeCell(2000);">*2000 </a>
-      <a href="#" onclick="setSizeCell(5000);">5000 </a>
+      <a href="#" onclick="setSizeCell(100);">100m </a>
+      <a href="#" onclick="setSizeCell(200);">200m </a>
+      <a href="#" onclick="setSizeCell(300);">300m </a>
+      <a href="#" onclick="setSizeCell(500);">500m </a>
+      <a href="#" onclick="setSizeCell(1000);">1Km </a>
+      <a href="#" onclick="setSizeCell(2000);">*2Km </a>
+      <a href="#" onclick="setSizeCell(5000);">5Km </a>
     </div>
   </div>
 
@@ -204,16 +214,17 @@ div.space05 {
     <div class="card" id="cardSuperior" style="width: 100.0%; height:345px;">
       
       <div id="aisData">
-        <fieldset id="aisDataPanel" class="visible">
+        <fieldset id="aisDataPanel" class="visible" >
           <legend>Historical Trajectories - AIS Data Clustering</legend>
             <div class="space">
               <div>    
                 
                 <button type="button" id="btnSelectAIS_File" disabled onclick="selectAIS_File();">Select File</button>
                 <input type="text" id="inputTxtFileName" name="Name" disabled/>
-                <button id="btnPlot" onclick="aisPlotFile();" disabled>Plot</button>
+                <button id="btnPlot" onclick="aisPlotFile();" disabled>Plot</button>&nbsp;
+                <!--
                 <br>
-
+                -->
                 <label for="clustering">Clustering:</label>
                     <select id="clustering" disabled onchange="GetSelectedClusteringValue(this)">
                         <option value="1">None (Density plots only)</option>
@@ -239,7 +250,7 @@ div.space05 {
                     suggested<br>
                     -->
                     <fieldset id="parametersPanel" class="visible">  <!-- style="width:265px" -->
-                      <legend>Parameters</legend>    
+                      <legend>Clustering Parameters</legend>    
                         <label id="lbl_inputParameter1">-- No parameters --</label>
                         <input type="text" id="inputParameter1" disabled value="0" class="not-visible" name="parameter1" size="2"/>&nbsp;
                       
@@ -256,7 +267,7 @@ div.space05 {
             </div>
         </fieldset>
       </div> 
-
+      <br>
       <div id="trajectory">
         <fieldset id="trajectoryPanel" class="visible">
               <legend>New Trajectories - AIS Data Analysis</legend>
@@ -264,9 +275,10 @@ div.space05 {
                     
                     <button type="button" id="btnLoadDatasets_File" onclick="selectDatasetFile();" disabled>Select Dataset </button>
                     <input type="text" id="inputDataSetsFileName" name="datasetsName" disabled/>
-                    <button id="btnLoadDataset" onclick="loadDatasetFile();" disabled>Load</button>
+                    <button id="btnLoadDataset" onclick="loadDatasetFile();" disabled>Load</button>&nbsp;&nbsp;&nbsp;
+                    <!--
                     <br>
-
+                    -->
                     <label for="listBoxTrajectories">Trajectory:</label>
                     <select id="listBoxTrajectories" disabled>
                         <!--<option value="0" selected>Select</option> 
@@ -291,7 +303,7 @@ div.space05 {
                   
                           <input type="radio" id="btnSelectAnomalous" name="btnRadioNormal" value="anomalous" />
                           <label for="btnSelectAnomalous">Anomalous</label> &nbsp; &nbsp;
-                          <br>
+                          <br><br>
                           <label for="confidence">Confidence:</label>
                           <select id="confidence">
                               <option value="very low" >Very low</option>
@@ -436,6 +448,7 @@ div.space05 {
   var df_ClusterTotalMatch = [];
 
   var firstShowAboutPage_flag = true;
+  var flag_active_back_end_process = false;  //////////// novo 19jul
   exibeAboutPage();
   
     //////////////////////////////////// FUNCTIONS ////////////////////////////////
@@ -680,9 +693,16 @@ div.space05 {
 
     var AOI_File = document.getElementById("aoi_File");
     AOI_File.click();
+    //retorno = AOI_File.click();
+    //console.log("retorno do AOI_File.click = ",retorno);
+    
   }
 
   function loadArea2(){
+
+    //var AOI_File = document.getElementById("aoi_File");
+    //AOI_File.click();
+
     var fileSize = 0;
     var theFile = document.getElementById("aoi_File");
     //theFile.click();
@@ -895,9 +915,11 @@ div.space05 {
     }
   
   function exibeAlertMsg(){
+    flag_active_back_end_process = false; ////novo 19jul
     modalAlert.showModal()
   }
   function fechaAlertMsg(){
+    flag_active_back_end_process = true; ////novo 19jul
     modalAlert.close()
   }
   
@@ -1050,6 +1072,8 @@ div.space05 {
         alert("erro execução Post para Open File");
       }
     });
+    ////////////////////// novo 19jul
+
   }
 
   function plotAisDataPanel(retorno){
@@ -1097,6 +1121,7 @@ div.space05 {
     } 
     console.log("tamanho aisAOI_Array = ", ais_Historical_AOI_ArrayFiltered.length);
     console.log(ais_Historical_AOI_ArrayFiltered);
+    fechaAlertMsg(); //////////////// novo 19jul
   }
 
   function aisPlotFile(){
@@ -1180,7 +1205,10 @@ div.space05 {
       });
     }
     enableTrajectoryPanel();
-        
+    console.log("passou no ajax applyClustering");
+    //while (flag_active_back_end_process == true) {
+    //  console.log("Waiting for back-end process to finish");
+    //}
   }
   function applyNoneClustering(length){
 
@@ -1197,6 +1225,7 @@ div.space05 {
   
   function plot_Clustering_LatLon(retorno){
     console.log(retorno);
+    console.log("passou no success - plot_Clustering");
     var df_Clusters_LatLon = JSON.parse(retorno[0]); 
     var df_ClusterColorTable  = JSON.parse(retorno[1]); 
 
@@ -1414,7 +1443,7 @@ div.space05 {
 
   function openDatasetFile(retorno){
     ////////////// novo 13jul
-    retorno = "data/AOI Delaware 09-05-23 Grid 2k.csv"
+    retorno = "data/AOI Delaware 09-05-23 Grid 2k.csv";
     //console.log(retorno);
     if (retorno == ""){
       return;
@@ -1427,7 +1456,7 @@ div.space05 {
     textField.val("data/AOI Delaware 09-05-23 Grid 2k.csv");
     
     //pathDatasetFile = retorno; // novo 13jul
-    pathDatasetFile = "data/AOI Delaware 09-05-23 Grid 2k.csv"
+    pathDatasetFile = "data/AOI Delaware 09-05-23 Grid 2k.csv";
     
     var btn = document.getElementById("btnLoadDataset");
     btn.disabled = false;
@@ -1519,16 +1548,19 @@ div.space05 {
     get_PercentageMatchCells();
     exibeAlertMsg(); ///novo 16jul
     ///////////////////////////////////////////////////
-    setTimeout(() => {
-            console.log("Hi, I am the console.log inside setTimeout 2sec")
-        },
-        1000
-    );
-    let currentTime = Date.now() / 1000;
-    let expectedTime = currentTime + 2;
-    while (currentTime < expectedTime) {
-        currentTime = Date.now() / 1000;
-    }
+    //setTimeout(() => {
+            //console.log("Hi, I am the console.log inside setTimeout 2sec")
+        //},
+        //2000
+    //);
+    
+    /////////// sleep //////
+    //let currentTime = Date.now() / 1000;
+    //let expectedTime = currentTime + 2;
+    //while (currentTime < expectedTime) {
+        //currentTime = Date.now() / 1000;
+    //}
+    /////////// fim sleep
     alert("The Matching Cells calculation has been started.");
     //////////////////////////////////////////////////////////////////
 
