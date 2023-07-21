@@ -137,8 +137,8 @@ def applyClustering():
        ais_clustered_df, clusterTable_df = clt.select_and_applyclustering(global_Historical_AIS_data, id_clustering, 
                                                                     llon, ulon, llat, ulat, parameter1, parameter2, parameter3)
        
-       #global_df_Cluster = ais_clustered_df.copy() 
-       global_df_Cluster = ais_clustered_df ###
+       global_df_Cluster = ais_clustered_df.copy() 
+       #global_df_Cluster = ais_clustered_df ###
 
        global_df_Cluster = global_df_Cluster.reset_index(drop=True) 
 
@@ -152,7 +152,7 @@ def applyClustering():
 def calc_ClusterMatch():
 
     global global_df_Cluster
-    
+
     if request.method == 'POST':
        df_trajectory  = request.get_json()
        df_trajectory = pd.Series((v[21] for v in df_trajectory))
