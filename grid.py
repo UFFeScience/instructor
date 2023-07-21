@@ -17,6 +17,9 @@ import clustering as clt
 app = Flask(__name__)
 CORS(app) # novo 09Jul23
 
+global_Historical_AIS_data = ""
+global_df_Cluster = ""
+
 @app.route('/') 
 def homepage():
     print(sys.path) #
@@ -90,7 +93,8 @@ def openTrajectoryFileAndFilterAOI():
 
 @app.route('/openHistoricalFileAndFilterAOI', methods=['POST'])
 def openHistoricalFileAndFilterAOI():
-    global global_Historical_AIS_df
+    global global_Historical_AIS_data
+    
     
     if request.method == 'POST':
        
@@ -98,6 +102,10 @@ def openHistoricalFileAndFilterAOI():
 
        global_Historical_AIS_df, id_TrajID = openFileAndFilterAOI(dadosAIS) # id_TrajId not used
        global_Historical_AIS_df['NumCluster'] = 999 
+
+       #### teste
+       global_Historical_AIS_data = global_Historical_AIS_df
+
        ais_df_gridCells = gridCellsData_for_RoseWind(global_Historical_AIS_df)
        
        ais_df_gridCells_json = ais_df_gridCells.to_json(orient='values')
@@ -110,6 +118,7 @@ def openHistoricalFileAndFilterAOI():
     
 @app.route('/applyClustering', methods=['POST'])
 def applyClustering():
+    global_Historical_AIS_data
     global global_df_Cluster
 
     if request.method == 'POST':
@@ -125,10 +134,12 @@ def applyClustering():
        parameter2 = int(data[6]) #minPts
        parameter3 = int(data[7]) #
 
-       ais_clustered_df, clusterTable_df = clt.select_and_applyclustering(global_Historical_AIS_df, id_clustering, 
+       ais_clustered_df, clusterTable_df = clt.select_and_applyclustering(global_Historical_AIS_data, id_clustering, 
                                                                     llon, ulon, llat, ulat, parameter1, parameter2, parameter3)
        
-       global_df_Cluster = ais_clustered_df.copy() 
+       #global_df_Cluster = ais_clustered_df.copy() 
+       global_df_Cluster = ais_clustered_df ###
+
        global_df_Cluster = global_df_Cluster.reset_index(drop=True) 
 
        ais_clustered_df_json = ais_clustered_df.to_json(orient='values')
@@ -140,6 +151,7 @@ def applyClustering():
 @app.route('/calc_ClusterMatch', methods=['POST'])
 def calc_ClusterMatch():
 
+    global global_df_Cluster
     if request.method == 'POST':
        df_trajectory  = request.get_json()
        df_trajectory = pd.Series((v[21] for v in df_trajectory))
