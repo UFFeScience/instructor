@@ -1306,7 +1306,7 @@ div.space05 {
     plotSelectedTrajectory(); // novo 29Jun
     trajectoryPointIndex = 0
     drawGridCell(trajectoryPointIndex); // show the first AIS point of the trajectory
-    displayMapLegend(); 
+    displayMapLegend(idTrajetory); // 21jul 
   }
   function plotSelectedTrajectory(){
 
@@ -1538,15 +1538,15 @@ div.space05 {
     }
   }
   ///// Map Legend
-  function displayMapLegend(){
+  function displayMapLegend(id_traj){
     exibeAlertMsg(); ///novo 16jul
-    //alert("The Matching Cells calculation has been started.");//
+    alert("The Matching Cells calculation will be started.");//
     var colorCluster = "";
     var percentage = 0;
     var idCluster = 0;
     //const myTimeout = setTimeout(get_PercentageMatchCells, 5000);// novo 16jul
     get_PercentageMatchCells();
-    exibeAlertMsg(); ///novo 16jul
+    //exibeAlertMsg(); ///novo 16jul
     ///////////////////////////////////////////////////
     //setTimeout(() => {
             //console.log("Hi, I am the console.log inside setTimeout 2sec")
@@ -1555,13 +1555,13 @@ div.space05 {
     //);
     
     /////////// sleep //////
-    //let currentTime = Date.now() / 1000;
-    //let expectedTime = currentTime + 2;
-    //while (currentTime < expectedTime) {
-        //currentTime = Date.now() / 1000;
-    //}
+    let currentTime = Date.now() / 1000;
+    let expectedTime = currentTime + 2;
+    while (currentTime < expectedTime) {
+        currentTime = Date.now() / 1000;
+    }
     /////////// fim sleep
-    alert("The Matching Cells calculation has been started.");
+    //alert("The Matching Cells calculation has been started.");
     //////////////////////////////////////////////////////////////////
 
     /*Legend specific*/
@@ -1573,7 +1573,7 @@ div.space05 {
     legend.onAdd = function(mapa) {
       var div = L.DomUtil.create("div", "legend");
       
-      div.innerHTML += "<h4>Matching Cells</br>Trajectory x Cluster</h4>";
+      div.innerHTML += "<h4>Matching Cells</br>Trajectory " + id_traj + " x Clusters</h4>";
       
       console.log("df_ClusterTotalMatch.length = ", df_ClusterTotalMatch.length);
       console.log("perc_pointsNotMatch = ", perc_pointsNotMatch);
@@ -1607,8 +1607,9 @@ div.space05 {
     
     legend.addTo(mapa); 
     flagLegendExist = true;
+    fechaAlertMsg(); // novo 16Jul 21jul
     alert("The Matching Cells calculation has been done.");
-    fechaAlertMsg(); // novo 16Jul
+    
   }
   
   function get_PercentageMatchCells(){
@@ -1621,11 +1622,11 @@ div.space05 {
             dataType: 'json',
             contentType: 'application/json',
             data: dado,
-            timeout: 5000, // novo 16jul
+            timeout: 10000, // novo 16jul
             success: get_PercentageMatch,
             error: function(xhr, textStatus, errorThrown) { //novo 16jul
               if (textStatus == 'timeout') {
-                  alert("Error : Timeout for calc_ClusterMatch call!");
+                  alert("Error : Timeout 10s for calc_ClusterMatch call!");
               } else{
                   alert("erro execução get_PercentageMatchCells function");
               }

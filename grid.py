@@ -152,6 +152,7 @@ def applyClustering():
 def calc_ClusterMatch():
 
     global global_df_Cluster
+    
     if request.method == 'POST':
        df_trajectory  = request.get_json()
        df_trajectory = pd.Series((v[21] for v in df_trajectory))

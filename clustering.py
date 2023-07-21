@@ -17,8 +17,8 @@ import random
 
 def select_and_applyclustering(ais_Historical_df, id_clusteringType, llon, ulon, llat, ulat, parameter1, parameter2, parameter3):
 
-    global db 
-    global labels 
+    #global db 
+    #global labels 
     my_map = Basemap(projection='merc',
         resolution = 'h', area_thresh = 10.0, # l -> low
         llcrnrlon=llon, llcrnrlat=llat, #min longitude (llcrnrlon) and latitude (llcrnrlat)
@@ -286,16 +286,16 @@ def calcPercentageCellsMatch(df_Cluster, df_trajectory):
     totalPointsNotMatch = totalPointsTrajectory; # initial value
     print("totalPointsTrajectory = ", totalPointsTrajectory)
     
-    df_aux_DB_Cluster = df_Cluster.copy()  
+    df_tmp_DB_Cluster = df_Cluster.copy()  #########
     # df_aux_DB_Cluster = df_Cluster[["Clus_Db", "GridCell"]] 
-    df_aux_DB_Cluster = df_aux_DB_Cluster[["Clus_Db", "GridCell"]] 
+    df_aux_DB_Cluster = df_tmp_DB_Cluster[["Clus_Db", "GridCell"]] ##########
     df_aux_DB_Cluster.drop_duplicates(inplace=True)
     df_aux_DB_Cluster = df_aux_DB_Cluster.sort_values(by=['Clus_Db', 'GridCell'])
     df_aux_DB_Cluster = df_aux_DB_Cluster.reset_index(drop=True) 
     print("df_aux_DB_Cluster = ", df_aux_DB_Cluster)
 
-    df_ClusterTotalMatch = df_aux_DB_Cluster.copy()
-    df_ClusterTotalMatch = df_ClusterTotalMatch[["Clus_Db"]]
+    df_tmp_ClusterTotalMatch = df_aux_DB_Cluster.copy() #############
+    df_ClusterTotalMatch = df_tmp_ClusterTotalMatch[["Clus_Db"]]  ##########
     df_ClusterTotalMatch.drop_duplicates(inplace=True)
     df_ClusterTotalMatch['TotalMatch'] = 0
     df_ClusterTotalMatch['perc_TotalMatch'] = 0.0
