@@ -157,8 +157,10 @@ div.space05 {
     <button class="subnavbtn">Area of Interest (AOI) <i class="fa fa-caret-down"></i></button>
     <div class="subnav-content">
       <a href="#" onclick="removeArea();" id="removeArea">Remove</a>
-      <a href="#" onclick="select_AOI_File();" id="select_AOI_File">Select File</a>
-      <a href="#" onclick="loadArea2();" id="loadAOI">Load File</a> <!--novo 12jul-->
+      <a href="#" onclick="select_AOI_File();" id="select_AOI_File">Load File</a>
+      <!--
+      <a href="#" onclick="loadArea2();" id="loadAOI">Load File</a>
+      -->
       <a href="#" onclick="gerarPoligono();" id="geraAOI">Create</a>
       <a href="#" onclick="download_csv_file();">Save into a File</a>
       <input type="file" id="aoi_File" accept=".csv" class="not-visible" /> <!--novo 11jul-->
@@ -166,28 +168,28 @@ div.space05 {
   </div>
     
   <div class="subnav">
-    <button class="subnavbtn">Grid Cell Size <i class="fa fa-caret-down"></i></button>
+    <button class="subnavbtn">Grid Creation (Cell Size) <i class="fa fa-caret-down"></i></button>
     <div class="subnav-content">
       <a href="#" onclick="setSizeCell(100);">100m </a>
       <a href="#" onclick="setSizeCell(200);">200m </a>
       <a href="#" onclick="setSizeCell(300);">300m </a>
       <a href="#" onclick="setSizeCell(500);">500m </a>
       <a href="#" onclick="setSizeCell(1000);">1Km </a>
-      <a href="#" onclick="setSizeCell(2000);">*2Km </a>
+      <a href="#" onclick="setSizeCell(2000);">2Km </a>
       <a href="#" onclick="setSizeCell(5000);">5Km </a>
     </div>
   </div>
-
+  <!--
   <div class="subnav">
     <button class="subnavbtn" onclick="gridCreation();">Grid Creation </button>
   </div>
-
+  -->
   <div class="subnav">
     <button class="subnavbtn">Trajectory Data <i class="fa fa-caret-down"></i></button>
     <div class="subnav-content">
-      <a href="#" onclick="enable_AIS_File_btn();">Start Clustering</a>
+      <a href="#" onclick="enable_AIS_File_btn();">Analysis (side panel)</a>
       
-      <a href="#" onclick="concat_AIS_Files();" id="concat_Files">Build File</a>
+      <a href="#" onclick="concat_AIS_Files();" id="concat_Files" >Build File</a>
       
       <a href="#" onclick="downloadClassificationFile();" id="downloadClassification">Download Classifications</a>
     </div>
@@ -449,9 +451,16 @@ div.space05 {
 
   var firstShowAboutPage_flag = true;
   var flag_active_back_end_process = false;  //////////// novo 19jul
+
+  const fileInput = document.getElementById('aoi_File'); // 22jul
+
   exibeAboutPage();
   
     //////////////////////////////////// FUNCTIONS ////////////////////////////////
+
+  fileInput.addEventListener('change', event => { // 22Jul
+    loadArea2();
+  });
 
   function GetSelectedClusteringValue(clustering) {
     var selText = clustering.options[clustering.selectedIndex].innerHTML;
@@ -589,6 +598,9 @@ div.space05 {
   }
 
   function newMarker(e){
+    if (flagPolygon == true){ // 22 jul
+      return;
+    } 
     //var new_mark = L.marker().setLatLng(e.latlng).addTo(mapa);
     var new_mark;
     //new_mark = L.marker().setLatLng(e.latlng).addTo(mapa);
@@ -640,6 +652,7 @@ div.space05 {
           console.table(pontos);
       mapa.removeLayer(markersLayerGroup);
       flagPolygon = true;
+      /////////// 22jul
     }
     else {
       if (flagPolygon == true){
@@ -655,18 +668,24 @@ div.space05 {
     var localZoom = local;
     if (localZoom == 1){
       mapa.setView([-14, -38], 4);
+      mapaAIS.setView([-14, -38], 3);
     }
     if (localZoom == 2){
       mapa.setView([39, -73], 4);
+      mapaAIS.setView([39, -73], 3);
     }
 		if (localZoom == 3){
       mapa.setView([3, 5], 4);
+      mapaAIS.setView([3, 5], 3);
+
     }
     if (localZoom == 4){
       mapa.setView([-24, 112], 4);
+      mapaAIS.setView([-24, 112], 3);
     }
     if (localZoom == 5){
       mapa.setView([45, 0], 4);
+      mapaAIS.setView([45, 0], 3);
     }
   };
   function removeArea(){
@@ -782,6 +801,8 @@ div.space05 {
     const [latInfAOI, latSupAOI, lonInfAOI, lonSupAOI, latMedAOI] = findMinMax(pontos);
     gerarPoligono();
     mapa.setView([latMedAOI, (lonInfAOI + lonSupAOI)/2], 8);
+    ///////// jul22
+    mapaAIS.setView([latMedAOI, (lonInfAOI + lonSupAOI)/2], 7);  // 22jul
   }
    //create a user-defined function to download CSV file   
   function download_csv_file() {  
@@ -823,6 +844,7 @@ div.space05 {
   function setSizeCell(size){
     cellSize = size;
     console.log("cell size = ", cellSize);
+    gridCreation(); /// 22jul
   }  
   function gridCreation(){
     exibeAlertMsg();
