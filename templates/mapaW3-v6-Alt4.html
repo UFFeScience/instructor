@@ -870,7 +870,7 @@ div.space05 {
           mapa.removeLayer(cellsLayerGroup);
           cellsLayerGroup.clearLayers(); 
           mapa.removeLayer(polylinha); 
-          flagGridCreation = false;
+          //flagGridCreation = false;  ////////jul22
         }
         
         exibirAreaLimGrid(coordGrid);
@@ -1110,7 +1110,7 @@ div.space05 {
       mapa.removeLayer(markersLayerGroup); 
       mapa.removeLayer(cellsLayerGroup);
       
-      flagGridCreation = false;
+      //flagGridCreation = false;  /// jul22
       
       for (var i = 0; i < len; i++) {
         
@@ -1167,7 +1167,7 @@ div.space05 {
     var btn = document.getElementById("listBoxTrajectories");
     btn.disabled = false;
     btn = document.getElementById("btnPrevious");
-    btn.disabled = false;
+    btn.disabled = true; //jul22
     btn = document.getElementById("btnNext");
     btn.disabled = false;
     
@@ -1439,9 +1439,29 @@ div.space05 {
 
   function btnPrevious(){
     if (trajectoryPointIndex > 0){
+
+      /////////// 22 jul
+      var circle = L.circle([aisAOI_trajSelected[trajectoryPointIndex][2],
+                             aisAOI_trajSelected[trajectoryPointIndex][3]], {
+            color: 'yellow',
+            fillColor: '#f03',
+            fillOpacity: 0.5,
+            radius: 50
+          }).addTo(displayedPointsLayerGroup) 
+      mapa.addLayer(displayedPointsLayerGroup); 
+      //////////////
+
       trajectoryPointIndex = trajectoryPointIndex - 1;
       drawGridCell(trajectoryPointIndex);
+      ////////// 22 jul
+      btn = document.getElementById("btnNext");
+      btn.disabled = false;
+      if (trajectoryPointIndex == 0){
+        btn = document.getElementById("btnPrevious");
+        btn.disabled = true;
+      }
     }
+    
   }
 
   function btnNext(){
@@ -1449,6 +1469,13 @@ div.space05 {
       trajectoryPointIndex = trajectoryPointIndex + 1;
       //displayedPointsLayerGroup.removeLayer(circle); nao testado
       drawGridCell(trajectoryPointIndex);
+      ////////// 22 jul
+      btn = document.getElementById("btnPrevious");
+      btn.disabled = false;
+      if (trajectoryPointIndex == aisAOI_trajSelected.length -1){
+        btn = document.getElementById("btnNext");
+        btn.disabled = true;
+      }
     } 
   }
   function selectDatasetFile(){
@@ -1561,14 +1588,14 @@ div.space05 {
   }
   ///// Map Legend
   function displayMapLegend(id_traj){
-    exibeAlertMsg(); ///novo 16jul
+    //exibeAlertMsg(); ///novo 16jul
     alert("The Matching Cells calculation will be started.");//
     var colorCluster = "";
     var percentage = 0;
     var idCluster = 0;
     //const myTimeout = setTimeout(get_PercentageMatchCells, 5000);// novo 16jul
     get_PercentageMatchCells();
-    //exibeAlertMsg(); ///novo 16jul
+    exibeAlertMsg(); ///novo 16jul
     ///////////////////////////////////////////////////
     //setTimeout(() => {
             //console.log("Hi, I am the console.log inside setTimeout 2sec")

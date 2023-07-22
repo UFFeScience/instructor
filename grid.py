@@ -130,9 +130,12 @@ def applyClustering():
        ulat= data[2] 
        llon= data[3]
        ulon= data[4]
-       parameter1 = float(data[5]) # eps
-       parameter2 = int(data[6]) #minPts
-       parameter3 = int(data[7]) #
+       #parameter1 = float(data[5]) # eps
+       #parameter2 = int(data[6]) #minPts
+       #parameter3 = int(data[7]) #
+       parameter1 = data[5] 
+       parameter2 = data[6]
+       parameter3 = data[7]
 
        ais_clustered_df, clusterTable_df = clt.select_and_applyclustering(global_Historical_AIS_data, id_clustering, 
                                                                     llon, ulon, llat, ulat, parameter1, parameter2, parameter3)
