@@ -19,6 +19,10 @@ CORS(app) # novo 09Jul23
 
 global_Historical_AIS_data = ""
 global_df_Cluster = ""
+global_fileNameExpert = ""  ##### 22 jul
+global_loginName = ""    ########
+global_expert_df = ""   #####
+global_expert_full_df = ""  ######
 
 @app.route('/') 
 def homepage():
@@ -383,34 +387,41 @@ def selectNameFile(): ################################
 @app.route('/checkLoginName', methods=['POST'])
 def checkLoginName():
         
-    global fileNameExpert
-    global loginName
+    global global_fileNameExpert
+    global global_loginName
     
-    loginName = request.get_json()
-    print("linha 152 loginName = ", loginName)
-    fileNameExpert = "none"
+    data = request.get_json() # 22 jul
+    global_loginName = data[0]
+    #global_loginName = request.get_json()
+
+    expert_password = data[1] ####
+
+    print("global_loginName e senha = ", global_loginName, expert_password)
+    global_fileNameExpert = "none"
     expertsID_df = pd.read_csv("static/expertFiles/expertsID.csv")
     print("arq expertsID = ", expertsID_df.head(5))
     for i in range(0, len(expertsID_df)):
         nameLoginFileCSV = expertsID_df["name"][i]
-        if loginName == nameLoginFileCSV:
+        if global_loginName == nameLoginFileCSV and expert_password == expertsID_df["password"][i]:
             print ("linha 160 nome = ", nameLoginFileCSV)
-            fileNameExpert = expertsID_df["filename"][i]
+            global_fileNameExpert = expertsID_df["filename"][i]
         
-    print("filename = ", fileNameExpert)
-    resposta = jsonify(fileNameExpert)
+    print("filename = ", global_fileNameExpert)
+    resposta = jsonify(global_fileNameExpert)
     resposta.headers.add("Access-Control-Allow-Origin", "*")
     return resposta
 
 @app.route('/loadExpertFile', methods=['GET'])
 def loadExpertFile():
-    global expert_df
-    global expert_full_df
-    expertCSV_File = "static/expertFiles/" + fileNameExpert
-    expert_df = pd.read_csv(expertCSV_File)
-    expert_full_df = pd.read_csv("static/expertFiles/" + "expert_full.csv") # novo 22fev
+    global global_expert_df
+    global global_expert_full_df
+    global global_fileNameExpert
+
+    expertCSV_File = "static/expertFiles/" + global_fileNameExpert
+    global_expert_df = pd.read_csv(expertCSV_File)
+    global_expert_full_df = pd.read_csv("static/expertFiles/" + "expert_full.csv") # novo 22fev
     print(expertCSV_File)
-    print(expert_df)
+    print(global_expert_df)
     resposta = jsonify(expertCSV_File)
     resposta.headers.add("Access-Control-Allow-Origin", "*")
     return resposta
@@ -419,11 +430,14 @@ def loadExpertFile():
 def downloadClassification():
     
     #strDirName = selectNameDir()
+    global global_expert_full_df  #####
+    global global_fileNameExpert
+
     strDirName = "d:"
     if strDirName != "":
-        src1 = 'static/expertFiles/' + fileNameExpert
+        src1 = 'static/expertFiles/' + global_fileNameExpert
         src2 = 'static/expertFiles/' + 'expert_full.csv'
-        destination1 = strDirName + '/' + fileNameExpert
+        destination1 = strDirName + '/' + global_fileNameExpert
         destination2 = strDirName + '/' + 'expert_full.csv'
 
         shutil.copyfile(src1, destination1)
@@ -434,45 +448,62 @@ def downloadClassification():
 
 @app.route('/saveClassification', methods=['POST'])
 def saveClassification():
-    expertID = loginName
+    
+    global global_expert_df ######## 22 jul
+    global global_expert_full_df ###### 22 jul
+    global global_fileNameExpert
+    global global_loginName
+
+    expertID = global_loginName
     dados = request.get_json()
-    trajetoriaID = dados[0]
-    clusteringSelection = dados[1]
-    normal = dados[2]
-    confiabilitySelection = dados[3]
-    data = dados[4]
-    hora = dados[5]
-    expertCSV_File = "static/expertFiles/" + fileNameExpert
+
+    filename_historical_AIS = dados[0]
+    filename_traj_AIS = dados[1]
+
+    trajetoriaID = dados[2]
+    clusteringSelection = dados[3]
+    normal = dados[4]
+    confiabilitySelection = dados[5]
+    data = dados[6]
+    hora = dados[7]
+    expertCSV_File = "static/expertFiles/" + global_fileNameExpert
     expertCSC_FullFile = "static/expertFiles/" + "expert_full.csv"
   
-    index = len(expert_df)
-    index_full = len(expert_full_df)
+    index = len(global_expert_df)
+    index_full = len(global_expert_full_df)
     print("tamanho expert_df = ", index)
 
-    expert_df.loc[index,"Trajetoria"]  = trajetoriaID
-    expert_full_df.loc[index_full,"Trajetoria"]  = trajetoriaID
+    global_expert_df.loc[index,"Filename_historical_AIS"]  = filename_historical_AIS #####
+    global_expert_full_df.loc[index_full,"Filename_historical_AIS"]  = filename_historical_AIS
 
-    expert_df.loc[index,"Expert"]  = expertID
-    expert_full_df.loc[index_full,"Expert"]  = expertID
+    global_expert_df.loc[index,"Filename_traj_AIS"]  = filename_traj_AIS #####
+    global_expert_full_df.loc[index_full,"Filename_traj_AIS"]  = filename_traj_AIS
 
-    expert_df.loc[index,"Clustering"]  = clusteringSelection
-    expert_full_df.loc[index_full,"Clustering"]  = clusteringSelection
 
-    expert_df.loc[index,"Normal"]  = normal
-    expert_full_df.loc[index_full,"Normal"]  = normal
+    global_expert_df.loc[index,"Trajetoria"]  = trajetoriaID
+    global_expert_full_df.loc[index_full,"Trajetoria"]  = trajetoriaID
 
-    expert_df.loc[index,"Conf"]  = confiabilitySelection
-    expert_full_df.loc[index_full,"Conf"]  = confiabilitySelection
+    global_expert_df.loc[index,"Expert"]  = expertID
+    global_expert_full_df.loc[index_full,"Expert"]  = expertID
 
-    expert_df.loc[index,"Date"]  = data
-    expert_full_df.loc[index_full,"Date"]  = data
+    global_expert_df.loc[index,"Clustering"]  = clusteringSelection
+    global_expert_full_df.loc[index_full,"Clustering"]  = clusteringSelection
 
-    expert_df.loc[index,"Time"]  = hora
-    expert_full_df.loc[index_full,"Time"]  = hora
+    global_expert_df.loc[index,"Normal"]  = normal
+    global_expert_full_df.loc[index_full,"Normal"]  = normal
 
-    print("expert_df = ", expert_df)
-    #expert_df.to_csv(expertCSV_File, index=False)
-    #expert_full_df.to_csv(expertCSC_FullFile, index=False)
+    global_expert_df.loc[index,"Conf"]  = confiabilitySelection
+    global_expert_full_df.loc[index_full,"Conf"]  = confiabilitySelection
+
+    global_expert_df.loc[index,"Date"]  = data
+    global_expert_full_df.loc[index_full,"Date"]  = data
+
+    global_expert_df.loc[index,"Time"]  = hora
+    global_expert_full_df.loc[index_full,"Time"]  = hora
+
+    print("global_expert_df = ", global_expert_df)
+    global_expert_df.to_csv(expertCSV_File, index=False) #########
+    global_expert_full_df.to_csv(expertCSC_FullFile, index=False)  #######
     
     resposta = jsonify(expertCSV_File)
     resposta.headers.add("Access-Control-Allow-Origin", "*")

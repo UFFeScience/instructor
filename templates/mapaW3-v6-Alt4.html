@@ -84,7 +84,7 @@ div.space05 {
   <input type="text" id="inputTxtName" name="loginName" /><br><br>
       
   Password:<br>
-  <input type="text" id="inputTxtPassword" name="password" disabled /><br><br>
+  <input type="password" id="inputTxtPassword" name="password" /><br><br>
   
   <button onclick="fechaLoginPage();" style="display:block; margin: 0 auto; background-color: rgb(141, 163, 236);">Login</button>
 </dialog>
@@ -963,9 +963,9 @@ div.space05 {
     
     expertID = document.getElementById("inputTxtName").value;
     expertPassword = document.getElementById("inputTxtPassword").value;
-    var dado = JSON.stringify(expertID);
+    var dado = JSON.stringify([expertID, expertPassword]); // 22 jul
     
-    console.log("nome do expert = ", expertID);
+    console.log("nome do expert e senha = ", expertID, expertPassword);
     $.ajax({
             url: "{{ url_for('checkLoginName') }}",
             type: "POST",
@@ -1007,6 +1007,10 @@ div.space05 {
   function saveClassificationFile(){
 
     const d = new Date();
+
+    var nameFile_historical_AIS = document.getElementById("inputTxtFileName").value; /// 22 jul
+    var nameFile_traj_AIS = document.getElementById("inputDataSetsFileName").value; /// 22 jul
+
     let strDate = d.toLocaleDateString();
     let strTime = d.toLocaleTimeString();
     
@@ -1022,7 +1026,8 @@ div.space05 {
         typeTraj = "anomalous"
     }
 
-    var dados = JSON.stringify([trajetoria, clustering, typeTraj, confidence,strDate,strTime]);
+    var dados = JSON.stringify([nameFile_historical_AIS, nameFile_traj_AIS, trajetoria, clustering, 
+                                typeTraj, confidence,strDate,strTime]);
     console.log("dados do post saveClassification = ", dados);
     
     $.ajax({
@@ -1335,6 +1340,8 @@ div.space05 {
     var len = aisAOI_trajSelected.length;
     if (len > 0){
       
+      btn = document.getElementById("btnPrevious");  //// 22 jul
+      btn.disabled = true;   // 22jul
       mapa.removeLayer(trajectoryLayerGroup); 
       trajectoryLayerGroup.clearLayers();
       mapa.removeLayer(displayedPointsLayerGroup); 
