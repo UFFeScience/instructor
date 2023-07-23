@@ -1,4 +1,6 @@
 Filename_historical_AIS,Filename_traj_AIS,Trajetoria,Expert,Clustering,Normal,Conf,Date,Time
-data/AOI Delaware 08-05-23 Grid 2k.csv,data/AOI Delaware 09-05-23 Grid 2k.csv,1,admin,4,normal,very low,23/07/2023,02:06:17
-data/AOI Delaware 08-05-23 Grid 2k.csv,data/AOI Delaware 09-05-23 Grid 2k.csv,1,admin,4,normal,very low,23/07/2023,02:07:27
-data/AOI Delaware 08-05-23 Grid 2k.csv,data/AOI Delaware 09-05-23 Grid 2k.csv,1,admin,4,normal,very low,23/07/2023,02:07:39
+data/AOI Delaware 08-05-23 Grid 2k.csv,data/AOI Delaware 09-05-23 Grid 2k.csv,1.0,admin,4.0,normal,very low,23/07/2023,02:06:17
+data/AOI Delaware 08-05-23 Grid 2k.csv,data/AOI Delaware 09-05-23 Grid 2k.csv,1.0,admin,4.0,normal,very low,23/07/2023,02:07:27
+data/AOI Delaware 08-05-23 Grid 2k.csv,data/AOI Delaware 09-05-23 Grid 2k.csv,1.0,admin,4.0,normal,very low,23/07/2023,02:07:39
+data/AOI Delaware 08-05-23 Grid 2k.csv,data/AOI Delaware 09-05-23 Grid 2k.csv,1,admin,4,normal,very low,23/07/2023,12:03:22
+data/AOI Delaware 08-05-23 Grid 2k.csv,data/AOI Delaware 09-05-23 Grid 2k.csv,1,admin,4,anomalous,high,23/07/2023,12:06:19

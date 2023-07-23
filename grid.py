@@ -430,7 +430,7 @@ def loadExpertFile():
 def downloadClassification():
     
     #strDirName = selectNameDir()
-    global global_expert_full_df  #####
+    #global global_expert_full_df  #####
     global global_fileNameExpert
 
     strDirName = "d:"
@@ -440,8 +440,40 @@ def downloadClassification():
         destination1 = strDirName + '/' + global_fileNameExpert
         destination2 = strDirName + '/' + 'expert_full.csv'
 
-        shutil.copyfile(src1, destination1)
-        shutil.copyfile(src2, destination2)
+
+        #######################################################
+        try:
+            f = open(src1, 'r')
+            file_contents = f.read()
+            print (file_contents)
+            f.close()
+        except:
+            print("Error occurred while printing the file.")
+        
+
+        try:
+            shutil.copyfile(src1, destination1)
+            shutil.copyfile(src2, destination2)
+            print("File copied successfully.")
+    
+        # If source and destination are same
+        except shutil.SameFileError:
+            print("Source and destination represents the same file.")
+        
+        # If destination is a directory.
+        except IsADirectoryError:
+            print("Destination is a directory.")
+        
+        # If there is any permission issue
+        except PermissionError:
+            print("Permission denied.")
+        
+        # For other errors
+        except:
+            print("Error occurred while copying file.")
+        ##########################################################
+        #shutil.copyfile(src1, destination1)
+        #shutil.copyfile(src2, destination2)
     resposta = jsonify(strDirName)# response useless
     resposta.headers.add("Access-Control-Allow-Origin", "*")
     return resposta
