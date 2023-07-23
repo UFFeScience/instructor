@@ -432,7 +432,7 @@ def downloadClassification():
     #strDirName = selectNameDir()
     #global global_expert_full_df  #####
     global global_fileNameExpert
-
+    target = 'd:/'
     strDirName = "d:"
     if strDirName != "":
         src1 = 'static/expertFiles/' + global_fileNameExpert
@@ -471,6 +471,16 @@ def downloadClassification():
         # For other errors
         except:
             print("Error occurred while copying file.")
+
+        try:
+            shutil.copy(src1, target)
+            shutil.copy(src2, target)
+        except IOError as e:
+            print("Unable to copy file. %s" % e)
+        except:
+            print("Unexpected error:", sys.exc_info())
+
+
         ##########################################################
         #shutil.copyfile(src1, destination1)
         #shutil.copyfile(src2, destination2)

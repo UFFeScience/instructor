@@ -79,7 +79,7 @@ function exibeWindRose(s3, s7, s11, s15, s20, s99){
     data[3].r = s15;
     data[4].r = s20;
     data[5].r = s99;
-    console.log ("windRose arrays - dentro do js = \n", s3, "\n", s7, "\n", s11, "\n", s15, "\n", s20, "\n",s99);
+    //console.log ("windRose arrays - dentro do js = \n", s3, "\n", s7, "\n", s11, "\n", s15, "\n", s20, "\n",s99);
 
     Plotly.newPlot("vesselsSpeed", data, layout, config)
 }

@@ -26,7 +26,7 @@ function findMinMax(pontos) {
             maxValueLon = parseFloat(pontos[i][1]);
         };
         somaLat = somaLat + parseFloat(pontos[i][0]);
-        console.log("parcial ", i, " ", minValueLat,maxValueLat, minValueLon, maxValueLon, somaLat);
+        //console.log("parcial ", i, " ", minValueLat,maxValueLat, minValueLon, maxValueLon, somaLat);
     };
     medLat = (somaLat / len).toFixed(5);
     return [minValueLat,maxValueLat, minValueLon, maxValueLon, medLat];

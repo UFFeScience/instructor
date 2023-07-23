@@ -392,7 +392,7 @@ div.space05 {
   const modalInstructions = document.getElementById("instructionsPage");
   const modalAlert = document.getElementById("AlertMsg");
 
-  console.log("distancia = ", getDistanceFromLatLng(30, -90, 31, -90));
+  //console.log("distancia = ", getDistanceFromLatLng(30, -90, 31, -90));
   cellSize = 2000 ; //valor default
   var vertA_Cel, vertB_Cel, vertC_Cel, vertD_Cel;
   var vertices;
@@ -613,7 +613,7 @@ div.space05 {
     //  console.log(e.target);
         var latUltPonto = pontos[pontos.length - 1][0];
         var lonUltPonto = pontos[pontos.length - 1][1]; 
-        console.log(latUltPonto,lonUltPonto);
+        //console.log(latUltPonto,lonUltPonto);
         if ((latUltPonto == e.latlng.lat.toFixed(5)) && (lonUltPonto == e.latlng.lng.toFixed(5))){
           mapa.removeLayer(new_mark);//(e.target);
           pontos.pop();
@@ -621,7 +621,7 @@ div.space05 {
     })
     var lat = e.latlng.lat.toFixed(5), lng = e.latlng.lng.toFixed(5);
     new_mark.bindPopup("Latitude: " + lat + "</br>" + "Longitude: "+ lng);
-		console.log(lat, lng);
+		//console.log(lat, lng);
 		pontos.push([lat, lng]);
 		//console.table(pontos);
 		new_mark.on('dragend', function(e) {  //precisa habilitar o dragging
@@ -740,7 +740,7 @@ div.space05 {
               }
               data.shift(); // remove first element - the header
               data.pop(); // remove last element - blank array
-              console.log(data);
+              //console.log(data);
               plotLoadedArea(data);
               //return data; // teste
               
@@ -782,12 +782,12 @@ div.space05 {
     if (flagPolygon == true){
       removeArea();
     }
-    console.log("locations 0 = ",locations[0]); //
+    //console.log("locations 0 = ",locations[0]); //
     //pontos = JSON.parse(locations); //novo 12jul
     pontos = locations.map(function (obj){
       return obj;
     }); //novo 12 jul
-    console.log("locations from back end = ", pontos); // novo 11jul
+    //console.log("locations from back end = ", pontos); // novo 11jul
     var csv = 'LAT,LONG\n';  
           
     //merge the data with CSV  
@@ -796,7 +796,7 @@ div.space05 {
             csv += "\n";  
     });  
     polygon_CSV = csv;
-    console.log("polygon_CSV = ", polygon_CSV);
+    //console.log("polygon_CSV = ", polygon_CSV);
 
     const [latInfAOI, latSupAOI, lonInfAOI, lonSupAOI, latMedAOI] = findMinMax(pontos);
     gerarPoligono();
@@ -806,7 +806,7 @@ div.space05 {
   }
    //create a user-defined function to download CSV file   
   function download_csv_file() {  
-    console.log("locations pontos dentro da funcao downloag = ", pontos); // novo 12jul
+    //console.log("locations pontos dentro da funcao download = ", pontos); // novo 12jul
     if (pontos.length > 2) {
         //define the heading for each row of the data  
         var csv = 'LAT,LONG\n';  
@@ -834,7 +834,7 @@ div.space05 {
       //  console.log(e.target);
       var latUltPonto = pontos[pontos.length - 1][0];
       var lonUltPonto = pontos[pontos.length - 1][1]; 
-      console.log(latUltPonto,lonUltPonto);
+      //console.log(latUltPonto,lonUltPonto);
       //if ((latUltPonto == e.latlng.lat.toFixed(5)) && (lonUltPonto == e.latlng.lng.toFixed(5))){
        //       mapa.removeLayer(e.target);
           //    pontos.pop();
@@ -843,7 +843,7 @@ div.space05 {
   }
   function setSizeCell(size){
     cellSize = size;
-    console.log("cell size = ", cellSize);
+    //console.log("cell size = ", cellSize);
     gridCreation(); /// 22jul
   }  
   function gridCreation(){
@@ -857,8 +857,8 @@ div.space05 {
         latSupGrid = latSupAOI;
         lonInfGrid = lonInfAOI;
         lonSupGrid = lonSupAOI;
-        console.log("clique possível no botao grid Creation");
-        console.log("AOI pontos = ", latInfAOI, latSupAOI, lonInfAOI, lonSupAOI, latMedAOI);
+        
+        //console.log("AOI pontos = ", latInfAOI, latSupAOI, lonInfAOI, lonSupAOI, latMedAOI);
         var pontoA = [latInfAOI, lonInfAOI];
         var pontoB = [latSupAOI, lonInfAOI];
         var pontoC = [latSupAOI, lonSupAOI];
@@ -965,7 +965,7 @@ div.space05 {
     expertPassword = document.getElementById("inputTxtPassword").value;
     var dado = JSON.stringify([expertID, expertPassword]); // 22 jul
     
-    console.log("nome do expert e senha = ", expertID, expertPassword);
+    //console.log("nome do expert e senha = ", expertID, expertPassword);
     $.ajax({
             url: "{{ url_for('checkLoginName') }}",
             type: "POST",
@@ -981,10 +981,10 @@ div.space05 {
   function validaLogin(retorno){
 
     expertFileName = retorno;
-    console.log("depois do ajax - expertFileName = ", expertFileName);
+    //console.log("depois do ajax - expertFileName = ", expertFileName);
     
     if (expertFileName == 'none') {
-      console.log("valor none");
+      //console.log("valor none");
       alert("The name, password or both are unknown. Please try again.");
     } else {
       modalLogin.close();
@@ -1028,7 +1028,7 @@ div.space05 {
 
     var dados = JSON.stringify([nameFile_historical_AIS, nameFile_traj_AIS, trajetoria, clustering, 
                                 typeTraj, confidence,strDate,strTime]);
-    console.log("dados do post saveClassification = ", dados);
+    //console.log("dados do post saveClassification = ", dados);
     
     $.ajax({
             url: "{{ url_for('saveClassification') }}",
@@ -1066,7 +1066,7 @@ div.space05 {
 
   function openFileAIS(retorno){
     
-    console.log("retorno = ", retorno);
+    //console.log("retorno = ", retorno);
     
     var textField = $('#inputTxtFileName');
     textField.disabled = false;
@@ -1086,7 +1086,7 @@ div.space05 {
     
     var dados = JSON.stringify([latInfGrid, latSupGrid, lonInfGrid, lonSupGrid,
                                 pathHistoricalFileAISdata, polygon_CSV, larguraCelula, alturaCelula, qtdeCel_X]);
-    console.log("front variável dados = ", dados);
+    //console.log("front variável dados = ", dados);
     $.ajax({
       url: "{{ url_for('openHistoricalFileAndFilterAOI') }}",
       type: "POST",
@@ -1105,7 +1105,7 @@ div.space05 {
 
   function plotAisDataPanel(retorno){
     
-    console.log(retorno);
+    //console.log(retorno);
     var ret = JSON.parse(retorno[0]); 
     gridCell_array = JSON.parse(retorno[1]); 
     
@@ -1146,8 +1146,8 @@ div.space05 {
     } else {
       alert("arquivo selecionado não possui dados de AIS no Grid/AOI selecionada");
     } 
-    console.log("tamanho aisAOI_Array = ", ais_Historical_AOI_ArrayFiltered.length);
-    console.log(ais_Historical_AOI_ArrayFiltered);
+    console.log("tamanho ais_Historical_AOI_ArrayFiltered = ", ais_Historical_AOI_ArrayFiltered.length);
+    //console.log(ais_Historical_AOI_ArrayFiltered);
     fechaAlertMsg(); //////////////// novo 19jul
   }
 
@@ -1204,8 +1204,8 @@ div.space05 {
     var param3 = document.getElementById("inputParameter3").value; // novo 25Jun
     var dados = JSON.stringify([idClustering, latInfGrid, latSupGrid, lonInfGrid, lonSupGrid, param1, param2, param3]);
     
-    console.log("front variável dados = ", dados);
-    console.log("Clustering = ", idClustering);
+    //console.log("front variável dados = ", dados);
+    //console.log("Clustering = ", idClustering);
 
     var len = ais_Historical_AOI_ArrayFiltered.length;
     if (len == 0){
@@ -1251,7 +1251,7 @@ div.space05 {
   }
   
   function plot_Clustering_LatLon(retorno){
-    console.log(retorno);
+    //console.log(retorno);
     console.log("passou no success - plot_Clustering");
     var df_Clusters_LatLon = JSON.parse(retorno[0]); 
     var df_ClusterColorTable  = JSON.parse(retorno[1]); 
@@ -1301,7 +1301,7 @@ div.space05 {
       alert("erro na execução plotDBSCAN_LAT-LON");
     } 
     console.log("tamanho df_Clusters_LatLon = ", df_Clusters_LatLon.length);
-    console.log(df_Clusters_LatLon);
+    //console.log(df_Clusters_LatLon);
 
 
   }
@@ -1327,7 +1327,7 @@ div.space05 {
       //}
     }
     console.log("tamanho do aisAOI-trajSelected = ", aisAOI_trajSelected.length);
-    console.log("aisAOI_trajSelected conteudo = ", aisAOI_trajSelected);
+    //console.log("aisAOI_trajSelected conteudo = ", aisAOI_trajSelected);
     //plotSelectedTrajectory();  // novo 29Jun
     classificationWindow();
     plotSelectedTrajectory(); // novo 29Jun
@@ -1440,7 +1440,7 @@ div.space05 {
         break;
       }
     }
-    console.log ("windRose arrays = \n", s3, "\n", s7, "\n", s11, "\n", s15, "\n", s20, "\n",s99);
+    //console.log ("windRose arrays = \n", s3, "\n", s7, "\n", s11, "\n", s15, "\n", s20, "\n",s99);
     return [s3, s7, s11, s15, s20, s99];
   }
 
@@ -1524,7 +1524,7 @@ div.space05 {
     
     var dados = JSON.stringify([latInfGrid, latSupGrid, lonInfGrid, lonSupGrid,
                                 pathDatasetFile, polygon_CSV, larguraCelula, alturaCelula, qtdeCel_X]);
-    console.log("front variável dados = ", dados);
+    //console.log("front variável dados = ", dados);
     $.ajax({
       url: "{{ url_for('openTrajectoryFileAndFilterAOI') }}",
       type: "POST",
@@ -1540,7 +1540,7 @@ div.space05 {
     });
   }
   function getArrayData_forTrajectories(retorno){
-    console.log(retorno);
+    //console.log(retorno);
     var ret = JSON.parse(retorno[0]); 
     totalTraj = JSON.parse(retorno[1]); 
     console.log("total de traj = ", totalTraj);
@@ -1560,8 +1560,8 @@ div.space05 {
       fechaAlertMsg();
       alert("arquivo selecionado não possui dados de AIS no Grid/AOI selecionada");
     } 
-    console.log("tamanho aisAOI_Array = ", ais_Trajectory_AOI_ArrayFiltered.length);
-    console.log(ais_Trajectory_AOI_ArrayFiltered);
+    console.log("tamanho ais_Trajectory_AOI_ArrayFiltered = ", ais_Trajectory_AOI_ArrayFiltered.length);
+    //console.log(ais_Trajectory_AOI_ArrayFiltered);
     
     btn = document.getElementById("btnShow"); // novo 21Mai
     btn.disabled = false;
@@ -1589,7 +1589,7 @@ div.space05 {
     for  (var k = 1; k <= total_traj; k++){ 
         var option = document.createElement("option");
         option.text = k;
-        console.log("option text = ", option.text);
+        //console.log("option text = ", option.text);
         listBoxTraj.add(option);
     }
   }
@@ -1712,7 +1712,7 @@ div.space05 {
 
     var dados = JSON.stringify([latInfGrid, latSupGrid, lonInfGrid, lonSupGrid,
                                 polygon_CSV, larguraCelula, alturaCelula, qtdeCel_X]);
-    console.log("front variável dados = ", dados);
+    //console.log("front variável dados = ", dados);
     $.ajax({
       url: "{{ url_for('concat_AIS_Files') }}",
       type: "POST",
