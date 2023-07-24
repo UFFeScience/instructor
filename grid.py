@@ -393,21 +393,19 @@ def checkLoginName():
     
     data = request.get_json() # 22 jul
     global_loginName = data[0]
-    #global_loginName = request.get_json()
-
     expert_password = data[1] ####
 
-    print("global_loginName e senha = ", global_loginName, expert_password)
+    #print("global_loginName e senha = ", global_loginName, expert_password)
     global_fileNameExpert = "none"
     expertsID_df = pd.read_csv("static/expertFiles/expertsID.csv")
-    print("arq expertsID = ", expertsID_df.head(5))
+    #print("arq expertsID = ", expertsID_df.head(5))
     for i in range(0, len(expertsID_df)):
         nameLoginFileCSV = expertsID_df["name"][i]
         if global_loginName == nameLoginFileCSV and expert_password == expertsID_df["password"][i]:
-            print ("linha 160 nome = ", nameLoginFileCSV)
+            #print ("linha 160 nome = ", nameLoginFileCSV)
             global_fileNameExpert = expertsID_df["filename"][i]
         
-    print("filename = ", global_fileNameExpert)
+    #print("filename = ", global_fileNameExpert)
     resposta = jsonify(global_fileNameExpert)
     resposta.headers.add("Access-Control-Allow-Origin", "*")
     return resposta
@@ -421,8 +419,8 @@ def loadExpertFile():
     expertCSV_File = "static/expertFiles/" + global_fileNameExpert
     global_expert_df = pd.read_csv(expertCSV_File)
     global_expert_full_df = pd.read_csv("static/expertFiles/expert_full.csv") # novo 22fev
-    print(expertCSV_File)
-    print(global_expert_df)
+    #print(expertCSV_File)
+    #print(global_expert_df)
     resposta = jsonify(expertCSV_File)
     resposta.headers.add("Access-Control-Allow-Origin", "*")
     return resposta
