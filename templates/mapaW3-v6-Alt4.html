@@ -918,6 +918,7 @@ div.space05 {
     if (flagGridCreation == true){
       var btn = document.getElementById("btnSelectAIS_File");
       btn.disabled = false;  
+      loadExpertFile(); // jul23
     }
     else {
       alert("It must have a Grid created.")
@@ -988,7 +989,7 @@ div.space05 {
       alert("The name, password or both are unknown. Please try again.");
     } else {
       modalLogin.close();
-      loadExpertFile(); // jul23
+      //loadExpertFile(); // jul23
     }
   }
   function loadExpertFile(){
