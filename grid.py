@@ -389,7 +389,7 @@ def checkLoginName():
         
     global global_fileNameExpert
     global global_loginName
-    global expertsID_df
+    #global expertsID_df ##### 23 jul
     
     data = request.get_json() # 22 jul
     global_loginName = data[0]
