@@ -988,6 +988,7 @@ div.space05 {
       alert("The name, password or both are unknown. Please try again.");
     } else {
       modalLogin.close();
+      loadExpertFile(); // jul23
     }
   }
   function loadExpertFile(){
@@ -996,7 +997,7 @@ div.space05 {
             type: "GET",
             dataType: 'json',
             success: function(retorno){ 
-              //alert("Arquivo de classificação carregado");
+              alert("Arquivo de classificação carregado"); /// 23 jul
             },
             error: function(){
               alert("error execution loadExpertFile no back-end");
@@ -1176,7 +1177,7 @@ div.space05 {
     btn = document.getElementById("btnNext");
     btn.disabled = false;
     
-    loadExpertFile();
+    //loadExpertFile(); // jul 23
   }
   function classificationWindow(){
    
