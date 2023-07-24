@@ -389,6 +389,7 @@ def checkLoginName():
         
     global global_fileNameExpert
     global global_loginName
+    global expertsID_df
     
     data = request.get_json() # 22 jul
     global_loginName = data[0]
@@ -417,7 +418,7 @@ def loadExpertFile():
     global global_expert_full_df
     global global_fileNameExpert
 
-    expertCSV_File = 'static/expertFiles/' + global_fileNameExpert
+    expertCSV_File = "static/expertFiles/" + global_fileNameExpert
     global_expert_df = pd.read_csv(expertCSV_File)
     global_expert_full_df = pd.read_csv("static/expertFiles/expert_full.csv") # novo 22fev
     print(expertCSV_File)
