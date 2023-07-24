@@ -417,9 +417,9 @@ def loadExpertFile():
     global global_expert_full_df
     global global_fileNameExpert
 
-    expertCSV_File = "static/expertFiles/" + global_fileNameExpert
+    expertCSV_File = 'static/expertFiles/' + global_fileNameExpert
     global_expert_df = pd.read_csv(expertCSV_File)
-    global_expert_full_df = pd.read_csv("static/expertFiles/" + "expert_full.csv") # novo 22fev
+    global_expert_full_df = pd.read_csv("static/expertFiles/expert_full.csv") # novo 22fev
     print(expertCSV_File)
     print(global_expert_df)
     resposta = jsonify(expertCSV_File)
@@ -436,7 +436,7 @@ def downloadClassification():
     strDirName = "d:"
     if strDirName != "":
         src1 = 'static/expertFiles/' + global_fileNameExpert
-        src2 = 'static/expertFiles/' + 'expert_full.csv'
+        src2 = 'static/expertFiles/expert_full.csv'
         destination1 = strDirName + '/' + global_fileNameExpert
         destination2 = strDirName + '/' + 'expert_full.csv'
 
@@ -509,7 +509,7 @@ def saveClassification():
     data = dados[6]
     hora = dados[7]
     expertCSV_File = "static/expertFiles/" + global_fileNameExpert
-    expertCSC_FullFile = "static/expertFiles/" + "expert_full.csv"
+    expertCSV_FullFile = "static/expertFiles/expert_full.csv"
   
     index = len(global_expert_df)
     index_full = len(global_expert_full_df)
@@ -520,8 +520,7 @@ def saveClassification():
 
     global_expert_df.loc[index,"Filename_traj_AIS"]  = filename_traj_AIS #####
     global_expert_full_df.loc[index_full,"Filename_traj_AIS"]  = filename_traj_AIS
-
-
+    
     global_expert_df.loc[index,"Trajetoria"]  = trajetoriaID
     global_expert_full_df.loc[index_full,"Trajetoria"]  = trajetoriaID
 
@@ -545,7 +544,13 @@ def saveClassification():
 
     print("global_expert_df = ", global_expert_df)
     global_expert_df.to_csv(expertCSV_File, index=False) #########
-    global_expert_full_df.to_csv(expertCSC_FullFile, index=False)  #######
+    global_expert_full_df.to_csv(expertCSV_FullFile, index=False)  #######
+
+    ######################### jul 23
+    df = pd.read_csv(expertCSV_File)
+    df2 = pd.read_csv(expertCSV_FullFile)
+    print("Expert file = ", df)
+    print("Expert full file = ",  df2)
     
     resposta = jsonify(expertCSV_File)
     resposta.headers.add("Access-Control-Allow-Origin", "*")
