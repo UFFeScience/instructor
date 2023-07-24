@@ -1617,7 +1617,8 @@ div.space05 {
     var percentage = 0;
     var idCluster = 0;
     //const myTimeout = setTimeout(get_PercentageMatchCells, 5000);// novo 16jul
-    get_PercentageMatchCells();
+    setTimeout(get_PercentageMatchCells(), 0);/// jul24
+    //get_PercentageMatchCells(); // jul 24
     exibeAlertMsg(); ///novo 16jul
     ///////////////////////////////////////////////////
     //setTimeout(() => {
@@ -1626,6 +1627,7 @@ div.space05 {
         //2000
     //);
     
+    /*
     /////////// sleep //////
     let currentTime = Date.now() / 1000;
     let expectedTime = currentTime + 2;
@@ -1633,6 +1635,8 @@ div.space05 {
         currentTime = Date.now() / 1000;
     }
     /////////// fim sleep
+    */
+
     //alert("The Matching Cells calculation has been started.");
     //////////////////////////////////////////////////////////////////
 
@@ -1676,7 +1680,7 @@ div.space05 {
       return div;
     };
 
-    setTimeout(() => {legend.addTo(mapa)}, 2000);// jul 24
+    setTimeout(() => {legend.addTo(mapa)}, 3000);// jul 24
     //legend.addTo(mapa);   // jul 24 
     flagLegendExist = true;
     fechaAlertMsg(); // novo 16Jul 21jul
