@@ -17,7 +17,7 @@ import clustering as clt
 app = Flask(__name__)
 CORS(app) # novo 09Jul23
 
-global_Historical_AIS_data = ""
+global_Historical_AIS_df = ""
 global_df_Cluster = ""
 global_fileNameExpert = ""  ##### 22 jul
 global_loginName = ""    ########
@@ -97,8 +97,8 @@ def openTrajectoryFileAndFilterAOI():
 
 @app.route('/openHistoricalFileAndFilterAOI', methods=['POST'])
 def openHistoricalFileAndFilterAOI():
-    global global_Historical_AIS_data
-    
+    #global global_Historical_AIS_data
+    global global_Historical_AIS_df
     
     if request.method == 'POST':
        
@@ -108,7 +108,7 @@ def openHistoricalFileAndFilterAOI():
        global_Historical_AIS_df['NumCluster'] = 999 
 
        #### teste
-       global_Historical_AIS_data = global_Historical_AIS_df
+       #global_Historical_AIS_data = global_Historical_AIS_df
 
        ais_df_gridCells = gridCellsData_for_RoseWind(global_Historical_AIS_df)
        
@@ -122,7 +122,7 @@ def openHistoricalFileAndFilterAOI():
     
 @app.route('/applyClustering', methods=['POST'])
 def applyClustering():
-    global_Historical_AIS_data
+    global_Historical_AIS_df ##### jul23
     global global_df_Cluster
 
     if request.method == 'POST':
@@ -141,7 +141,7 @@ def applyClustering():
        parameter2 = data[6]
        parameter3 = data[7]
 
-       ais_clustered_df, clusterTable_df = clt.select_and_applyclustering(global_Historical_AIS_data, id_clustering, 
+       ais_clustered_df, clusterTable_df = clt.select_and_applyclustering(global_Historical_AIS_df, id_clustering, 
                                                                     llon, ulon, llat, ulat, parameter1, parameter2, parameter3)
        
        global_df_Cluster = ais_clustered_df.copy() 
@@ -430,8 +430,9 @@ def downloadClassification():
     
     #strDirName = selectNameDir()
     #global global_expert_full_df  #####
+    msg = ""
     global global_fileNameExpert
-    target = 'd:/'
+    target = 'd:'
     strDirName = "d:"
     if strDirName != "":
         src1 = 'static/expertFiles/' + global_fileNameExpert
@@ -447,43 +448,51 @@ def downloadClassification():
             print (file_contents)
             f.close()
         except:
+            msg = "Error occurred while printing the file."
             print("Error occurred while printing the file.")
         
 
         try:
             shutil.copyfile(src1, destination1)
             shutil.copyfile(src2, destination2)
+            msg = "File copied successfully."
             print("File copied successfully.")
     
         # If source and destination are same
         except shutil.SameFileError:
+            msg = "Source and destination represents the same file."
             print("Source and destination represents the same file.")
         
         # If destination is a directory.
         except IsADirectoryError:
+            msg = "Destination is a directory."
             print("Destination is a directory.")
         
         # If there is any permission issue
         except PermissionError:
+            msg = "Permission denied."
             print("Permission denied.")
         
         # For other errors
         except:
+            msg = "Error occurred while copying file."
             print("Error occurred while copying file.")
 
         try:
             shutil.copy(src1, target)
             shutil.copy(src2, target)
         except IOError as e:
+            msg = "Unable to copy file."
             print("Unable to copy file. %s" % e)
         except:
+            msg = "Unexpected error:"
             print("Unexpected error:", sys.exc_info())
 
 
         ##########################################################
         #shutil.copyfile(src1, destination1)
         #shutil.copyfile(src2, destination2)
-    resposta = jsonify(strDirName)# response useless
+    resposta = jsonify(msg)# response useless
     resposta.headers.add("Access-Control-Allow-Origin", "*")
     return resposta
 

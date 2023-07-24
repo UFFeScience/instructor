@@ -1577,7 +1577,7 @@ div.space05 {
             success: function(retorno){ 
               if (retorno != ""){
                 alert("Download finished");
-              } else {alert("Download Canceled by the user.")}
+              } else {alert(retorno)}
             },
             error: function(){
               alert("error execution downloadClassification in the back-end");
