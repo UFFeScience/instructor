@@ -125,6 +125,8 @@ def applyClustering():
     global_Historical_AIS_df ##### jul23
     global global_df_Cluster
 
+    historical_AIS_df = global_Historical_AIS_df.copy()  #######
+
     if request.method == 'POST':
        
        data = request.get_json()
@@ -141,7 +143,7 @@ def applyClustering():
        parameter2 = data[6]
        parameter3 = data[7]
 
-       ais_clustered_df, clusterTable_df = clt.select_and_applyclustering(global_Historical_AIS_df, id_clustering, 
+       ais_clustered_df, clusterTable_df = clt.select_and_applyclustering(historical_AIS_df, id_clustering, 
                                                                     llon, ulon, llat, ulat, parameter1, parameter2, parameter3)
        
        global_df_Cluster = ais_clustered_df.copy() 
@@ -159,17 +161,18 @@ def applyClustering():
 def calc_ClusterMatch():
 
     global global_df_Cluster
+    df_cluster = global_df_Cluster.copy()  #####
 
     if request.method == 'POST':
        df_trajectory  = request.get_json()
        df_trajectory = pd.Series((v[21] for v in df_trajectory))
        
-       print("*** INICIO TRAJETORIA ARRAY *** \n", df_trajectory)
-       print("*** FIM TRAJETORIA ARRAY ***") 
+       #print("*** INICIO TRAJETORIA ARRAY *** \n", df_trajectory)
+       #print("*** FIM TRAJETORIA ARRAY ***") 
 
-       print("##### global_df_Cluster #### \n", global_df_Cluster) 
+       #print("##### global_df_Cluster #### \n", global_df_Cluster) 
 
-       perc_pointsNotMatch, df_ClusterTotalMatch = clt.calcPercentageCellsMatch(global_df_Cluster, df_trajectory)
+       perc_pointsNotMatch, df_ClusterTotalMatch = clt.calcPercentageCellsMatch(df_cluster, df_trajectory)
        
        df_ClusterTotalMatch_json = df_ClusterTotalMatch.to_json(orient='values')
        

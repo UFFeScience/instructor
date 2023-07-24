@@ -451,6 +451,8 @@ div.space05 {
 
   var firstShowAboutPage_flag = true;
   var flag_active_back_end_process = false;  //////////// novo 19jul
+  var flag_runing_js_function = false;  /////// novo 24jul
+  
 
   const fileInput = document.getElementById('aoi_File'); // 22jul
 
@@ -1329,13 +1331,24 @@ div.space05 {
       //}
     }
     console.log("tamanho do aisAOI-trajSelected = ", aisAOI_trajSelected.length);
-    //console.log("aisAOI_trajSelected conteudo = ", aisAOI_trajSelected);
+    console.log("antes de chamar classificationWindow");
     //plotSelectedTrajectory();  // novo 29Jun
     classificationWindow();
+    trajectoryPointIndex = 0; /// 24 jul
+    flag_runing_js_function = true;
     plotSelectedTrajectory(); // novo 29Jun
-    trajectoryPointIndex = 0
-    drawGridCell(trajectoryPointIndex); // show the first AIS point of the trajectory
-    displayMapLegend(idTrajetory); // 21jul 
+    //var i = 0;
+    //while (flag_runing_js_function = true){
+    //  console.log("running js function - nr times = ", i);
+    //  i = i + 1;
+    //}
+    
+    //trajectoryPointIndex = 0; // 24 jul
+    setTimeout(drawGridCell(trajectoryPointIndex), 2000); // show the first AIS point of the trajectory
+    
+    //alert("The selected trajectory has been plotting."); // 23 jul
+    setTimeout(displayMapLegend(idTrajetory), 4000); // 24jul
+    //displayMapLegend(idTrajetory); // 24jul 
   }
   function plotSelectedTrajectory(){
 
@@ -1361,6 +1374,7 @@ div.space05 {
       }  
       mapa.addLayer(trajectoryLayerGroup); 
     }
+    flag_runing_js_function = false; //// 24 jul
   }
   
   function drawGridCell(index){
@@ -1576,8 +1590,8 @@ div.space05 {
             //dataType: 'json',
             success: function(retorno){ 
               if (retorno != ""){
-                alert("Download finished");
-              } else {alert(retorno)}
+                alert("Download finished, msg retorno = ", retorno);
+              } else {alert("msg retorno no success = ", retorno)}
             },
             error: function(){
               alert("error execution downloadClassification in the back-end");
@@ -1597,7 +1611,7 @@ div.space05 {
   }
   ///// Map Legend
   function displayMapLegend(id_traj){
-    //exibeAlertMsg(); ///novo 16jul
+    exibeAlertMsg(); ///novo 16jul
     alert("The Matching Cells calculation will be started.");//
     var colorCluster = "";
     var percentage = 0;
@@ -1662,8 +1676,8 @@ div.space05 {
       return div;
     };
 
-    
-    legend.addTo(mapa); 
+    setTimeout(() => {legend.addTo(mapa)}, 2000);// jul 24
+    //legend.addTo(mapa);   // jul 24 
     flagLegendExist = true;
     fechaAlertMsg(); // novo 16Jul 21jul
     alert("The Matching Cells calculation has been done.");
