@@ -289,7 +289,9 @@ div.space05 {
                         <option value="traj3">traj3</option> -->
                     </select>&nbsp;&nbsp;
                     
-                    <button type="button" id="btnShow" onclick="showTrajectory();" disabled>Show </button>
+                    <button type="button" id="btnShow" onclick="showTrajectory();" disabled>Plot </button>&nbsp; &nbsp;
+                    
+
                   </div> 
                   <div class="space05">
                     <br>
@@ -317,13 +319,20 @@ div.space05 {
                           <button id="btnSaveClassif"  onclick="btnClassifAnomaly();">Save</button>
                           
                 </fieldset>
+
+
+
               </div>
-              <!--
-              <div class="rightPanel">
-                <br><br>
+              
+              <div class="rightPanel" style="float: left;">
+                &nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;
+                <button type="button" id="btnShow_panel_matching_cells" onclick="show_panel_matching_cells();" disabled>Statistics Panel</button>
+                
+                <!--
                 <button type="button" id="btnFinish" onclick="finishTrajectoryAnalysis();" style="background-color: rgb(141, 163, 236);"disabled>Finish</button>
+                -->
               </div>
-              -->
+              
             </div>  
         </fieldset>  
       </div>  
@@ -1314,7 +1323,6 @@ div.space05 {
     
     var listBoxTraj = document.getElementById("listBoxTrajectories");
     idTrajetory = listBoxTraj.value;
-    //var count_idTrajetory = 1; //concluir contagem
     len = ais_Trajectory_AOI_ArrayFiltered.length;
 
     while (aisAOI_trajSelected.length) { //remove all the elements inside the array
@@ -1337,19 +1345,32 @@ div.space05 {
     trajectoryPointIndex = 0; /// 24 jul
     flag_runing_js_function = true;
     plotSelectedTrajectory(); // novo 29Jun
+    
+    //trajectoryPointIndex = 0; // 24 jul
+    setTimeout(drawGridCell(trajectoryPointIndex), 2000); // show the first AIS point of the trajectory
+    get_PercentageMatchCells();   //// 25 jul
+
     //var i = 0;
     //while (flag_runing_js_function = true){
     //  console.log("running js function - nr times = ", i);
     //  i = i + 1;
     //}
-    
-    //trajectoryPointIndex = 0; // 24 jul
-    setTimeout(drawGridCell(trajectoryPointIndex), 2000); // show the first AIS point of the trajectory
-    
     //alert("The selected trajectory has been plotting."); // 23 jul
-    setTimeout(displayMapLegend(idTrajetory), 4000); // 24jul
+    ///// original setTimeout(displayMapLegend(idTrajetory), 4000); // 25jul
     //displayMapLegend(idTrajetory); // 24jul 
   }
+
+  function show_panel_matching_cells(){  //// 25 jul
+    var listBoxTraj = document.getElementById("listBoxTrajectories");
+    idTrajetory = listBoxTraj.value;
+    displayMapLegend(idTrajetory); 
+
+    var btn = document.getElementById("btnShow_panel_matching_cells");
+    btn.disabled = true;
+  }
+
+
+
   function plotSelectedTrajectory(){
 
     var len = aisAOI_trajSelected.length;
@@ -1616,30 +1637,7 @@ div.space05 {
     var colorCluster = "";
     var percentage = 0;
     var idCluster = 0;
-    //const myTimeout = setTimeout(get_PercentageMatchCells, 5000);// novo 16jul
-    setTimeout(get_PercentageMatchCells(), 0);/// jul24
-    //get_PercentageMatchCells(); // jul 24
-    exibeAlertMsg(); ///novo 16jul
-    ///////////////////////////////////////////////////
-    //setTimeout(() => {
-            //console.log("Hi, I am the console.log inside setTimeout 2sec")
-        //},
-        //2000
-    //);
     
-    /*
-    /////////// sleep //////
-    let currentTime = Date.now() / 1000;
-    let expectedTime = currentTime + 2;
-    while (currentTime < expectedTime) {
-        currentTime = Date.now() / 1000;
-    }
-    /////////// fim sleep
-    */
-
-    //alert("The Matching Cells calculation has been started.");
-    //////////////////////////////////////////////////////////////////
-
     /*Legend specific*/
     if (flagLegendExist == true){
       mapa.removeControl(legend);///////
@@ -1678,13 +1676,37 @@ div.space05 {
       //div.innerHTML += '<i style="background: #477AC2; width:100px"></i>50%</br>';
       //div.innerHTML += '<i style="background: #ffffff; width:60px"></i>30% Not Match';
       return div;
+
+      //const myTimeout = setTimeout(get_PercentageMatchCells, 5000);// novo 16jul
+      ////// original ////////setTimeout(get_PercentageMatchCells(), 0);/// jul24
+      //get_PercentageMatchCells(); // jul 25
+      //exibeAlertMsg(); ///novo 16jul
+      ///////////////////////////////////////////////////
+      //setTimeout(() => {
+              //console.log("Hi, I am the console.log inside setTimeout 2sec")
+          //},
+          //2000
+      //);
+      
+      /*
+      /////////// sleep //////
+      let currentTime = Date.now() / 1000;
+      let expectedTime = currentTime + 2;
+      while (currentTime < expectedTime) {
+          currentTime = Date.now() / 1000;
+      }
+      /////////// fim sleep
+      */
+
+      //alert("The Matching Cells calculation has been started.");
+      //////////////////////////////////////////////////////////////////
     };
 
     setTimeout(() => {legend.addTo(mapa)}, 3000);// jul 24
     //legend.addTo(mapa);   // jul 24 
     flagLegendExist = true;
     fechaAlertMsg(); // novo 16Jul 21jul
-    alert("The Matching Cells calculation has been done.");
+    //alert("The Matching Cells calculation has been done.");
     
   }
   
@@ -1718,6 +1740,9 @@ div.space05 {
     df_ClusterTotalMatch = JSON.parse(retorno[1]);
     console.log("perc_pointsNotMatch = ", perc_pointsNotMatch);
     console.log("df_ClusterTotalMatch = \n", df_ClusterTotalMatch);
+    
+    var btn = document.getElementById("btnShow_panel_matching_cells"); // 25 jul
+    btn.disabled = false;
   
   }
   
