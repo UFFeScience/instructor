@@ -392,6 +392,9 @@ def checkLoginName():
         
     global global_fileNameExpert
     global global_loginName
+    global global_expert_df  #### 25jul
+    global global_expert_full_df  ###
+
     #global expertsID_df ##### 23 jul
     
     data = request.get_json() # 22 jul
@@ -407,7 +410,10 @@ def checkLoginName():
         if global_loginName == nameLoginFileCSV and expert_password == expertsID_df["password"][i]:
             #print ("linha 160 nome = ", nameLoginFileCSV)
             global_fileNameExpert = expertsID_df["filename"][i]
-        
+            expertCSV_File = "static/expertFiles/" + global_fileNameExpert
+            global_expert_df = pd.read_csv(expertCSV_File)### 25 jul
+            global_expert_full_df = pd.read_csv("static/expertFiles/expert_full.csv") # 25 jul
+            break #### 25 jul
     #print("filename = ", global_fileNameExpert)
     resposta = jsonify(global_fileNameExpert)
     resposta.headers.add("Access-Control-Allow-Origin", "*")
