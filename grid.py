@@ -114,7 +114,7 @@ def openHistoricalFileAndFilterAOI():
        
        ais_df_gridCells_json = ais_df_gridCells.to_json(orient='values')
        global_Historical_AIS_df_json = global_Historical_AIS_df.to_json(orient='values')
-       resposta = jsonify(global_Historical_AIS_df_json, id_TrajID, ais_df_gridCells_json)
+       #resposta = jsonify(global_Historical_AIS_df_json, id_TrajID, ais_df_gridCells_json)
        resposta = jsonify(global_Historical_AIS_df_json, ais_df_gridCells_json) 
        resposta.headers.add("Access-Control-Allow-Origin", "*")
 

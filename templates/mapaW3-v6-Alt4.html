@@ -1120,7 +1120,7 @@ div.space05 {
   function plotAisDataPanel(retorno){
     
     //console.log(retorno);
-    var ret = JSON.parse(retorno[0]); 
+    var ret = JSON.parse(retorno[0]); // historical AIS data ????
     gridCell_array = JSON.parse(retorno[1]); 
     
     var len = ret.length;
@@ -1316,12 +1316,14 @@ div.space05 {
     } 
     console.log("tamanho df_Clusters_LatLon = ", df_Clusters_LatLon.length);
     //console.log(df_Clusters_LatLon);
-
-
   }
 
   function showTrajectory(){
-    
+    exibeAlertMsg(); //26 jul
+    if (flagLegendExist == true){ /// 26 jul
+      mapa.removeControl(legend);///////
+    }
+
     var listBoxTraj = document.getElementById("listBoxTrajectories");
     idTrajetory = listBoxTraj.value;
     len = ais_Trajectory_AOI_ArrayFiltered.length;
@@ -1362,6 +1364,7 @@ div.space05 {
   }
 
   function show_panel_matching_cells(){  //// 25 jul
+    exibeAlertMsg(); // 26 jul
     var listBoxTraj = document.getElementById("listBoxTrajectories");
     idTrajetory = listBoxTraj.value;
     displayMapLegend(idTrajetory); 
@@ -1633,8 +1636,9 @@ div.space05 {
   }
   ///// Map Legend
   function displayMapLegend(id_traj){
-    exibeAlertMsg(); ///novo 16jul
-    alert("The Matching Cells calculation will be started.");//
+    
+    //alert("The Matching Cells calculation will be started.");//
+    //exibeAlertMsg(); ///reposicionado 25jul
     var colorCluster = "";
     var percentage = 0;
     var idCluster = 0;
@@ -1744,7 +1748,7 @@ div.space05 {
     
     var btn = document.getElementById("btnShow_panel_matching_cells"); // 25 jul
     btn.disabled = false;
-  
+    fechaAlertMsg(); // 26 jul
   }
   
   function concat_AIS_Files(){
