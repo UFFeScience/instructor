@@ -84,3 +84,21 @@ function exibeWindRose(s3, s7, s11, s15, s20, s99){
     Plotly.newPlot("vesselsSpeed", data, layout, config)
 }
 
+// used to show a blank WindRose in the page - first show
+function exibe_Blank_WindRose(){
+    var s3  = [0, 0, 0, 0, 0, 0, 0, 0];
+    var s7  = [0, 0, 0, 0, 0, 0, 0, 0];
+    var s11 = [0, 0, 0, 0, 0, 0, 0, 0];
+    var s15 = [0, 0, 0, 0, 0, 0, 0, 0];
+    var s20 = [0, 0, 0, 0, 0, 0, 0, 0];
+    var s99 = [0, 0, 0, 0, 0, 0, 0, 0];
+    
+    data[0].r = s3;
+    data[1].r = s7;
+    data[2].r = s11;
+    data[3].r = s15;
+    data[4].r = s20;
+    data[5].r = s99;
+    
+    Plotly.newPlot("vesselsSpeed", data, layout, config)
+}

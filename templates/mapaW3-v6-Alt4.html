@@ -213,7 +213,7 @@ div.space05 {
     </div>
   </div>
   <div class="rightcolumn">
-    <div class="card" id="cardSuperior" style="width: 100.0%; height:345px;">
+    <div class="card" id="cardSuperior" style="width: 100.0%; height:345px; opacity: 0.6;">
       
       <div id="aisData">
         <fieldset id="aisDataPanel" class="visible" >
@@ -229,7 +229,8 @@ div.space05 {
                 -->
                 <label for="clustering">Clustering:</label>
                     <select id="clustering" disabled onchange="GetSelectedClusteringValue(this)">
-                        <option value="1">None (Density plots only)</option>
+                        <!--<option value="1">None (Density plots only)</option>-->
+                        <option value="1">Automatic Mode</option>
                         <option value="2">Agglomerative Clustering</option>
                         <option value="3">BIRCH</option>
                         <option value="4">DBSCAN (Lat, Long)</option>
@@ -253,7 +254,7 @@ div.space05 {
                     -->
                     <fieldset id="parametersPanel" class="visible">  <!-- style="width:265px" -->
                       <legend>Clustering Parameters</legend>    
-                        <label id="lbl_inputParameter1">-- No parameters --</label>
+                        <label id="lbl_inputParameter1">Auto settings for an Ensemble Clustering</label>
                         <input type="text" id="inputParameter1" disabled value="0" class="not-visible" name="parameter1" size="2"/>&nbsp;
                       
                         <label id="lbl_inputParameter2"></label>
@@ -327,7 +328,7 @@ div.space05 {
               <div class="rightPanel" style="float: left;">
                 &nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;
                 <button type="button" id="btnShow_panel_matching_cells" onclick="show_panel_matching_cells();" disabled>Statistics Panel</button>
-                
+                <button type="button" id="btnPlay_trajectory" onclick="play_trajectory();" disabled>Play</button>
                 <!--
                 <button type="button" id="btnFinish" onclick="finishTrajectoryAnalysis();" style="background-color: rgb(141, 163, 236);"disabled>Finish</button>
                 -->
@@ -339,11 +340,13 @@ div.space05 {
       
     </div>
 
-    <div class="card" id="cardInferior" >
+    <div class="card" id="cardInferior" style="width: 100.0%; height:395px; opacity: 0.6;">
+      <!--
       <div id="aisPlotPanel" style="width: 100.0%; height:350px;" class="visible">
-      </div>
+      </div>  
+      -->
       
-      <div id="AISpointGridPanel" class="not-visible"> 
+      <div id="AISpointGridPanel" class="visible"> <!--original not-visible-->
         <fieldset id="AISpointPanel">
           <legend>AIS Selected Point from Trajectory</legend>
               Course: 
@@ -356,7 +359,7 @@ div.space05 {
         </fieldset>
       </div>
       
-      <div id="windRosePanel" class="not-visible">
+      <div id="windRosePanel" class="visible"> <!--original not-visible-->
         <div class="row">
           <div class="leftSubColumn">
             <div id="vesselsSpeed" style="width: 100.0%; height:330px;">
@@ -422,12 +425,12 @@ div.space05 {
 		maxZoom: 19, attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 	}).addTo(mapa);
 
-  var mapaAIS = L.map('aisPlotPanel').setView([-14,-38], 4);
-  L.control.scale().addTo(mapaAIS);
-
-	var tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-		maxZoom: 19, attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-	}).addTo(mapaAIS);
+  //var mapaAIS = L.map('aisPlotPanel').setView([-14,-38], 4); // removed 30 jul
+  //L.control.scale().addTo(mapaAIS);    // removed 30 jul
+  
+	//var tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+	//	maxZoom: 19, attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+	//}).addTo(mapaAIS);
 
   var markersLayerGroup = new L.LayerGroup(); 
   markersLayerGroup.addTo(mapa); 
@@ -465,6 +468,7 @@ div.space05 {
 
   const fileInput = document.getElementById('aoi_File'); // 22jul
 
+  exibe_Blank_WindRose(); // 30 jul added to show a blank WindRose at first time
   exibeAboutPage();
   
     //////////////////////////////////// FUNCTIONS ////////////////////////////////
@@ -482,8 +486,8 @@ div.space05 {
     var labelParam3 = ""
     
     switch(selIndex) {
-      case "1":  // None (Density plots only)
-        //labelParam1 = "-- No parameters --";
+      case "1":  // Automatic Mode 30 jul // Original None (Density plots only)
+        //labelParam1 = "Auto settings for an Ensemble Clustering";
         show_Parameters_labels_inputs(false, false, false, "", 0, "", 0, "", 0 )
         break;
 
@@ -604,7 +608,7 @@ div.space05 {
       $("#inputParameter1").addClass("not-visible");
     }
     if (!(p1 || p2 || p3)){
-      labelParameter1.innerHTML = "-- No parameters --"
+      labelParameter1.innerHTML = "Auto settings for an Ensemble Clustering"
     }
   }
 
@@ -679,26 +683,27 @@ div.space05 {
     var localZoom = local;
     if (localZoom == 1){
       mapa.setView([-14, -38], 4);
-      mapaAIS.setView([-14, -38], 3);
+      //mapaAIS.setView([-14, -38], 3);
     }
     if (localZoom == 2){
       mapa.setView([39, -73], 4);
-      mapaAIS.setView([39, -73], 3);
+      //mapaAIS.setView([39, -73], 3);
     }
 		if (localZoom == 3){
       mapa.setView([3, 5], 4);
-      mapaAIS.setView([3, 5], 3);
+      //mapaAIS.setView([3, 5], 3);
 
     }
     if (localZoom == 4){
       mapa.setView([-24, 112], 4);
-      mapaAIS.setView([-24, 112], 3);
+      //mapaAIS.setView([-24, 112], 3);
     }
     if (localZoom == 5){
       mapa.setView([45, 0], 4);
-      mapaAIS.setView([45, 0], 3);
+      //mapaAIS.setView([45, 0], 3);
     }
   };
+
   function removeArea(){
     if (flagPolygon == true){
       mapa.removeLayer(markersLayerGroup); 
@@ -813,7 +818,7 @@ div.space05 {
     gerarPoligono();
     mapa.setView([latMedAOI, (lonInfAOI + lonSupAOI)/2], 8);
     ///////// jul22
-    mapaAIS.setView([latMedAOI, (lonInfAOI + lonSupAOI)/2], 7);  // 22jul
+    //mapaAIS.setView([latMedAOI, (lonInfAOI + lonSupAOI)/2], 7);  // added 22jul //removed 30jul
   }
    //create a user-defined function to download CSV file   
   function download_csv_file() {  
@@ -929,7 +934,9 @@ div.space05 {
     if (flagGridCreation == true){
       var btn = document.getElementById("btnSelectAIS_File");
       btn.disabled = false;  
-      //loadExpertFile(); // jul25
+      
+      var card = document.getElementById("cardSuperior"); // 30 jul
+      card.style.opacity = 1.0; // 30 jul
     }
     else {
       alert("It must have a Grid created.")
@@ -1140,7 +1147,8 @@ div.space05 {
             fillColor: '#f03',
             fillOpacity: 0.5,
             radius: 30
-          }).addTo(mapaAIS);
+          //}).addTo(mapaAIS); // removed 30 jul
+          }).addTo(mapa);       // added 30 jul
       }  
       fechaAlertMsg(); 
       alert("The plotting processing has been done."); 
@@ -1168,17 +1176,20 @@ div.space05 {
   function aisPlotFile(){
     alert("This action may be extended for one or more minutes after closing this message. At the end another message will inform the status.");  
     exibeAlertMsg();
-    $("#windRosePanel").removeClass("visible");
-    $("#windRosePanel").addClass("not-visible");
+    //$("#windRosePanel").removeClass("visible"); // removed 30 jul
+    //$("#windRosePanel").addClass("not-visible"); // removed 30 jul
     $("#aisPlotPanel").removeClass("not-visible");
     $("#aisPlotPanel").addClass("visible");
 
-    polygon = L.polygon(pontos, {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", 			"noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 1}
-                    ).addTo(mapaAIS);
+    //polygon = L.polygon(pontos, {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", 			"noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 1}
+    //                ).addTo(mapaAIS); // jul 30
+
     const [latInfAOI, latSupAOI, lonInfAOI, lonSupAOI, latMedAOI] = findMinMax(pontos);
     
-    mapaAIS.setView([latMedAOI, (lonInfAOI + lonSupAOI)/2], 6);
+    //mapaAIS.setView([latMedAOI, (lonInfAOI + lonSupAOI)/2], 6);  //30 jul
     AISplotPanel();
+    //var card = document.getElementById("cardInferior"); // 30 jul
+    //card.style.opacity = 1.0; // 30 jul
   }
 
   function enableTrajectoryPanel(){
@@ -1358,9 +1369,15 @@ div.space05 {
     //  console.log("running js function - nr times = ", i);
     //  i = i + 1;
     //}
-    //alert("The selected trajectory has been plotting."); // 23 jul
+    fechaAlertMsg(); // 30 jul
+    alert("The selected trajectory has been plotting with yellow circle marks."); // 30 jul
     ///// original setTimeout(displayMapLegend(idTrajetory), 4000); // 25jul
     //displayMapLegend(idTrajetory); // 24jul 
+    var btn = document.getElementById("btnPlay_trajectory"); // 31 jul
+    btn.disabled = false;   // 31 jul
+
+    var card = document.getElementById("cardInferior"); // 30 jul
+    card.style.opacity = 1.0; // 30 jul
   }
 
   function show_panel_matching_cells(){  //// 25 jul
@@ -1526,6 +1543,26 @@ div.space05 {
       }
     } 
   }
+  function play_trajectory(){
+    
+    //while (trajectoryPointIndex < aisAOI_trajSelected.length -1){
+    if (trajectoryPointIndex != aisAOI_trajSelected.length -1){
+      btnNext();
+      setTimeout(play_trajectory, 300); 
+    } else {
+      //trajectoryPointIndex = 0;
+      //drawGridCell(trajectoryPointIndex);
+
+      var btn = document.getElementById("btnPrevious");
+      btn.disabled = true;
+      btn = document.getElementById("btnNext");
+      btn.disabled = false;
+      showTrajectory();
+      return
+    }  
+  }
+
+
   function selectDatasetFile(){
     $.ajax({
             url: "{{ url_for('selectDatasetFile') }}",
