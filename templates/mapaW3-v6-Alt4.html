@@ -56,16 +56,17 @@ div.space05 {
 
     <button onclick="fechaAboutPage();" style="display:block; margin: 0 auto; background-color: rgb(141, 163, 236);">Close</button>
 </dialog>
-<!--
-<dialog class="dialogoAlert" id="AlertMsg">
+
+<dialog class="dialogoInfo" id="Info_Msg">
   <div style="text-align: left;">
-    <img src="/static/waiting-icon-star.gif" style="float: inline-start;" width="50" height="50">
-    <h3>&nbsp; &nbsp; Please wait for the processing.</h3>
+    <h2>Login Sucessfull!</h2><br>
+    <h2>The <span style="color: white; background-color: rgb(90, 47, 158);"> highlighted </span> 
+       itens indicate the next action available/recomended to be executed.</h2>
+    <!-- -->
+    <button onclick="fechaInfo_Msg();" style="display:block; margin: 0 auto; background-color: rgb(141, 163, 236);">Ok</button>
   </div>
-   
-  <button onclick="fechaAlertMsg();" style="display:block; margin: 0 auto; background-color: rgb(141, 163, 236);">Ok</button>
 </dialog>
--->
+
 <dialog class="dialogoAlert" id="AlertMsg">
   <div style="text-align: left;">
     <img src="/static/waiting-icon-star.gif" style="float: inline-start;" width="50" height="50">
@@ -143,7 +144,7 @@ div.space05 {
 
 <div class="topnav" id="myTopnav">
   <div class="subnav">
-    <button class="subnavbtn">Map Set View <i class="fa fa-caret-down"></i></button>
+    <button class="subnavbtn" id="btn_Map_Set_View" >Map Set View <i class="fa fa-caret-down"></i></button>
     <div class="subnav-content">
       <a href="#" onclick="centralizarMapa(3);">Africa West Coast</a>
       <a href="#" onclick="centralizarMapa(4);">Australia West Coast</a>
@@ -154,9 +155,9 @@ div.space05 {
     </div>
   </div> 	
   <div class="subnav">
-    <button class="subnavbtn">Area of Interest (AOI) <i class="fa fa-caret-down"></i></button>
+    <button class="subnavbtn" id="btn_AOI" >Area of Interest (AOI) <i class="fa fa-caret-down"></i></button>
     <div class="subnav-content">
-      <a href="#" onclick="removeArea();" id="removeArea">Remove</a>
+      <a href="#" onclick="removeArea();" id="removeArea" >Remove</a>
       <a href="#" onclick="select_AOI_File();" id="select_AOI_File">Load File</a>
       <!--
       <a href="#" onclick="loadArea2();" id="loadAOI">Load File</a>
@@ -168,7 +169,7 @@ div.space05 {
   </div>
     
   <div class="subnav">
-    <button class="subnavbtn">Grid Creation (Cell Size) <i class="fa fa-caret-down"></i></button>
+    <button class="subnavbtn" id="btn_Grid_Creation" >Grid Creation (Cell Size) <i class="fa fa-caret-down"></i></button>
     <div class="subnav-content">
       <a href="#" onclick="setSizeCell(100);">100m </a>
       <a href="#" onclick="setSizeCell(200);">200m </a>
@@ -185,7 +186,7 @@ div.space05 {
   </div>
   -->
   <div class="subnav">
-    <button class="subnavbtn">Trajectory Data <i class="fa fa-caret-down"></i></button>
+    <button class="subnavbtn" id="btn_Trajectory_Data">Trajectory Data <i class="fa fa-caret-down"></i></button>
     <div class="subnav-content">
       <a href="#" onclick="enable_AIS_File_btn();">Analysis (side panel)</a>
       
@@ -197,7 +198,7 @@ div.space05 {
 
 
   <div class="subnav">
-    <button class="subnavbtn">Help <i class="fa fa-caret-down"></i></button>
+    <button class="subnavbtn" id="btn_Help">Help <i class="fa fa-caret-down"></i></button>
     <div class="subnav-content">
       <a href="#" onclick="exibeInstructions();">Instructions</a>
       <a href="#" onclick="exibeAboutPage();" id="showAboutPage">About</a>
@@ -213,9 +214,9 @@ div.space05 {
     </div>
   </div>
   <div class="rightcolumn">
-    <div class="card" id="cardSuperior" style="width: 100.0%; height:345px; opacity: 0.6;">
+    <div class="card" id="cardSuperior" style="width: 100.0%; height:345px;">
       
-      <div id="aisData">
+      <div id="aisData" style="opacity: 0.4;"> <!-- 02 Ago -->
         <fieldset id="aisDataPanel" class="visible" >
           <legend>Historical Trajectories - AIS Data Clustering</legend>
             <div class="space">
@@ -271,7 +272,7 @@ div.space05 {
         </fieldset>
       </div> 
       <br>
-      <div id="trajectory">
+      <div id="trajectory" style="opacity: 0.4;"> <!-- 02 Ago -->
         <fieldset id="trajectoryPanel" class="visible">
               <legend>New Trajectories - AIS Data Analysis</legend>
                   <div class="space">
@@ -340,13 +341,13 @@ div.space05 {
       
     </div>
 
-    <div class="card" id="cardInferior" style="width: 100.0%; height:395px; opacity: 0.6;">
+    <div class="card" id="cardInferior" style="width: 100.0%; height:395px; "> <!-- 02 ago -->
       <!--
       <div id="aisPlotPanel" style="width: 100.0%; height:350px;" class="visible">
       </div>  
       -->
       
-      <div id="AISpointGridPanel" class="visible"> <!--original not-visible-->
+      <div id="AISpointGridPanel" class="visible" style="opacity: 0.4;"> <!--original not-visible-->
         <fieldset id="AISpointPanel">
           <legend>AIS Selected Point from Trajectory</legend>
               Course: 
@@ -359,7 +360,7 @@ div.space05 {
         </fieldset>
       </div>
       
-      <div id="windRosePanel" class="visible"> <!--original not-visible-->
+      <div id="windRosePanel" class="visible" style="opacity: 0.4;"> <!--original not-visible--> <!-- 02 ago -->
         <div class="row">
           <div class="leftSubColumn">
             <div id="vesselsSpeed" style="width: 100.0%; height:330px;">
@@ -401,6 +402,7 @@ div.space05 {
   //const modal = document.querySelector("dialog");  //funciona
   const modalAbout = document.getElementById("aboutPage");
   const modalLogin = document.getElementById("loginPage"); 
+  const modalInfo = document.getElementById("Info_Msg"); // 03 ago
   const modalInstructions = document.getElementById("instructionsPage");
   const modalAlert = document.getElementById("AlertMsg");
 
@@ -418,7 +420,8 @@ div.space05 {
 	
 	pontos.pop()
     	
-	var mapa = L.map('mapa').setView([-14,-38], 4);
+	//var mapa = L.map('mapa').setView([-14,-38], 4);
+  var mapa = L.map('mapa').setView([0,0], 4);
   L.control.scale().addTo(mapa);
 
 	var tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -476,6 +479,33 @@ div.space05 {
   fileInput.addEventListener('change', event => { // 22Jul
     loadArea2();
   });
+  
+  function highlight_element_HMI(normal, highlight){
+
+    if (normal != ""){
+      var elemento = document.getElementById(normal); // 02 Ago
+      elemento.style.backgroundColor = "inherit";
+    }
+    if (highlight != ""){
+      var elemento = document.getElementById(highlight); // 02 Ago
+      elemento.style.backgroundColor = "rgb(90, 47, 158)";
+    }
+  }
+  
+  function highlight_element_HMI_button(normal, highlight){
+    
+    if (normal != ""){
+      var elemento = document.getElementById(normal); // 02 Ago
+      elemento.style.backgroundColor = "#f0f0f0"; //"LightGrey";
+      elemento.style.color = "black";
+    }
+    if (highlight != ""){
+      var elemento = document.getElementById(highlight); // 02 Ago
+      elemento.style.backgroundColor = "rgb(90, 47, 158)";
+      elemento.style.color = "white";
+    }
+
+  }
 
   function GetSelectedClusteringValue(clustering) {
     var selText = clustering.options[clustering.selectedIndex].innerHTML;
@@ -666,8 +696,10 @@ div.space05 {
               ).addTo(mapa);
           console.table(pontos);
       mapa.removeLayer(markersLayerGroup);
+      
+      highlight_element_HMI("btn_Map_Set_View", "");  // 02 ago
+      highlight_element_HMI("btn_AOI", "btn_Grid_Creation"); // 02 Ago
       flagPolygon = true;
-      /////////// 22jul
     }
     else {
       if (flagPolygon == true){
@@ -690,7 +722,7 @@ div.space05 {
       //mapaAIS.setView([39, -73], 3);
     }
 		if (localZoom == 3){
-      mapa.setView([3, 5], 4);
+      mapa.setView([0, 0], 4);
       //mapaAIS.setView([3, 5], 3);
 
     }
@@ -702,6 +734,10 @@ div.space05 {
       mapa.setView([45, 0], 4);
       //mapaAIS.setView([45, 0], 3);
     }
+    var elemento = document.getElementById("btn_Map_Set_View"); // 02 Ago
+    elemento.style.backgroundColor = "inherit";
+    elemento = document.getElementById("btn_AOI"); // 02 Ago
+    elemento.style.backgroundColor = "rgb(90, 47, 158)";
   };
 
   function removeArea(){
@@ -719,6 +755,8 @@ div.space05 {
           cellsLayerGroup.clearLayers(); //recente
           flagGridCreation = false;
       }
+      highlight_element_HMI("btn_Grid_Creation", "btn_AOI"); // 02 ago
+
     } else {
       alert("There is no area to be removed.")
     }
@@ -762,6 +800,8 @@ div.space05 {
               
           }
           myReader.readAsText(theFile.files[0]);  //call file reader onload
+          highlight_element_HMI("btn_Map_Set_View", "");  // 02 ago
+          highlight_element_HMI("btn_AOI", "btn_Grid_Creation"); // 02 Ago
         }
         else {
            alert("This browser does not support HTML5.");
@@ -919,6 +959,7 @@ div.space05 {
         }   
         
         mapa.addLayer(cellsLayerGroup); 
+        highlight_element_HMI("btn_Grid_Creation", "btn_Trajectory_Data"); // 02 ago
         flagGridCreation = true;
     } else {
       alert("To create a Grid it would have an Area of Interest.")};
@@ -935,8 +976,11 @@ div.space05 {
       var btn = document.getElementById("btnSelectAIS_File");
       btn.disabled = false;  
       
-      var card = document.getElementById("cardSuperior"); // 30 jul
+      var card = document.getElementById("aisData"); // 30 jul // alter 02 Ago 
       card.style.opacity = 1.0; // 30 jul
+      highlight_element_HMI("btn_Trajectory_Data", "");
+      highlight_element_HMI_button("", "btnSelectAIS_File");
+
     }
     else {
       alert("It must have a Grid created.")
@@ -955,6 +999,14 @@ div.space05 {
         })
     }
   
+  function exibeInfo_Msg(){
+    modalInfo.showModal()
+  }
+  function fechaInfo_Msg(){
+    modalInfo.close()
+    highlight_element_HMI("", "btn_Map_Set_View"); // 03 ago
+  }
+
   function exibeAlertMsg(){
     flag_active_back_end_process = false; ////novo 19jul
     modalAlert.showModal()
@@ -1007,7 +1059,9 @@ div.space05 {
       alert("The name, password or both are unknown. Please try again.");
     } else {
       modalLogin.close();
-      alert("Arquivo de classificação carregado"); /// 25 jul
+      exibeInfo_Msg(); // 03 ago
+      //highlight_element_HMI("", "btn_Map_Set_View"); // removed 03 ago
+      //alert("Arquivo de classificação carregado"); /// 25 jul // removed 02 ago
       //loadExpertFile(); // jul23
     }
   }
@@ -1101,6 +1155,7 @@ div.space05 {
 
     var btn = document.getElementById("btnPlot");
     btn.disabled = false;
+    highlight_element_HMI_button("btnSelectAIS_File", "btnPlot"); // 02 ago
   }
  
   function AISplotPanel(){
@@ -1164,6 +1219,8 @@ div.space05 {
 
       btn = document.getElementById("btnApply");
       btn.disabled = false;
+      highlight_element_HMI_button("btnPlot", "clustering"); // 02 ago
+      highlight_element_HMI_button("", "btnApply");
 
     } else {
       alert("arquivo selecionado não possui dados de AIS no Grid/AOI selecionada");
@@ -1319,9 +1376,14 @@ div.space05 {
       }  
       fechaAlertMsg(); 
       alert("The Clustering plotting processing has been done."); 
+
+      var element = document.getElementById("trajectory"); // 02 Ago
+      element.style.opacity = 1.0; // 02 Ago
+
       var btn = document.getElementById("btnLoadDatasets_File");
       btn.disabled = false;
-      
+      highlight_element_HMI_button("clustering", ""); // 02 ago
+      highlight_element_HMI_button("btnApply", "btnLoadDatasets_File");
     } else {
       alert("erro na execução plotDBSCAN_LAT-LON");
     } 
@@ -1378,6 +1440,11 @@ div.space05 {
 
     var card = document.getElementById("cardInferior"); // 30 jul
     card.style.opacity = 1.0; // 30 jul
+    highlight_element_HMI_button("listBoxTrajectories", ""); // 02 ago
+    highlight_element_HMI_button("btnShow", "btnShow_panel_matching_cells");
+    highlight_element_HMI_button("", "btnPlay_trajectory");
+    highlight_element_HMI_button("", "btnNext");
+  
   }
 
   function show_panel_matching_cells(){  //// 25 jul
@@ -1388,6 +1455,7 @@ div.space05 {
 
     var btn = document.getElementById("btnShow_panel_matching_cells");
     btn.disabled = true;
+    highlight_element_HMI_button("btnShow_panel_matching_cells", ""); // 02 ago
   }
 
 
@@ -1415,7 +1483,18 @@ div.space05 {
         
       }  
       mapa.addLayer(trajectoryLayerGroup); 
+
+      var element = document.getElementById("AISpointGridPanel"); // 02 Ago
+      element.style.opacity = 1.0; // 02 Ago
+
+      element = document.getElementById("windRosePanel"); // 02 Ago
+      element.style.opacity = 1.0; // 02 Ago
+    } else {
+      alert("The trajectory selected is empty");
     }
+
+
+
     flag_runing_js_function = false; //// 24 jul
   }
   
@@ -1541,6 +1620,7 @@ div.space05 {
         btn = document.getElementById("btnNext");
         btn.disabled = true;
       }
+      highlight_element_HMI_button("btnNext", "");  //02 ago
     } 
   }
   function play_trajectory(){
@@ -1560,6 +1640,8 @@ div.space05 {
       showTrajectory();
       return
     }  
+    highlight_element_HMI_button("btnPlay_trajectory", "");  // 02 ago
+    
   }
 
 
@@ -1594,6 +1676,7 @@ div.space05 {
     
     var btn = document.getElementById("btnLoadDataset");
     btn.disabled = false;
+    highlight_element_HMI_button("btnLoadDatasets_File", "btnLoadDataset"); // 02ago
   }
   
   function loadDatasetFile(){
@@ -1631,8 +1714,14 @@ div.space05 {
         ais_Trajectory_AOI_ArrayFiltered.push(ret[i]);
       }  
       loadSelectBoxTrajectories(totalTraj);
+      btn = document.getElementById("btnShow"); // novo 21Mai // realocado do final 02 ago
+      btn.disabled = false;
+      highlight_element_HMI_button("btnLoadDataset", "listBoxTrajectories"); //02 ago
+      highlight_element_HMI_button("", "btnShow" ); //
+
       fechaAlertMsg();
       alert("The AIS data processing has been done."); 
+
       
     } else {
       fechaAlertMsg();
@@ -1641,8 +1730,7 @@ div.space05 {
     console.log("tamanho ais_Trajectory_AOI_ArrayFiltered = ", ais_Trajectory_AOI_ArrayFiltered.length);
     //console.log(ais_Trajectory_AOI_ArrayFiltered);
     
-    btn = document.getElementById("btnShow"); // novo 21Mai
-    btn.disabled = false;
+    
   }
 
   function downloadClassificationFile(){

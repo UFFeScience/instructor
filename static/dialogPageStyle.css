@@ -25,3 +25,10 @@ dialog {
     border-radius: .5rem;
     width: 50%;
 }
+
+.dialogoInfo{
+    background-color: #4fabf7;
+    max-width: 550px;
+    border-radius: .5rem;
+    width: 50%;
+}
