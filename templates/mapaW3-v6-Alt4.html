@@ -1434,9 +1434,6 @@ div.space05 {
     }  
     exibeAlertMsg(); 
     //seleciona o clustering
-    //////////// 
-     ////////////////// 06 ago
-
     /*
     if (idClustering == 1){
       applyNoneClustering(len);
@@ -1457,16 +1454,12 @@ div.space05 {
       });
       */
       (async () => {
-        let response = await setTimeout(exec_applyClustering(dados), 1500);
-        await response; 
+        let response = await exec_applyClustering(dados);
+        //await response; 
       })();
 
     //}
-    //////////////
-
     
-    //////////////
-
     enableTrajectoryPanel();
     console.log("passou no ajax applyClustering");
     fechaAlertMsg(); // 06 ago
@@ -1475,7 +1468,7 @@ div.space05 {
     //}
   }
 
-  function exec_applyClustering(dados){
+  async function exec_applyClustering(dados){
 
     $.ajax({
       url: "{{ url_for('applyClustering') }}",
