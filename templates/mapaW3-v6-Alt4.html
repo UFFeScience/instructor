@@ -1437,6 +1437,7 @@ div.space05 {
       applyNoneClustering(len);
       fechaAlertMsg(); // novo 4Jul
     } else {
+      /*
       $.ajax({
         url: "{{ url_for('applyClustering') }}",
         type: "POST",
@@ -1449,13 +1450,40 @@ div.space05 {
           alert("erro execução Post para applyClustering");
         }
       });
+      */
+      (async () => {
+        let response = await exec_applyClustering(dados);
+        await response; 
+      })();
+
     }
+    //////////////
+    
+    //////////////
+
     enableTrajectoryPanel();
     console.log("passou no ajax applyClustering");
     //while (flag_active_back_end_process == true) {
     //  console.log("Waiting for back-end process to finish");
     //}
   }
+
+  function exec_applyClustering(dados){
+
+    $.ajax({
+      url: "{{ url_for('applyClustering') }}",
+      type: "POST",
+      dataType: 'json',
+      contentType: 'application/json',
+      data: dados,
+      success: plot_Clustering_LatLon,
+      error: function(){
+        fechaAlertMsg();
+        alert("erro execução Post para applyClustering");
+      }
+    });
+  }
+
   function applyNoneClustering(length){
 
     for (var i = 0; i < length; i++) {
