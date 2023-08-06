@@ -125,7 +125,7 @@ def applyClustering():
     global_Historical_AIS_df ##### jul23
     global global_df_Cluster
 
-    historical_AIS_df = global_Historical_AIS_df.copy()  #######
+    #historical_AIS_df = global_Historical_AIS_df.copy()  #######
 
     if request.method == 'POST':
        
@@ -143,7 +143,7 @@ def applyClustering():
        parameter2 = data[6]
        parameter3 = data[7]
 
-       ais_clustered_df, clusterTable_df = clt.select_and_applyclustering(historical_AIS_df, id_clustering, 
+       ais_clustered_df, clusterTable_df = clt.select_and_applyclustering(global_Historical_AIS_df, id_clustering, 
                                                                     llon, ulon, llat, ulat, parameter1, parameter2, parameter3)
        
        global_df_Cluster = ais_clustered_df.copy() 
