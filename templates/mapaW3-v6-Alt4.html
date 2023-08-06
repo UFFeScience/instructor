@@ -231,9 +231,9 @@ div.space05 {
           <legend>Historical Trajectories - AIS Data Clustering</legend>
             <div class="space">
               <div>    
-                <button type="button" id="btnSelectAIS_File" disabled onclick="selectAIS_File();">Select File</button>
+                <button type="button" id="btnSelectAIS_File" disabled onclick="async_selectAIS_File();">Select File</button>
                 <input type="text" id="inputTxtFileName" name="Name" disabled/>
-                <button id="btnPlot" onclick="aisPlotFile();" disabled>Plot</button>&nbsp;
+                <button id="btnPlot" onclick="async_aisPlotFile();" disabled>Plot</button>&nbsp;
                 <!--
                 <br>
                 -->
@@ -272,7 +272,7 @@ div.space05 {
                     <label id="lbl_inputParameter3"></label>
                     <input type="text" id="inputParameter3" disabled value="0" class="not-visible" name="parameter3" size="2"/>&nbsp;
                   
-                    <button type="button" id="btnApply" onclick="applyClustering();" disabled>Apply</button>
+                    <button type="button" id="btnApply" onclick="async_applyClustering();" disabled>Apply</button>
                                 
                 </fieldset>  
               </div>
@@ -285,9 +285,9 @@ div.space05 {
               <legend>New Trajectories - AIS Data Analysis</legend>
                   <div class="space">
                     
-                    <button type="button" id="btnLoadDatasets_File" onclick="selectDatasetFile();" disabled>Select Dataset </button>
+                    <button type="button" id="btnLoadDatasets_File" onclick="async_selectDatasetFile();" disabled>Select Dataset </button>
                     <input type="text" id="inputDataSetsFileName" name="datasetsName" disabled/>
-                    <button id="btnLoadDataset" onclick="loadDatasetFile();" disabled>Load</button>&nbsp;&nbsp;&nbsp;
+                    <button id="btnLoadDataset" onclick="async_loadDatasetFile();" disabled>Load</button>&nbsp;&nbsp;&nbsp;
                     <!--
                     <br>
                     -->
@@ -299,7 +299,7 @@ div.space05 {
                         <option value="traj3">traj3</option> -->
                     </select>&nbsp;&nbsp;
                     
-                    <button type="button" id="btnShow" onclick="showTrajectory();" disabled>Plot </button>&nbsp; &nbsp;
+                    <button type="button" id="btnShow" onclick="async_showTrajectory();" disabled>Plot </button>&nbsp; &nbsp;
                     
 
                   </div> 
@@ -982,9 +982,18 @@ div.space05 {
   }
   function setSizeCell(size){
     cellSize = size;
-    //console.log("cell size = ", cellSize);
-    gridCreation(); /// 22jul
+    
+    //gridCreation(); // original 06 Ago
+    /////////  teste
+    (async () => {
+      let response = await gridCreation();
+      await response; ///gridCreation;
+      //let user = await response; ///gridCreation;
+    
+    })();
+    /////////////
   }  
+
   function gridCreation(){
     exibeAlertMsg();
     alert("The Grid construction takes a few seconds depending on the area size");
@@ -1222,6 +1231,17 @@ div.space05 {
   function fechaInstructions(){
     modalInstructions.close()
   }
+
+  function async_selectAIS_File(){
+    (async () => {
+      let response = await selectAIS_File();
+      await response; ///gridCreation;
+      //let user = await response; ///gridCreation;
+    
+    })();
+  }
+
+
   function selectAIS_File(){
     $.ajax({
             url: "{{ url_for('selectAIS_File') }}",
@@ -1326,6 +1346,16 @@ div.space05 {
     fechaAlertMsg(); //////////////// novo 19jul
   }
 
+  function async_aisPlotFile(){
+    (async () => {
+      let response = await aisPlotFile();
+      await response; ///gridCreation;
+      //let user = await response; ///gridCreation;
+    
+    })();
+  }
+
+
   function aisPlotFile(){
     alert("This action may be extended for one or more minutes after closing this message. At the end another message will inform the status.");  
     exibeAlertMsg();
@@ -1372,6 +1402,17 @@ div.space05 {
     $("#windRosePanel").removeClass("not-visible");
     $("#windRosePanel").addClass("visible");
   }
+
+  function async_applyClustering(){
+
+    (async () => {
+      let response = await applyClustering();
+      await response; 
+        
+    })();
+  }
+
+
   function applyClustering(){
     
     var listBoxClustering = document.getElementById("clustering");
@@ -1487,8 +1528,19 @@ div.space05 {
     //console.log(df_Clusters_LatLon);
   }
 
+
+  function async_showTrajectory(){
+    exibeAlertMsg();///
+    (async () => {
+      let response = await showTrajectory();
+      await response; 
+    
+    })();
+    fechaAlertMsg();//
+  }
+
   function showTrajectory(){
-    exibeAlertMsg(); //26 jul
+    //exibeAlertMsg(); //26 jul
     if (flagLegendExist == true){ /// 26 jul
       mapa.removeControl(legend);///////
     }
@@ -1527,7 +1579,7 @@ div.space05 {
     //  console.log("running js function - nr times = ", i);
     //  i = i + 1;
     //}
-    fechaAlertMsg(); // 30 jul
+    //fechaAlertMsg(); // 30 jul
     alert("The selected trajectory has been plotting with yellow circle marks."); // 30 jul
     ///// original setTimeout(displayMapLegend(idTrajetory), 4000); // 25jul
     //displayMapLegend(idTrajetory); // 24jul 
@@ -1743,6 +1795,13 @@ div.space05 {
     
   }
 
+  function async_selectDatasetFile(){
+    (async () => {
+      let response = await selectDatasetFile();
+      await response; 
+    
+    })();
+  }
 
   function selectDatasetFile(){
     $.ajax({
@@ -1778,6 +1837,16 @@ div.space05 {
     highlight_element_HMI_button("btnLoadDatasets_File", "btnLoadDataset"); // 02ago
   }
   
+  function async_loadDatasetFile(){
+
+    (async () => {
+      let response = await loadDatasetFile();
+      await response; 
+    
+    })();
+  }
+
+
   function loadDatasetFile(){
     alert("This action may be extended for one or more minutes after closing this message. At the end another message will inform the status.");  
     exibeAlertMsg(); 
