@@ -54,18 +54,28 @@ div.space05 {
 
     <p>The site was developed and designed by Claudio V. Ribeiro as part of studies in his P.H.D. course.</p>
 
-    <button onclick="fechaAboutPage();" style="display:block; margin: 0 auto; background-color: rgb(141, 163, 236);">Close</button>
+    <button onclick="fechaAboutPage();" autofocus style="display:block; margin: 0 auto; background-color: rgb(141, 163, 236);">Close</button>
 </dialog>
 
 <dialog class="dialogoInfo" id="Info_Msg">
   <div style="text-align: left;">
     <h2>Login Sucessfull!</h2><br>
-    <h2>The <span style="color: white; background-color: rgb(90, 47, 158);"> highlighted </span> 
+    <h2>The <span style="color: #e71d89; background-color: black;"> highlighted </span> 
        itens indicate the next action available/recomended to be executed.</h2>
     <!-- -->
-    <button onclick="fechaInfo_Msg();" style="display:block; margin: 0 auto; background-color: rgb(141, 163, 236);">Ok</button>
+    <button onclick="fechaInfo_Msg();" autofocus style="display:block; margin: 0 auto; background-color: rgb(141, 163, 236);"> Ok </button>
   </div>
 </dialog>
+
+<dialog class="dialogoInfo" id="Restart_Confirmation_Msg">
+  <div style="text-align: center;">
+    <h2>This action will restart the page.<br>Do you confirm it?</h2><br>
+        <!-- -->
+    <button type="button" onclick="restart_app();" style="background-color: rgb(141, 163, 236); text-align: center;"> Yes </button>&nbsp;&nbsp;&nbsp;&nbsp;
+    <button type="button" onclick="close_restart_page();" autofocus style="background-color: rgb(141, 163, 236); text-align: center;"> No </button>
+  </div>
+</dialog>
+
 
 <dialog class="dialogoAlert" id="AlertMsg">
   <div style="text-align: left;">
@@ -87,7 +97,7 @@ div.space05 {
   Password:<br>
   <input type="password" id="inputTxtPassword" name="password" /><br><br>
   
-  <button onclick="fechaLoginPage();" style="display:block; margin: 0 auto; background-color: rgb(141, 163, 236);">Login</button>
+  <button id="btn_fechaLogin" onclick="fechaLoginPage();" style="display:block; margin: 0 auto; background-color: rgb(141, 163, 236);">Login</button>
 </dialog>
 
 <dialog class="dialogo"    id="instructionsPage">
@@ -133,7 +143,7 @@ div.space05 {
   - Mouse Scrolling: up -> zoom in; down -> zoom out.
   </p>
 
-   <button onclick="fechaInstructions();" style="display:block; margin: 0 auto; background-color: rgb(141, 163, 236);">Close</button>
+   <button onclick="fechaInstructions();" autofocus style="display:block; margin: 0 auto; background-color: rgb(141, 163, 236);">Close</button>
 </dialog>
 
 <div class="header">
@@ -143,7 +153,7 @@ div.space05 {
 <!---------------------------------------- MENU----------------------------------->
 
 <div class="topnav" id="myTopnav">
-  <div class="subnav">
+  <div class="subnav" id="subnav_menu_item">
     <button class="subnavbtn" id="btn_Map_Set_View" >Map Set View <i class="fa fa-caret-down"></i></button>
     <div class="subnav-content">
       <a href="#" onclick="centralizarMapa(3);">Africa West Coast</a>
@@ -163,7 +173,7 @@ div.space05 {
       <a href="#" onclick="loadArea2();" id="loadAOI">Load File</a>
       -->
       <a href="#" onclick="gerarPoligono();" id="geraAOI">Create</a>
-      <a href="#" onclick="download_csv_file();">Save into a File</a>
+      <a href="#" onclick="download_csv_file();" id="saveAOI" >Save into a File</a>
       <input type="file" id="aoi_File" accept=".csv" class="not-visible" /> <!--novo 11jul-->
     </div>
   </div>
@@ -188,7 +198,7 @@ div.space05 {
   <div class="subnav">
     <button class="subnavbtn" id="btn_Trajectory_Data">Trajectory Data <i class="fa fa-caret-down"></i></button>
     <div class="subnav-content">
-      <a href="#" onclick="enable_AIS_File_btn();">Analysis (side panel)</a>
+      <a href="#" onclick="enable_AIS_File_btn();" id="subButton_enable_AIS_File" >Analysis (side panel)</a>
       
       <a href="#" onclick="concat_AIS_Files();" id="concat_Files" >Build File</a>
       
@@ -221,7 +231,6 @@ div.space05 {
           <legend>Historical Trajectories - AIS Data Clustering</legend>
             <div class="space">
               <div>    
-                
                 <button type="button" id="btnSelectAIS_File" disabled onclick="selectAIS_File();">Select File</button>
                 <input type="text" id="inputTxtFileName" name="Name" disabled/>
                 <button id="btnPlot" onclick="aisPlotFile();" disabled>Plot</button>&nbsp;
@@ -245,7 +254,6 @@ div.space05 {
                         <option value="12">Spectral Clustering</option>
                         <option value="13">K-Means Ensemble</option>
                         <option value="14">Ensemble Clustering</option>
-                    
                     </select>
                     <!--
                     Parameters:
@@ -253,20 +261,20 @@ div.space05 {
                     <input type="checkbox" id="checkBox_Auto" onclick="checkBox_Auto_Function()">
                     suggested<br>
                     -->
-                    <fieldset id="parametersPanel" class="visible">  <!-- style="width:265px" -->
-                      <legend>Clustering Parameters</legend>    
-                        <label id="lbl_inputParameter1">Auto settings for an Ensemble Clustering</label>
-                        <input type="text" id="inputParameter1" disabled value="0" class="not-visible" name="parameter1" size="2"/>&nbsp;
-                      
-                        <label id="lbl_inputParameter2"></label>
-                        <input type="text" id="inputParameter2" disabled value="0" class="not-visible" name="parameter2" size="2"/>&nbsp;
-                      
-                        <label id="lbl_inputParameter3"></label>
-                        <input type="text" id="inputParameter3" disabled value="0" class="not-visible" name="parameter3" size="2"/>&nbsp;
-                      
-                        <button type="button" id="btnApply" onclick="applyClustering();" disabled>Apply</button>
-                                   
-                    </fieldset>  
+                <fieldset id="parametersPanel" class="visible">  <!-- style="width:265px" -->
+                  <legend>Clustering Parameters</legend>    
+                    <label id="lbl_inputParameter1">Auto settings for an Ensemble Clustering</label>
+                    <input type="text" id="inputParameter1" disabled value="0" class="not-visible" name="parameter1" size="2"/>&nbsp;
+                  
+                    <label id="lbl_inputParameter2"></label>
+                    <input type="text" id="inputParameter2" disabled value="0" class="not-visible" name="parameter2" size="2"/>&nbsp;
+                  
+                    <label id="lbl_inputParameter3"></label>
+                    <input type="text" id="inputParameter3" disabled value="0" class="not-visible" name="parameter3" size="2"/>&nbsp;
+                  
+                    <button type="button" id="btnApply" onclick="applyClustering();" disabled>Apply</button>
+                                
+                </fieldset>  
               </div>
             </div>
         </fieldset>
@@ -321,9 +329,6 @@ div.space05 {
                           <button id="btnSaveClassif"  onclick="btnClassifAnomaly();">Save</button>
                           
                 </fieldset>
-
-
-
               </div>
               
               <div class="rightPanel" style="float: left;">
@@ -405,6 +410,7 @@ div.space05 {
   const modalInfo = document.getElementById("Info_Msg"); // 03 ago
   const modalInstructions = document.getElementById("instructionsPage");
   const modalAlert = document.getElementById("AlertMsg");
+  const modalRestart = document.getElementById("Restart_Confirmation_Msg");
 
   //console.log("distancia = ", getDistanceFromLatLng(30, -90, 31, -90));
   cellSize = 2000 ; //valor default
@@ -467,6 +473,7 @@ div.space05 {
   var firstShowAboutPage_flag = true;
   var flag_active_back_end_process = false;  //////////// novo 19jul
   var flag_runing_js_function = false;  /////// novo 24jul
+  var flag_trajectory_analysis = false; // added 05 ago
   
 
   const fileInput = document.getElementById('aoi_File'); // 22jul
@@ -479,16 +486,82 @@ div.space05 {
   fileInput.addEventListener('change', event => { // 22Jul
     loadArea2();
   });
+
+  var input_User = document.getElementById("inputTxtName");
+  input_User.addEventListener("keypress", function(event) {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      document.getElementById("btn_fechaLogin").click();
+    }
+  });
+  
+  var input_Password = document.getElementById("inputTxtPassword");
+  input_Password.addEventListener("keypress", function(event) {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      document.getElementById("btn_fechaLogin").click();
+    }
+  });
+
+  function restart_app(){
+    location.reload(); 
+  }
+  function close_restart_page(){
+    modalRestart.close();
+  }
   
   function highlight_element_HMI(normal, highlight){
 
-    if (normal != ""){
-      var elemento = document.getElementById(normal); // 02 Ago
-      elemento.style.backgroundColor = "inherit";
-    }
+    var elemento = document.getElementById("btn_Map_Set_View");
+    elemento.style.color = "white" ;
+
+    elemento = document.getElementById("btn_AOI");
+    elemento.style.color = "white" ;
+
+    elemento = document.getElementById("btn_Grid_Creation");
+    elemento.style.color = "white" ;
+
+    elemento = document.getElementById("btn_Trajectory_Data");
+    elemento.style.color = "white" ;
+
     if (highlight != ""){
-      var elemento = document.getElementById(highlight); // 02 Ago
-      elemento.style.backgroundColor = "rgb(90, 47, 158)";
+      elemento = document.getElementById(highlight);
+      elemento.style.color = "#e71d89";//
+    }
+  }
+
+  function highlight_element_HMI_subMenu(normal, highlight){
+
+    //var elemento = document.getElementById("removeArea");
+    //elemento.style.Color = "rgb(68, 41, 83)";
+
+    //elemento = document.getElementById("select_AOI_File");
+    //elemento.style.color = "rgb(68, 41, 83)";
+
+    //$("#select_AOI_File").removeClass(".subnav-content a");
+    //$("#select_AOI_File").addClass(".subnav-content a");
+    
+    /*
+    elemento = document.getElementById("geraAOI");
+    elemento.style.color = "rgb(68, 41, 83)";    
+    elemento = document.getElementById("saveAOI");
+    elemento.style.color = "rgb(68, 41, 83)";    
+    elemento = document.getElementById("subButton_enable_AIS_File");
+    elemento.style.color = "rgb(68, 41, 83)";    
+    elemento = document.getElementById("concat_Files");
+    elemento.style.color = "rgb(68, 41, 83)";   
+    elemento = document.getElementById("downloadClassification");
+    elemento.style.color = "rgb(68, 41, 83)";  
+    */
+    if (highlight != ""){
+      elemento = document.getElementById(highlight);
+      elemento.style.color = "#e71d89";//
+    } else {
+      elemento = document.getElementById(normal);
+      elemento.style.color = "white";//
+      $("#subButton_enable_AIS_File").removeClass(".subnav-content");
+      $("#subButton_enable_AIS_File").addClass(".subnav-content");
+
     }
   }
   
@@ -496,13 +569,13 @@ div.space05 {
     
     if (normal != ""){
       var elemento = document.getElementById(normal); // 02 Ago
-      elemento.style.backgroundColor = "#f0f0f0"; //"LightGrey";
+      //elemento.style.backgroundColor = "inherit"; //"LightGrey";
       elemento.style.color = "black";
     }
     if (highlight != ""){
       var elemento = document.getElementById(highlight); // 02 Ago
-      elemento.style.backgroundColor = "rgb(90, 47, 158)";
-      elemento.style.color = "white";
+      //elemento.style.backgroundColor = "black";
+      elemento.style.color = "#e71d89"; // 
     }
 
   }
@@ -734,13 +807,20 @@ div.space05 {
       mapa.setView([45, 0], 4);
       //mapaAIS.setView([45, 0], 3);
     }
-    var elemento = document.getElementById("btn_Map_Set_View"); // 02 Ago
-    elemento.style.backgroundColor = "inherit";
-    elemento = document.getElementById("btn_AOI"); // 02 Ago
-    elemento.style.backgroundColor = "rgb(90, 47, 158)";
+    //var elemento = document.getElementById("btn_Map_Set_View"); // 02 Ago
+    //elemento.style.backgroundColor = "inherit"; removed 05 ago
+    //elemento = document.getElementById("btn_AOI"); // 02 Ago
+    //elemento.style.color = "rgb(90, 47, 158)";
+    highlight_element_HMI("btn_Map_Set_View", "btn_AOI"); //added 05 ago
   };
 
   function removeArea(){
+    if (flag_trajectory_analysis){
+      modalRestart.showModal();
+      return;
+      //location.reload();
+    }
+        
     if (flagPolygon == true){
       mapa.removeLayer(markersLayerGroup); 
       markersLayerGroup.clearLayers();
@@ -752,7 +832,10 @@ div.space05 {
       
       if (flagGridCreation == true){
           mapa.removeLayer(cellsLayerGroup);
-          cellsLayerGroup.clearLayers(); //recente
+          mapa.removeLayer(polylinha); // added 05 ago
+          cellsLayerGroup.clearLayers(); //
+
+
           flagGridCreation = false;
       }
       highlight_element_HMI("btn_Grid_Creation", "btn_AOI"); // 02 ago
@@ -932,34 +1015,44 @@ div.space05 {
         exibirAreaLimGrid(coordGrid);
         
         [qtdeCel_X, qtdeCel_Y, larguraCelula, alturaCelula] = calculaGridParametros(latInfAOI, latMedAOI, latSupAOI, lonInfAOI, lonSupAOI, cellSize);
-        for (var j = 0; j < qtdeCel_Y; j++) {
-          for (var k = 0; k < qtdeCel_X; k++) {   
-              
-            vertA_Cel = [parseFloat(latInfAOI + j * alturaCelula)      ,parseFloat(lonInfAOI + k * larguraCelula)];
-            vertB_Cel = [parseFloat(latInfAOI + (j + 1) * alturaCelula),parseFloat(lonInfAOI + k * larguraCelula)];
-            vertC_Cel = [parseFloat(latInfAOI + (j + 1) * alturaCelula),parseFloat(lonInfAOI + (k + 1)* larguraCelula)];
-            vertD_Cel = [parseFloat(latInfAOI + j * alturaCelula)      ,parseFloat(lonInfAOI + (k + 1)* larguraCelula)];
-            vertices  = [vertA_Cel, vertB_Cel, vertC_Cel, vertD_Cel];
-            if (isPointInPolygon(vertA_Cel[0],vertA_Cel[1], pontos) ||
-                isPointInPolygon(vertB_Cel[0],vertB_Cel[1], pontos) ||
-                isPointInPolygon(vertC_Cel[0],vertC_Cel[1], pontos) ||
-                isPointInPolygon(vertD_Cel[0],vertD_Cel[1], pontos)){
-              //polygonCell = L.polygon(vertices, {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "red", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", 			"noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 1}
-              //).addTo(mapa);
-              polygonCell = L.polygon(vertices, {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "red", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", 			"noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 1}
-              ).addTo(cellsLayerGroup);
-            }
-            else {
-              //polygonCell = L.polygon(vertices, {"bubblingMouseEvents": true, "color": "gray", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "black", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", 			"noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 1}
-              //).addTo(mapa);
-              polygonCell = L.polygon(vertices, {"bubblingMouseEvents": true, "color": "gray", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "black", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", 			"noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 1}
-              ).addTo(cellsLayerGroup);
-            }
-          }  
-        }   
+        var total_cells = qtdeCel_X * qtdeCel_Y;
+        if (total_cells < 22500){
         
-        mapa.addLayer(cellsLayerGroup); 
-        highlight_element_HMI("btn_Grid_Creation", "btn_Trajectory_Data"); // 02 ago
+          for (var j = 0; j < qtdeCel_Y; j++) {
+            for (var k = 0; k < qtdeCel_X; k++) {   
+                
+              vertA_Cel = [parseFloat(latInfAOI + j * alturaCelula)      ,parseFloat(lonInfAOI + k * larguraCelula)];
+              vertB_Cel = [parseFloat(latInfAOI + (j + 1) * alturaCelula),parseFloat(lonInfAOI + k * larguraCelula)];
+              vertC_Cel = [parseFloat(latInfAOI + (j + 1) * alturaCelula),parseFloat(lonInfAOI + (k + 1)* larguraCelula)];
+              vertD_Cel = [parseFloat(latInfAOI + j * alturaCelula)      ,parseFloat(lonInfAOI + (k + 1)* larguraCelula)];
+              vertices  = [vertA_Cel, vertB_Cel, vertC_Cel, vertD_Cel];
+              if (isPointInPolygon(vertA_Cel[0],vertA_Cel[1], pontos) ||
+                  isPointInPolygon(vertB_Cel[0],vertB_Cel[1], pontos) ||
+                  isPointInPolygon(vertC_Cel[0],vertC_Cel[1], pontos) ||
+                  isPointInPolygon(vertD_Cel[0],vertD_Cel[1], pontos)){
+                //polygonCell = L.polygon(vertices, {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "red", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", 			"noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 1}
+                //).addTo(mapa);
+                polygonCell = L.polygon(vertices, {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "red", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", 			"noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 1}
+                ).addTo(cellsLayerGroup);
+              }
+              else {
+                //polygonCell = L.polygon(vertices, {"bubblingMouseEvents": true, "color": "gray", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "black", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", 			"noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 1}
+                //).addTo(mapa);
+                polygonCell = L.polygon(vertices, {"bubblingMouseEvents": true, "color": "gray", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "black", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", 			"noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 1}
+                ).addTo(cellsLayerGroup);
+              }
+            }
+          }   
+          
+          mapa.addLayer(cellsLayerGroup); 
+          //highlight_element_HMI("btn_Grid_Creation", "btn_Trajectory_Data"); // 02 ago // realocated 05ago
+          //flagGridCreation = true;
+          alert("The Grid has been created with " + total_cells + " cells");
+        } else{
+          alert("The Grid has been created with " + total_cells + " cells, but to avoid overloading in the MAP the Grid visualization has been limited to 22.500 cells. ");
+        }
+        highlight_element_HMI("btn_Grid_Creation", "btn_Trajectory_Data"); // 05 ago
+        //highlight_element_HMI_subMenu("", "subButton_enable_AIS_File"); // added 05 ago); 
         flagGridCreation = true;
     } else {
       alert("To create a Grid it would have an Area of Interest.")};
@@ -978,7 +1071,9 @@ div.space05 {
       
       var card = document.getElementById("aisData"); // 30 jul // alter 02 Ago 
       card.style.opacity = 1.0; // 30 jul
+      
       highlight_element_HMI("btn_Trajectory_Data", "");
+      //highlight_element_HMI_subMenu("subButton_enable_AIS_File", ""); // added 05ago
       highlight_element_HMI_button("", "btnSelectAIS_File");
 
     }
@@ -1221,6 +1316,7 @@ div.space05 {
       btn.disabled = false;
       highlight_element_HMI_button("btnPlot", "clustering"); // 02 ago
       highlight_element_HMI_button("", "btnApply");
+      flag_trajectory_analysis = true; // 05 ago
 
     } else {
       alert("arquivo selecionado não possui dados de AIS no Grid/AOI selecionada");
@@ -1637,7 +1733,10 @@ div.space05 {
       btn.disabled = true;
       btn = document.getElementById("btnNext");
       btn.disabled = false;
-      showTrajectory();
+      //showTrajectory(); // removed 05ago
+      plotSelectedTrajectory(); // add 05 ago
+      trajectoryPointIndex = 0; // add 05 ago
+      drawGridCell(trajectoryPointIndex); // 05 ago
       return
     }  
     highlight_element_HMI_button("btnPlay_trajectory", "");  // 02 ago
