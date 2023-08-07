@@ -1567,7 +1567,7 @@ div.space05 {
     fechaAlertMsg();//
   }
 
-  function showTrajectory(){
+  async function showTrajectory(){ //
     //exibeAlertMsg(); //26 jul
     if (flagLegendExist == true){ /// 26 jul
       mapa.removeControl(legend);///////
@@ -1668,9 +1668,7 @@ div.space05 {
     } else {
       alert("The trajectory selected is empty");
     }
-
-
-
+    
     flag_runing_js_function = false; //// 24 jul
   }
   

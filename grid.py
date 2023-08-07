@@ -122,7 +122,7 @@ def openHistoricalFileAndFilterAOI():
     
 @app.route('/applyClustering', methods=['POST'])
 def applyClustering():
-    global_Historical_AIS_df ##### jul23
+    global global_Historical_AIS_df ##### jul23 #alt 06 ago
     global global_df_Cluster
 
     #historical_AIS_df = global_Historical_AIS_df.copy()  #######
