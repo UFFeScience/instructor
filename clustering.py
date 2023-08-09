@@ -41,23 +41,23 @@ def select_and_applyclustering(ais_Historical_df, id_clusteringType, llon, ulon,
     match id_clusteringType:
         # None - already been treated
         case 1: 
-            print("case 1")
+            stuff = 1 #print("case 1")
         
         # Agglomerative Clustering
         # main parameters: 1 - estimate of the number of clusters
         case 2:  
-            print("case 2")
+            #print("case 2")
             AC = AgglomerativeClustering(n_clusters=int(parameter1))
             #yhat = AC.fit_predict(cluster_df_aux)
             #clusters = unique(yhat)
             labels = AC.fit_predict(cluster_df_aux)
-            print ("AC clusters = ", labels)
+            #print ("AC clusters = ", labels)
         
 
         # BIRCH
         # main parameters: 1- threshold; 2 - n_clusters 
         case 3:  
-            print("case 3")
+            #print("case 3")
             B = Birch(threshold=float(parameter1), n_clusters=int(parameter2))
             B.fit(cluster_df_aux)
             labels = B.predict(cluster_df_aux)
@@ -65,7 +65,7 @@ def select_and_applyclustering(ais_Historical_df, id_clusteringType, llon, ulon,
         # DBSCAN (LAT, LON)
         # main parameters: 1 - eps; 2 - min_samples
         case 4: 
-            print("case 4")
+            #print("case 4")
             #cluster_df_aux = cluster_df[["xm", "ym"]]
             #cluster_df_aux = StandardScaler().fit_transform(cluster_df_aux)
             db = DBSCAN(eps = float(parameter1), min_samples = int(parameter2)).fit(cluster_df_aux)
@@ -74,7 +74,7 @@ def select_and_applyclustering(ais_Historical_df, id_clusteringType, llon, ulon,
         # DBSCAN (LAT, LON, SPEED)
         # main parameters: 1 - eps; 2 - min_samples
         case 5:  
-            print("case 5")
+            #print("case 5")
             #cluster_df_aux = cluster_df[["xm", "ym", "SOG"]]
             #cluster_df_aux = StandardScaler().fit_transform(cluster_df_aux)
             db = DBSCAN(eps = float(parameter1), min_samples = int(parameter2)).fit(cluster_df_aux)
@@ -86,7 +86,7 @@ def select_and_applyclustering(ais_Historical_df, id_clusteringType, llon, ulon,
         #         gen_min_span_tree=False, leaf_size=40, memory=Memory(cachedir=None),
         #         metric='euclidean', min_cluster_size=5, min_samples=None, p=None)
         case 6:  
-            print("case 6")
+            #print("case 6")
             HDB = hdbscan.HDBSCAN(cluster_selection_epsilon = float(parameter1), min_samples=int(parameter2), min_cluster_size=int(parameter3))
             HDB.fit(cluster_df_aux)
             labels = HDB.labels_
@@ -94,7 +94,7 @@ def select_and_applyclustering(ais_Historical_df, id_clusteringType, llon, ulon,
         # KMeans
         # main parameters: 1- n_clusters 
         case 7: 
-            print("case 7")
+            #print("case 7")
             cluster_df_aux = cluster_df[["xm", "ym"]]
             cluster_df_aux = StandardScaler().fit_transform(cluster_df_aux) #novo 30Mai
             nr_clusters = int(parameter1)
@@ -104,14 +104,14 @@ def select_and_applyclustering(ais_Historical_df, id_clusteringType, llon, ulon,
         # Mean Shift
         # main parameters: 1 - bandwidth
         case 8:  
-            print("case 8")
+            #print("case 8")
             MS = MeanShift()
             labels = MS.fit_predict(cluster_df_aux)
 
         # Mini-Batch K-Means
         # main parameters: 1 - n_clusters 
         case 9:  
-            print("case 9")
+            #print("case 9")
             MBK = MiniBatchKMeans(n_clusters=int(parameter1))
             MBK.fit(cluster_df_aux)
             labels = MBK.predict(cluster_df_aux)
@@ -119,7 +119,7 @@ def select_and_applyclustering(ais_Historical_df, id_clusteringType, llon, ulon,
         # Mixture of Gaussians
         # main parameters: 1 - n_clusters
         case 10: 
-            print("case 10")
+            #print("case 10")
             GM = GaussianMixture(n_components=int(parameter1))
             GM.fit(cluster_df_aux)
             labels = GM.predict(cluster_df_aux)
@@ -127,7 +127,7 @@ def select_and_applyclustering(ais_Historical_df, id_clusteringType, llon, ulon,
         # OPTICS
         # main parameters: 1 - eps; 2 - min_samples
         case 11:  
-            print("case 11")
+            #print("case 11")
             O = OPTICS(eps=float(parameter1), min_samples=int(parameter2))
             labels = O.fit_predict(cluster_df_aux)
         
@@ -146,7 +146,7 @@ def select_and_applyclustering(ais_Historical_df, id_clusteringType, llon, ulon,
         # KMeans Ensemble
         # main parameters: 1 - Number_Kmeans; 2 - Min_Probability; 3 - n_clusters
         case 13:  
-            print("case 13")
+            #print("case 13")
             cluster_df_aux = cluster_df[["xm", "ym"]]
             cluster_df_aux = StandardScaler().fit_transform(cluster_df_aux) #novo 30Mai
             Number_Kmeans = int(parameter1)
@@ -174,13 +174,13 @@ def select_and_applyclustering(ais_Historical_df, id_clusteringType, llon, ulon,
             # Extract the connected components
             n_clusters_ensemble, y_ensemble = connected_components( graph, directed=False, return_labels=True )
             
-            print ("********* Nr of clusters final = ", n_clusters_ensemble)
+            #print ("********* Nr of clusters final = ", n_clusters_ensemble)
             labels = y_ensemble
 
         # Ensemble Clusters
         # main parameters: 1 - Number_Kmeans; 2 - n_clusters
         case 14:  
-            print("case 14")
+            #print("case 14")
             cluster_df_aux = cluster_df[["xm", "ym"]]
             cluster_df_aux = StandardScaler().fit_transform(cluster_df_aux) #novo 30Mai
             Number_Kmeans = int(parameter1)
@@ -199,21 +199,21 @@ def select_and_applyclustering(ais_Historical_df, id_clusteringType, llon, ulon,
 
 
         case _:
-            print("Case valor default")
+            return  #print("Case valor default")
 
-    print (cluster_df_aux) 
-    print (labels[500:560])
+    #print (cluster_df_aux) 
+    #print (labels[500:560])
     cluster_df["Clus_Db"]=labels
     
     realClusterNum=len(set(labels)) - (1 if -1 in labels else 0)
-    print(realClusterNum)
+    #print(realClusterNum)
     clusterNum = len(set(labels))
-    print(clusterNum)
+    #print(clusterNum)
 
     no_of_colors=realClusterNum
     color=["#"+''.join([random.choice('0123456789ABCDEF') for i in range(6)])
         for j in range(no_of_colors)]
-    print(color)
+    #print(color)
 
     df_ClusterTable = pd.DataFrame(columns=['numCluster', 'color', 'cenx', 'ceny'], index=[0])
 
@@ -231,7 +231,7 @@ def select_and_applyclustering(ais_Historical_df, id_clusteringType, llon, ulon,
             df_ClusterTable.loc[clust_number_P, "ceny"] = ceny
         
     df_ClusterTable.shape
-    print("********** df_ClusterTable ****** \n", df_ClusterTable)
+    #print("********** df_ClusterTable ****** \n", df_ClusterTable)
         
     return cluster_df, df_ClusterTable
 
@@ -285,7 +285,7 @@ def calcPercentageCellsMatch(df_Cluster, df_trajectory):
     pointsMatch = 0
     totalPointsTrajectory = len(df_trajectory)
     totalPointsNotMatch = totalPointsTrajectory; # initial value
-    print("totalPointsTrajectory = ", totalPointsTrajectory)
+    #print("totalPointsTrajectory = ", totalPointsTrajectory)
     
     df_tmp_DB_Cluster = df_Cluster.copy()  #########
     # df_aux_DB_Cluster = df_Cluster[["Clus_Db", "GridCell"]] 
@@ -293,7 +293,7 @@ def calcPercentageCellsMatch(df_Cluster, df_trajectory):
     df_aux_DB_Cluster.drop_duplicates(inplace=True)
     df_aux_DB_Cluster = df_aux_DB_Cluster.sort_values(by=['Clus_Db', 'GridCell'])
     df_aux_DB_Cluster = df_aux_DB_Cluster.reset_index(drop=True) 
-    print("df_aux_DB_Cluster = ", df_aux_DB_Cluster)
+    #print("df_aux_DB_Cluster = ", df_aux_DB_Cluster)
 
     df_tmp_ClusterTotalMatch = df_aux_DB_Cluster.copy() #############
     df_ClusterTotalMatch = df_tmp_ClusterTotalMatch[["Clus_Db"]]  ##########
@@ -303,8 +303,8 @@ def calcPercentageCellsMatch(df_Cluster, df_trajectory):
     df_ClusterTotalMatch = df_ClusterTotalMatch.sort_values(by=['Clus_Db'])
     df_ClusterTotalMatch = df_ClusterTotalMatch.reset_index(drop=True) # novo
     totalClusters = len(df_ClusterTotalMatch)
-    print("total clusters = ", totalClusters)
-    print("df_ClusterTotalMatch = \n", df_ClusterTotalMatch)
+    #print("total clusters = ", totalClusters)
+    #print("df_ClusterTotalMatch = \n", df_ClusterTotalMatch)
 
     for i in range(0, totalPointsTrajectory):
         
@@ -336,7 +336,7 @@ def calcPercentageCellsMatch(df_Cluster, df_trajectory):
             
     perc_pointsNotMatch = round((totalPointsNotMatch/totalPointsTrajectory)*100,2)
     
-    print("perc_pointsNotMatch = ", perc_pointsNotMatch)
-    print("df_ClusterTotalMatch = \n", df_ClusterTotalMatch)
+    #print("perc_pointsNotMatch = ", perc_pointsNotMatch)
+    #print("df_ClusterTotalMatch = \n", df_ClusterTotalMatch)
     
     return perc_pointsNotMatch, df_ClusterTotalMatch

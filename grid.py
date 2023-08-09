@@ -17,8 +17,8 @@ import clustering as clt
 app = Flask(__name__)
 CORS(app) # novo 09Jul23
 
-global_Historical_AIS_df = ""
-global_df_Cluster = ""
+global_Historical_AIS_df = pd.DataFrame()#""
+global_df_Cluster = pd.DataFrame() #""
 global_fileNameExpert = ""  ##### 22 jul
 global_loginName = ""    ########
 global_expert_df = ""   #####
@@ -26,7 +26,7 @@ global_expert_full_df = ""  ######
 
 @app.route('/') 
 def homepage():
-    print(sys.path) #
+    #print(sys.path) #
     return render_template("mapaW3-v6-Alt4.html")
 
 
@@ -49,11 +49,11 @@ def loadFileAOI():
     
     locations_df = pd.read_csv(nameFile)    
     locations_dfBuffer = locations_df.copy() 
-    print("Loaded locations from file = ", locations_df) ## novo 11jul23
+    #print("Loaded locations from file = ", locations_df) ## novo 11jul23
     locations_df_json = locations_df.to_json(orient='values')
     
     resposta = jsonify(locations_df_json)
-    print("Locations from variavel jsonify = ", resposta) ## novo 11jul
+    #print("Locations from variavel jsonify = ", resposta) ## novo 11jul
     resposta.headers.add("Access-Control-Allow-Origin", "*")
     return resposta
 
@@ -187,10 +187,10 @@ def gridCellsData_for_RoseWind(dadosAIS):
     ais_df_gridCells = ais_df_gridCells.sort_values(by=['GridCell','courseBIN', 'speedBIN'])
     
     ais_df_gridCells['Freq'] = ais_df_gridCells.groupby(['GridCell','courseBIN','speedBIN'])['speedBIN'].transform('count')
-    print ("tam ais_df_gridCells antes = ", len(ais_df_gridCells))
+    #print ("tam ais_df_gridCells antes = ", len(ais_df_gridCells))
     ais_df_gridCells = ais_df_gridCells.drop_duplicates()
-    print ("tam ais_df_gridCells depois de eliminar duplicatas = ", len(ais_df_gridCells))
-    print (ais_df_gridCells.head(20))
+    #print ("tam ais_df_gridCells depois de eliminar duplicatas = ", len(ais_df_gridCells))
+    #print (ais_df_gridCells.head(20))
     #ais_df_gridCells.to_csv("d:ais_df_gridCells.csv", index=False) #novo 09jul23
 
     return ais_df_gridCells
@@ -209,33 +209,33 @@ def ORIGINAL_openFileAndFilterAOI(dados): # ORIGINAL VERSION - NOT USED
     altCell  = float(dados[7])
     qtdeCel_X= float(dados[8])
     
-    print ("print dados locations_dfBuffer inicio da funcao",locations_dfBuffer)
-    print("variável do post = ", dados)
+    #print ("print dados locations_dfBuffer inicio da funcao",locations_dfBuffer)
+    #print("variável do post = ", dados)
     
     ais_df.dropna(subset=['LAT', 'LON', 'MMSI'], inplace=True) #novo
     
-    print ("Tam array ais antes exclusao fora do Grid = ",ais_df.shape)
+    #print ("Tam array ais antes exclusao fora do Grid = ",ais_df.shape)
     ######### filtro
     ais_df = ais_df[(ais_df['LON'] > llon)]
     ais_df = ais_df[(ais_df['LON'] < ulon)]
     ais_df = ais_df[(ais_df['LAT'] > llat)]
     ais_df = ais_df[(ais_df['LAT'] < ulat)]
 
-    print ("Tam array ais depois exclusao fora do Grid = ",ais_df.shape)
+    #print ("Tam array ais depois exclusao fora do Grid = ",ais_df.shape)
 
     ais_df = ais_df[(ais_df['LON'] <  180)]
     ais_df = ais_df[(ais_df['LON'] > -180)]
     ais_df = ais_df[(ais_df['LAT'] <  90)]
     ais_df = ais_df[(ais_df['LAT'] > -90)]
 
-    print ("Tam array ais depois exclusao valores fora da faixa = ",ais_df.shape)
+    #print ("Tam array ais depois exclusao valores fora da faixa = ",ais_df.shape)
     #### NOVO 05fev #####################################
     ais_df['insideAOI']  = False  #novo
-    print ("shape depois da inclusao da coluna insideAOI ",ais_df.shape)
+    #print ("shape depois da inclusao da coluna insideAOI ",ais_df.shape)
     #print ("dataframe locations_dfBuffer ", locations_dfBuffer.shape)
     #lat = 0
     #lon = 0
-    print ("print dados locations_dfBuffer ",locations_dfBuffer)
+    #print ("print dados locations_dfBuffer ",locations_dfBuffer)
     ais_df = ais_df.reset_index(drop=True) # novo 05Fev
 
     for i in range(0, len(ais_df)):
@@ -248,7 +248,7 @@ def ORIGINAL_openFileAndFilterAOI(dados): # ORIGINAL VERSION - NOT USED
 
     ais_df = ais_df[(ais_df['insideAOI'] == True)]
     
-    print ("Tam array ais_df deletando pontos fora da AOI = ", ais_df.shape)    
+    #print ("Tam array ais_df deletando pontos fora da AOI = ", ais_df.shape)    
     ############################################################
 
     ais_df = ais_df.sort_values(by=['MMSI', 'BaseDateTime'])#NOVO
@@ -291,8 +291,8 @@ def ORIGINAL_openFileAndFilterAOI(dados): # ORIGINAL VERSION - NOT USED
         
     #ais_df.to_csv("d:ais_trajID.csv", index=False) # novo 09Jul23
 
-    print ("Tam array ais depois = ",ais_df.shape)
-    print(ais_df.head(10))
+    #print ("Tam array ais depois = ",ais_df.shape)
+    #print(ais_df.head(10))
     
     return ais_df, id_TrajID
 
@@ -344,8 +344,8 @@ def openFileAndFilterAOI(dados): # NEW VERSION
         
     #ais_df.to_csv("d:ais_trajID.csv", index=False)
 
-    print ("Tam array ais = ",ais_df.shape)
-    print(ais_df.head(10))
+    #print ("Tam array ais = ",ais_df.shape)
+    #print(ais_df.head(10))
     
     return ais_df, id_TrajID
 
@@ -363,7 +363,7 @@ def selectNameDir(): #######################################
     #except:
     #    dirPath = ""
     
-    print(dirPath)
+    #print(dirPath)
     #root.destroy()
  
     return dirPath
@@ -382,7 +382,7 @@ def selectNameFile(): ################################
     #except:
     #    filepath = ""  
 
-    print("filepah = ", filepath)
+    #print("filepah = ", filepath)
     #root.destroy()
  
     return filepath
@@ -454,48 +454,48 @@ def downloadClassification():
         try:
             f = open(src1, 'r')
             file_contents = f.read()
-            print (file_contents)
+            #print (file_contents)
             f.close()
         except:
             msg = "Error occurred while printing the file."
-            print("Error occurred while printing the file.")
+           # print("Error occurred while printing the file.")
         
 
         try:
             shutil.copyfile(src1, destination1)
             shutil.copyfile(src2, destination2)
             msg = "File copied successfully."
-            print("File copied successfully.")
+            #print("File copied successfully.")
     
         # If source and destination are same
         except shutil.SameFileError:
             msg = "Source and destination represents the same file."
-            print("Source and destination represents the same file.")
+            #print("Source and destination represents the same file.")
         
         # If destination is a directory.
         except IsADirectoryError:
             msg = "Destination is a directory."
-            print("Destination is a directory.")
+            #print("Destination is a directory.")
         
         # If there is any permission issue
         except PermissionError:
             msg = "Permission denied."
-            print("Permission denied.")
+            #print("Permission denied.")
         
         # For other errors
         except:
             msg = "Error occurred while copying file."
-            print("Error occurred while copying file.")
+            #print("Error occurred while copying file.")
 
         try:
             shutil.copy(src1, target)
             shutil.copy(src2, target)
         except IOError as e:
             msg = "Unable to copy file."
-            print("Unable to copy file. %s" % e)
+            #print("Unable to copy file. %s" % e)
         except:
             msg = "Unexpected error:"
-            print("Unexpected error:", sys.exc_info())
+            #print("Unexpected error:", sys.exc_info())
 
 
         ##########################################################
@@ -530,7 +530,7 @@ def saveClassification():
   
     index = len(global_expert_df)
     index_full = len(global_expert_full_df)
-    print("tamanho expert_df = ", index)
+    #print("tamanho expert_df = ", index)
 
     global_expert_df.loc[index,"Filename_historical_AIS"]  = filename_historical_AIS #####
     global_expert_full_df.loc[index_full,"Filename_historical_AIS"]  = filename_historical_AIS
@@ -559,15 +559,15 @@ def saveClassification():
     global_expert_df.loc[index,"Time"]  = hora
     global_expert_full_df.loc[index_full,"Time"]  = hora
 
-    print("global_expert_df = ", global_expert_df)
+    #print("global_expert_df = ", global_expert_df)
     global_expert_df.to_csv(expertCSV_File, index=False) #########
     global_expert_full_df.to_csv(expertCSV_FullFile, index=False)  #######
 
     ######################### jul 23
     df = pd.read_csv(expertCSV_File)
     df2 = pd.read_csv(expertCSV_FullFile)
-    print("Expert file = ", df)
-    print("Expert full file = ",  df2)
+    #print("Expert file = ", df)
+    #print("Expert full file = ",  df2)
     
     resposta = jsonify(expertCSV_File)
     resposta.headers.add("Access-Control-Allow-Origin", "*")
@@ -658,19 +658,19 @@ def concat_AIS_Files():
            n = str(k)
            df_ais_aux = pd.read_csv(f)
            df_ais_aux['insideAOI']  = False  
-           print ("Tam array ais antes exclusao fora do Grid = ",df_ais_aux.shape)
+           #print ("Tam array ais antes exclusao fora do Grid = ",df_ais_aux.shape)
            df_ais_aux = df_ais_aux[(df_ais_aux['LON'] > llon)]
            df_ais_aux = df_ais_aux[(df_ais_aux['LON'] < ulon)]
            df_ais_aux = df_ais_aux[(df_ais_aux['LAT'] > llat)]
            df_ais_aux = df_ais_aux[(df_ais_aux['LAT'] < ulat)]
             ############
-           print ("Tam array ais depois exclusao fora do Grid = ",df_ais_aux.shape) 
+           #print ("Tam array ais depois exclusao fora do Grid = ",df_ais_aux.shape) 
            df_ais_aux = df_ais_aux[(df_ais_aux['LON'] <  180)]
            df_ais_aux = df_ais_aux[(df_ais_aux['LON'] > -180)]
            df_ais_aux = df_ais_aux[(df_ais_aux['LAT'] <  90)]
            df_ais_aux = df_ais_aux[(df_ais_aux['LAT'] > -90)]
 
-           print ("Tam array ais apos exclusao valores fora da faixa = ",df_ais_aux.shape)
+           #print ("Tam array ais apos exclusao valores fora da faixa = ",df_ais_aux.shape)
              #########
            df_ais_aux = df_ais_aux.reset_index(drop=True) 
 
@@ -685,7 +685,7 @@ def concat_AIS_Files():
            df_ais_aux = df_ais_aux[(df_ais_aux['insideAOI'] == True)]
            df_ais_aux = df_ais_aux.drop(columns=['insideAOI'])
     
-           print ("Tam array df_ais_aux deletando pontos fora da AOI = ", df_ais_aux.shape)  
+           #print ("Tam array df_ais_aux deletando pontos fora da AOI = ", df_ais_aux.shape)  
                       
            #df_ais_aux.to_csv('d:\df' + n + '.csv', index=False, encoding='utf-8-sig') # novo 09Jul23
            
@@ -696,7 +696,7 @@ def concat_AIS_Files():
        if saving_Path:    
             df_combined_csv.to_csv(saving_Path, index=False, encoding='utf-8-sig')
        else: # user cancel the file browser window
-            print("No file chosen")  
+            stuff =1 #print("No file chosen")  
 
        return ("", 204)
     
