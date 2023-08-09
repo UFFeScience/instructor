@@ -25,9 +25,9 @@ def select_and_applyclustering(ais_Historical_df, id_clusteringType, llon, ulon,
         urcrnrlon=ulon, urcrnrlat=ulat) #max longitude (urcrnrlon) and latitude (urcrnrlat)
 
     
-    #cluster_df = ais_Historical_df  #### 26 jul
-    #cluster_df = cluster_df[["MMSI", "LAT", "LON", "SOG", "GridCell"]] # 26 jul
-    cluster_df = ais_Historical_df[["MMSI", "LAT", "LON", "SOG", "GridCell"]] 
+    cluster_df = ais_Historical_df.copy()  #### 26 jul
+    cluster_df = cluster_df[["MMSI", "LAT", "LON", "SOG", "GridCell"]] # 26 jul
+    #cluster_df = ais_Historical_df[["MMSI", "LAT", "LON", "SOG", "GridCell"]] 
     cluster_df = cluster_df.reset_index(drop=True) 
 
     xs,ys = my_map(np.asarray(cluster_df.LON), np.asarray(cluster_df.LAT))
@@ -65,18 +65,12 @@ def select_and_applyclustering(ais_Historical_df, id_clusteringType, llon, ulon,
         # DBSCAN (LAT, LON)
         # main parameters: 1 - eps; 2 - min_samples
         case 4: 
-            #print("case 4")
-            #cluster_df_aux = cluster_df[["xm", "ym"]]
-            #cluster_df_aux = StandardScaler().fit_transform(cluster_df_aux)
             db = DBSCAN(eps = float(parameter1), min_samples = int(parameter2)).fit(cluster_df_aux)
             labels = db.labels_
 
         # DBSCAN (LAT, LON, SPEED)
         # main parameters: 1 - eps; 2 - min_samples
         case 5:  
-            #print("case 5")
-            #cluster_df_aux = cluster_df[["xm", "ym", "SOG"]]
-            #cluster_df_aux = StandardScaler().fit_transform(cluster_df_aux)
             db = DBSCAN(eps = float(parameter1), min_samples = int(parameter2)).fit(cluster_df_aux)
             labels = db.labels_
 
@@ -94,9 +88,6 @@ def select_and_applyclustering(ais_Historical_df, id_clusteringType, llon, ulon,
         # KMeans
         # main parameters: 1- n_clusters 
         case 7: 
-            #print("case 7")
-            cluster_df_aux = cluster_df[["xm", "ym"]]
-            cluster_df_aux = StandardScaler().fit_transform(cluster_df_aux) #novo 30Mai
             nr_clusters = int(parameter1)
             clusterKmeans = KMeans(n_clusters= nr_clusters).fit_predict(cluster_df_aux)
             labels = clusterKmeans
@@ -134,21 +125,16 @@ def select_and_applyclustering(ais_Historical_df, id_clusteringType, llon, ulon,
         # Spectral Clustering
         # main parameters: 1 - n_clusters
         case 12:  
-            cluster_df_aux = cluster_df[["xm", "ym"]]
-            cluster_df_aux = StandardScaler().fit_transform(cluster_df_aux) # novo 30Mai
             nr_clusters = int(parameter1)
             try:
                 spectral = SpectralClustering(n_clusters= nr_clusters, assign_labels='cluster_qr').fit_predict(cluster_df_aux)
                 labels = spectral
             except:
-                print("Error execution Spectral Clustering")
+                stuff = 0 #print("Error execution Spectral Clustering")
         
         # KMeans Ensemble
         # main parameters: 1 - Number_Kmeans; 2 - Min_Probability; 3 - n_clusters
         case 13:  
-            #print("case 13")
-            cluster_df_aux = cluster_df[["xm", "ym"]]
-            cluster_df_aux = StandardScaler().fit_transform(cluster_df_aux) #novo 30Mai
             Number_Kmeans = int(parameter1)
             Min_Probability = float(parameter2)
             nr_clusters =  int(parameter3)
@@ -180,9 +166,6 @@ def select_and_applyclustering(ais_Historical_df, id_clusteringType, llon, ulon,
         # Ensemble Clusters
         # main parameters: 1 - Number_Kmeans; 2 - n_clusters
         case 14:  
-            #print("case 14")
-            cluster_df_aux = cluster_df[["xm", "ym"]]
-            cluster_df_aux = StandardScaler().fit_transform(cluster_df_aux) #novo 30Mai
             Number_Kmeans = int(parameter1)
             #Min_Probability = 0.9# paramater1
             nr_clusters =  int(parameter2)
