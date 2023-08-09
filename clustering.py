@@ -25,17 +25,17 @@ def select_and_applyclustering(ais_Historical_df, id_clusteringType, llon, ulon,
         urcrnrlon=ulon, urcrnrlat=ulat) #max longitude (urcrnrlon) and latitude (urcrnrlat)
 
     
-    cluster_df = ais_Historical_df.copy()  #### 26 jul
-    cluster_df = cluster_df[["MMSI", "LAT", "LON", "SOG", "GridCell"]] # 26 jul
-    #cluster_df = ais_Historical_df[["MMSI", "LAT", "LON", "SOG", "GridCell"]] 
-    cluster_df = cluster_df.reset_index(drop=True) 
+    #cluster_df = ais_Historical_df.copy()  #### 26 jul
+    #cluster_df = cluster_df[["MMSI", "LAT", "LON", "SOG", "GridCell"]] # 26 jul
+    cluster_df = ais_Historical_df[['MMSI', 'LAT', 'LON', 'SOG', 'GridCell']].copy() 
+    #cluster_df = cluster_df.reset_index(drop=True) 
 
     xs,ys = my_map(np.asarray(cluster_df.LON), np.asarray(cluster_df.LAT))
     
     cluster_df['xm'] = xs.tolist() # add column xm
     cluster_df['ym'] = ys.tolist()
 
-    cluster_df_aux = cluster_df[["xm", "ym"]] # novo 24Jun
+    cluster_df_aux = cluster_df[['xm', 'ym']] # novo 24Jun
     cluster_df_aux = StandardScaler().fit_transform(cluster_df_aux) # novo 24Jun
      
     match id_clusteringType:
