@@ -1454,12 +1454,19 @@ div.space05 {
         }
       });
       */
+///////////////
+/*
       (async () => {
         let response = await exec_applyClustering(dados);
         await response; //
       })();
-
+*/
+//////////////////
     //}
+
+    //////////////
+    exec_applyClustering(dados);
+    /////////////
     
     enableTrajectoryPanel();
     console.log("passou no ajax applyClustering");
@@ -1469,7 +1476,7 @@ div.space05 {
     //}
   }
 
-  async function exec_applyClustering(dados){
+  function exec_applyClustering(dados){
 
     $.ajax({
       url: "{{ url_for('applyClustering') }}",
