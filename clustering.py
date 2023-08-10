@@ -272,7 +272,7 @@ def calcPercentageCellsMatch(df_Cluster, df_trajectory):
     
     df_tmp_DB_Cluster = df_Cluster.copy()  #########
     # df_aux_DB_Cluster = df_Cluster[["Clus_Db", "GridCell"]] 
-    df_aux_DB_Cluster = df_tmp_DB_Cluster.loc[:,['Clus_Db', 'GridCell']] ### 09 ago
+    df_aux_DB_Cluster = df_tmp_DB_Cluster.loc[:,['Clus_Db', 'GridCell']].copy() ### 09 ago
     df_aux_DB_Cluster.drop_duplicates(inplace=True)
     df_aux_DB_Cluster = df_aux_DB_Cluster.sort_values(by=['Clus_Db', 'GridCell'])
     df_aux_DB_Cluster = df_aux_DB_Cluster.reset_index(drop=True) 
@@ -281,8 +281,8 @@ def calcPercentageCellsMatch(df_Cluster, df_trajectory):
     df_tmp_ClusterTotalMatch = df_aux_DB_Cluster.copy() #############
     df_ClusterTotalMatch = df_tmp_ClusterTotalMatch.loc[:,['Clus_Db']].copy()  ## 09 ago
     df_ClusterTotalMatch.drop_duplicates(inplace=True)
-    df_ClusterTotalMatch["TotalMatch"] = 0
-    df_ClusterTotalMatch["perc_TotalMatch"] = 0.0
+    df_ClusterTotalMatch['TotalMatch'] = 0
+    df_ClusterTotalMatch['perc_TotalMatch'] = 0.0
     df_ClusterTotalMatch = df_ClusterTotalMatch.sort_values(by=['Clus_Db'])
     df_ClusterTotalMatch = df_ClusterTotalMatch.reset_index(drop=True) # novo
     totalClusters = len(df_ClusterTotalMatch)
