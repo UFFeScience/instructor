@@ -27,8 +27,8 @@ def select_and_applyclustering(ais_Historical_df, id_clusteringType, llon, ulon,
     
     #cluster_df = ais_Historical_df.copy()  #### 26 jul
     #cluster_df = cluster_df[["MMSI", "LAT", "LON", "SOG", "GridCell"]] # 26 jul
-    cluster_df = ais_Historical_df.loc[:,['MMSI', 'LAT', 'LON', 'SOG', 'GridCell']].copy() # 09 ago
-    #cluster_df = cluster_df.reset_index(drop=True) 
+    cluster_df = ais_Historical_df[['MMSI', 'LAT', 'LON', 'SOG', 'GridCell']].copy() # 09 ago
+    cluster_df = cluster_df.reset_index(drop=True) ### 09 ago
 
     xs,ys = my_map(np.asarray(cluster_df.LON), np.asarray(cluster_df.LAT))
     
