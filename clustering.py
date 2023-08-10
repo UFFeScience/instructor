@@ -208,10 +208,10 @@ def select_and_applyclustering(ais_Historical_df, id_clusteringType, llon, ulon,
         if clust_number_P != -1:  
             cenx=np.mean(clust_set_P.LON) 
             ceny=np.mean(clust_set_P.LAT) 
-            df_ClusterTable.loc[clust_number_P, "numCluster"] = clust_number_P
-            df_ClusterTable.loc[clust_number_P, "color"] = c
-            df_ClusterTable.loc[clust_number_P, "cenx"] = cenx
-            df_ClusterTable.loc[clust_number_P, "ceny"] = ceny
+            df_ClusterTable.loc[clust_number_P, 'numCluster'] = clust_number_P
+            df_ClusterTable.loc[clust_number_P, 'color'] = c
+            df_ClusterTable.loc[clust_number_P, 'cenx'] = cenx
+            df_ClusterTable.loc[clust_number_P, 'ceny'] = ceny
         
     df_ClusterTable.shape
     #print("********** df_ClusterTable ****** \n", df_ClusterTable)
@@ -272,17 +272,17 @@ def calcPercentageCellsMatch(df_Cluster, df_trajectory):
     
     df_tmp_DB_Cluster = df_Cluster.copy()  #########
     # df_aux_DB_Cluster = df_Cluster[["Clus_Db", "GridCell"]] 
-    df_aux_DB_Cluster = df_tmp_DB_Cluster[["Clus_Db", "GridCell"]] ##########
+    df_aux_DB_Cluster = df_tmp_DB_Cluster.loc[:,['Clus_Db', 'GridCell']] ### 09 ago
     df_aux_DB_Cluster.drop_duplicates(inplace=True)
     df_aux_DB_Cluster = df_aux_DB_Cluster.sort_values(by=['Clus_Db', 'GridCell'])
     df_aux_DB_Cluster = df_aux_DB_Cluster.reset_index(drop=True) 
     #print("df_aux_DB_Cluster = ", df_aux_DB_Cluster)
 
     df_tmp_ClusterTotalMatch = df_aux_DB_Cluster.copy() #############
-    df_ClusterTotalMatch = df_tmp_ClusterTotalMatch[["Clus_Db"]]  ##########
+    df_ClusterTotalMatch = df_tmp_ClusterTotalMatch.loc[:,['Clus_Db']].copy()  ## 09 ago
     df_ClusterTotalMatch.drop_duplicates(inplace=True)
-    df_ClusterTotalMatch['TotalMatch'] #= 0
-    df_ClusterTotalMatch['perc_TotalMatch'] #= 0.0
+    df_ClusterTotalMatch["TotalMatch"] = 0
+    df_ClusterTotalMatch["perc_TotalMatch"] = 0.0
     df_ClusterTotalMatch = df_ClusterTotalMatch.sort_values(by=['Clus_Db'])
     df_ClusterTotalMatch = df_ClusterTotalMatch.reset_index(drop=True) # novo
     totalClusters = len(df_ClusterTotalMatch)
@@ -299,13 +299,13 @@ def calcPercentageCellsMatch(df_Cluster, df_trajectory):
             df_aux_Cluster = df_aux_Cluster.reset_index(drop=True)
             
             for k in range(0, len(df_aux_Cluster)):
-                numberCellCluster = df_aux_Cluster["GridCell"][k]
+                numberCellCluster = df_aux_Cluster['GridCell'][k]
                 if numberCellTraj == numberCellCluster:
                     pointsMatch = pointsMatch + 1
-                    total = df_ClusterTotalMatch["TotalMatch"][j] + 1
-                    df_ClusterTotalMatch.loc[j, "TotalMatch"] = total
+                    total = df_ClusterTotalMatch['TotalMatch'][j] + 1
+                    df_ClusterTotalMatch.loc[j, 'TotalMatch'] = total
                     flagMatch = True
-                    if df_ClusterTotalMatch["Clus_Db"][j] == -1:
+                    if df_ClusterTotalMatch['Clus_Db'][j] == -1:
                         flagMatch = False
                     
                     break
@@ -313,9 +313,9 @@ def calcPercentageCellsMatch(df_Cluster, df_trajectory):
             totalPointsNotMatch = totalPointsNotMatch - 1
 
     for n in range(0, totalClusters):
-        totalMatch = df_ClusterTotalMatch["TotalMatch"][n]
+        totalMatch = df_ClusterTotalMatch['TotalMatch'][n]
         percentageMatch = round((totalMatch/totalPointsTrajectory)*100, 2)
-        df_ClusterTotalMatch.loc[n, "perc_TotalMatch"] = percentageMatch
+        df_ClusterTotalMatch.loc[n, 'perc_TotalMatch'] = percentageMatch
             
     perc_pointsNotMatch = round((totalPointsNotMatch/totalPointsTrajectory)*100,2)
     
