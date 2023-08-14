@@ -24,11 +24,20 @@
 
 <style>
 div.space {
+  line-height: 2.0;
+}
+div.space18 {
   line-height: 1.8;
 }
+div.space08 {
+  line-height: 0.8;
+}
+
 div.space05 {
   line-height: 0.5;
 }
+
+
 
 </style>
 </head>
@@ -220,24 +229,35 @@ div.space05 {
   <div class="leftcolumn">
     <div class="card">
       <h3>MAP</h3>
-      <div id="mapa" style="width: 100.0%; height: 670px;"></div>
+      <div id="mapa" style="width: 100.0%; height: 670px;">
+      </div>
+      <!--
+      
+      <div id="vesselsSpeed_on_MAP" >
+      </div>
+      -->
     </div>
   </div>
   <div class="rightcolumn">
-    <div class="card" id="cardSuperior" style="width: 100.0%; height:345px;">
-      
+    <div class="card" id="cardSuperior" style="width: 100.0%; height:180px;">
       <div id="aisData" style="opacity: 0.4;"> <!-- 02 Ago -->
+        <div class="space08">
+          <span style="font-weight:bold;">Historical Trajectories - AIS Data Clustering</span><br><br>
+        </div>
+        <!--
         <fieldset id="aisDataPanel" class="visible" >
+          
           <legend>Historical Trajectories - AIS Data Clustering</legend>
-            <div class="space">
+        -->    
+            <div class="space18">
               <div>    
                 <button type="button" id="btnSelectAIS_File" disabled onclick="async_selectAIS_File();">Select File</button>
-                <input type="text" id="inputTxtFileName" name="Name" disabled/>
-                <button id="btnPlot" onclick="async_aisPlotFile();" disabled>Plot</button>&nbsp;
-                <!--
-                <br>
-                -->
-                <label for="clustering">Clustering:</label>
+                <input type="text" id="inputTxtFileName" name="Name" disabled/>&nbsp;&nbsp;
+                <button id="btnPlot" onclick="async_aisPlotFile();" disabled>Plot</button><br>
+                 
+                <fieldset id="parametersPanel" class="visible">  <!-- style="width:265px" -->
+                  <legend>Clustering Algorithm & Parameters</legend>    
+                  <label for="clustering">Algorithm:</label>
                     <select id="clustering" disabled onchange="GetSelectedClusteringValue(this)">
                         <!--<option value="1">None (Density plots only)</option>-->
                         <option value="1">Automatic Mode</option>
@@ -254,15 +274,8 @@ div.space05 {
                         <option value="12">Spectral Clustering</option>
                         <option value="13">K-Means Ensemble</option>
                         <option value="14">Ensemble Clustering</option>
-                    </select>
-                    <!--
-                    Parameters:
-                    <label for="checkBox_Auto"></label> 
-                    <input type="checkbox" id="checkBox_Auto" onclick="checkBox_Auto_Function()">
-                    suggested<br>
-                    -->
-                <fieldset id="parametersPanel" class="visible">  <!-- style="width:265px" -->
-                  <legend>Clustering Parameters</legend>    
+                    </select><br>
+                    
                     <label id="lbl_inputParameter1">Auto settings for an Ensemble Clustering</label>
                     <input type="text" id="inputParameter1" disabled value="0" class="not-visible" name="parameter1" size="2"/>&nbsp;
                   
@@ -272,34 +285,39 @@ div.space05 {
                     <label id="lbl_inputParameter3"></label>
                     <input type="text" id="inputParameter3" disabled value="0" class="not-visible" name="parameter3" size="2"/>&nbsp;
                   
-                    <button type="button" id="btnApply" onclick="async_applyClustering();" disabled>Apply</button>
+                    <button type="button" id="btnApply" onclick="async_applyClustering();" disabled>Run</button>
                                 
                 </fieldset>  
               </div>
             </div>
-        </fieldset>
+        <!--</fieldset>-->
       </div> 
       <br>
+    </div>
+    <div class="card" id="cardCentral" style="width: 100.0%; height:200px;">
+
       <div id="trajectory" style="opacity: 0.4;"> <!-- 02 Ago -->
+        <div class="space08">
+          <span style="font-weight:bold;">New Trajectories - AIS Data Analysis</span><br><br>
+        </div>
+        <!--
         <fieldset id="trajectoryPanel" class="visible">
               <legend>New Trajectories - AIS Data Analysis</legend>
+        -->
                   <div class="space">
-                    
                     <button type="button" id="btnLoadDatasets_File" onclick="async_selectDatasetFile();" disabled>Select Dataset </button>
-                    <input type="text" id="inputDataSetsFileName" name="datasetsName" disabled/>
-                    <button id="btnLoadDataset" onclick="async_loadDatasetFile();" disabled>Load</button>&nbsp;&nbsp;&nbsp;
-                    <!--
+                    <input type="text" id="inputDataSetsFileName" name="datasetsName" disabled/>&nbsp;&nbsp;
+                    <button id="btnLoadDataset" onclick="async_loadDatasetFile();" disabled>Load</button>
+                    
                     <br>
-                    -->
+                    
                     <label for="listBoxTrajectories">Trajectory:</label>
                     <select id="listBoxTrajectories" disabled>
-                        <!--<option value="0" selected>Select</option> 
-                        <option value="traj1">traj1</option>
-                        <option value="traj2">traj2</option>
-                        <option value="traj3">traj3</option> -->
                     </select>&nbsp;&nbsp;
                     
-                    <button type="button" id="btnShow" onclick="async_showTrajectory();" disabled>Plot </button>&nbsp; &nbsp;
+                    <button type="button" id="btnShow" onclick="async_showTrajectory();" disabled>Plot </button>&nbsp;
+                    <button type="button" id="btnPlay_trajectory" onclick="play_trajectory();" disabled>Play</button>&nbsp;
+                    <button type="button" id="btnShow_panel_matching_cells" onclick="show_panel_matching_cells();" disabled>Statistics Panel</button>
                     
 
                   </div> 
@@ -309,71 +327,58 @@ div.space05 {
             <!-- alt-->
             <div class="row">
               <div class="leftPanel">
-                
-                <fieldset id="classificationPanel" disabled class="visible">  <!-- style="width:265px" -->
-                  <legend>Classification</legend>     
-                          <input type="radio" id="btnSelectNormal" name="btnRadioNormal" value="normal" checked />
-                          <label for="btnSelectNormal">Normal</label>
-                  
-                          <input type="radio" id="btnSelectAnomalous" name="btnRadioNormal" value="anomalous" />
-                          <label for="btnSelectAnomalous">Anomalous</label> &nbsp; &nbsp;
-                          <br><br>
-                          <label for="confidence">Confidence:</label>
-                          <select id="confidence">
-                              <option value="very low" >Very low</option>
-                              <option value="low"      >Low</option>
-                              <option value="medium"   >Medium</option>
-                              <option value="high"     >High</option>
-                              <option value="very high">Very high</option>
-                          </select>&nbsp; &nbsp;
-                          <button id="btnSaveClassif"  onclick="btnClassifAnomaly();">Save</button>
-                          
-                </fieldset>
+                <div class="space08">
+                  <fieldset id="classificationPanel" disabled class="visible">  <!-- style="width:265px" -->
+                    <legend>Classification</legend>     
+                            <input type="radio" id="btnSelectNormal" name="btnRadioNormal" value="normal" checked />
+                            <label for="btnSelectNormal">Normal</label>
+                    
+                            <input type="radio" id="btnSelectAnomalous" name="btnRadioNormal" value="anomalous" />
+                            <label for="btnSelectAnomalous">Anomalous</label> &nbsp; &nbsp;
+                            <br><br>
+                            <label for="confidence">Confidence:</label>
+                            <select id="confidence">
+                                <option value="very low" >Very low</option>
+                                <option value="low"      >Low</option>
+                                <option value="medium"   >Medium</option>
+                                <option value="high"     >High</option>
+                                <option value="very high">Very high</option>
+                            </select>&nbsp; &nbsp;
+                            <button id="btnSaveClassif"  onclick="btnClassifAnomaly();">Save</button>
+                  </fieldset>
+                </div>
               </div>
               
               <div class="rightPanel" style="float: left;">
                 &nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;
-                <button type="button" id="btnShow_panel_matching_cells" onclick="show_panel_matching_cells();" disabled>Statistics Panel</button>
-                <button type="button" id="btnPlay_trajectory" onclick="play_trajectory();" disabled>Play</button>
+                
                 <!--
                 <button type="button" id="btnFinish" onclick="finishTrajectoryAnalysis();" style="background-color: rgb(141, 163, 236);"disabled>Finish</button>
                 -->
               </div>
               
             </div>  
-        </fieldset>  
+        <!--</fieldset>  -->
       </div>  
       
-    </div>
-
-    <div class="card" id="cardInferior" style="width: 100.0%; height:395px; "> <!-- 02 ago -->
+    <!--</div>-->
+  </div>
+    <div class="card" id="cardInferior" style="width: 100.0%; height:350px; "> <!-- 02 ago -->
       <!--
       <div id="aisPlotPanel" style="width: 100.0%; height:350px;" class="visible">
       </div>  
       -->
-      
-      <div id="AISpointGridPanel" class="visible" style="opacity: 0.4;"> <!--original not-visible-->
-        <fieldset id="AISpointPanel">
-          <legend>AIS Selected Point from Trajectory</legend>
-              Course: 
-              <input type="text" id="inputTxtCourse" name="Course" size="6" disabled/>
-              Speed: 
-              <input type="text" id="inputTxtSpeed" name="Speed" size="4" disabled/>
-              <button id="btnPrevious" onclick="btnPrevious()" disabled>Previous</button>
-              <button id="btnNext" onclick="btnNext()" disabled>Next</button>
-              <br>
-        </fieldset>
-      </div>
-      
       <div id="windRosePanel" class="visible" style="opacity: 0.4;"> <!--original not-visible--> <!-- 02 ago -->
+        <div style="width: 70.0%; height:15px;">
+          <span style="font-weight:bold;">AIS Data (Course & Speed)</span>
+        </div>
+
         <div class="row">
           <div class="leftSubColumn">
-            <div id="vesselsSpeed" style="width: 100.0%; height:330px;">
+            <div id="vesselsSpeed" style="width: 100.0%; height:325px;">
             </div>
           </div>
           <div class="rightSubColumn"> 
-
-                
                 <div style="text-align: left;">
                   <font size="-1">
                     Speed<br>
@@ -384,6 +389,18 @@ div.space05 {
                     <span style="color: blue;   background-color: blue;">X</span> 3-7<br>
                     <span style="color: gray;   background-color: gray;">X</span> 0-3<br>
                   </font> 
+                </div><br>
+                <div id="AISpointGridPanel" class="visible" style="opacity: 0.4;"> 
+                  <fieldset id="AISpointPanel">
+                    <legend>Trajectory Point</legend>
+                        Course: 
+                        <input type="text" id="inputTxtCourse" name="Course" size="6" disabled/><br>
+                        Speed: 
+                        <input type="text" id="inputTxtSpeed" name="Speed" size="4" disabled/><br>
+                        <button id="btnPrevious" onclick="btnPrevious()" disabled>Previous</button>
+                        <button id="btnNext" onclick="btnNext()" disabled>Next</button>
+                        <br>
+                  </fieldset>
                 </div>
           </div>
         </div>
@@ -422,9 +439,9 @@ div.space05 {
   var polylinha; 
   var flagPolygon = false;
   var flagGridCreation = false; 
-  let pontos = [[0.0,0.0][0.0,0.0]]    
+  let pontos = [[0.0,0.0][0.0,0.0]];
 	
-	pontos.pop()
+	pontos.pop();
     	
 	//var mapa = L.map('mapa').setView([-14,-38], 4);
   var mapa = L.map('mapa').setView([0,0], 4);
@@ -434,12 +451,37 @@ div.space05 {
 		maxZoom: 19, attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 	}).addTo(mapa);
 
-  //var mapaAIS = L.map('aisPlotPanel').setView([-14,-38], 4); // removed 30 jul
-  //L.control.scale().addTo(mapaAIS);    // removed 30 jul
-  
-	//var tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-	//	maxZoom: 19, attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-	//}).addTo(mapaAIS);
+  //////////////////////////
+  /*
+  var windRoseLayerGroup = new L.LayerGroup(); 
+  //windRoseLayerGroup.addTo(mapa); 
+
+  //.addTo(trajectoryLayerGroup) 
+  //mapa.addLayer(trajectoryLayerGroup); 
+
+  var div = L.DomUtil.create("div", "vesselsSpeed_on_MAP");
+  windRose_Legend = L.control({ position: "bottomright" }); //"topright" });  // 11 ago
+  windRose_Legend.addTo(windRoseLayerGroup);// jul 24
+  windRose_Legend.onAdd = function(mapa) {
+    var div = L.DomUtil.create("div", "vesselsSpeed_on_MAP");
+    //let contents = div.innerHTML;
+    //document.getElementById("vesselsSpeed_on_MAP").innerHTML = "==== NOVO TESTE ==";
+    //div.innerHTML = "++++++++++++++TESTE DE EXIBICAO ++++++++++++++++++++++";//exibe_Blank_WindRose_on_MAP();
+    //div.innerHTML = exibe_Blank_WindRose_on_MAP();
+    //div.innerHTML = newHTML;
+    //exibe_Blank_WindRose_on_MAP();
+    //var btn_on_MAP_next = L.DomUtil.create("button", "btn_next_on_MAPP");
+    //btn_on_MAP_next.innerHTML;
+    return div;
+  };
+  //legend.addTo(mapa)
+  windRose_Legend.onAdd(mapa);
+  //windRose_Legend.addTo(windRoseLayerGroup);// jul 24
+  windRoseLayerGroup.addTo(mapa);
+  //exibe_Blank_WindRose_on_MAP();
+
+  //windRose_Legend.addTo(mapa); */
+///////////////////////////////////
 
   var markersLayerGroup = new L.LayerGroup(); 
   markersLayerGroup.addTo(mapa); 
@@ -465,7 +507,9 @@ div.space05 {
   var aisAOI_trajSelected = [];
   var gridCell_array = [];
   var flagLegendExist = false; 
-    
+  var flag_Environment_Legend_Exist = false; // 14 Ago
+  var flag_Optimization_Legend_Exist = false; // 14 Ago  
+
   var global_df_ClusterColorTable = []; 
   var perc_pointsNotMatch = 0.0; 
   var df_ClusterTotalMatch = [];
@@ -480,7 +524,7 @@ div.space05 {
 
   exibe_Blank_WindRose(); // 30 jul added to show a blank WindRose at first time
   exibeAboutPage();
-  
+  //display_windRose_on_MAP(); // 12 ago
     //////////////////////////////////// FUNCTIONS ////////////////////////////////
 
   fileInput.addEventListener('change', event => { // 22Jul
@@ -1673,6 +1717,13 @@ div.space05 {
 
       element = document.getElementById("windRosePanel"); // 02 Ago
       element.style.opacity = 1.0; // 02 Ago
+      //////// 14 Ago
+      var listBoxTraj = document.getElementById("listBoxTrajectories");
+      idTrajetory = listBoxTraj.value;
+      displayEnvironmentLegend("55"); // 14 Ago
+      displayOptimizationLegend(idTrajetory); // 14 Ago
+
+
     } else {
       alert("The trajectory selected is empty");
     }
@@ -1711,7 +1762,26 @@ div.space05 {
     // windrose data
     const [s3_array, s7_array, s11_array, s15_array, s20_array, s99_array] = buildWindRose_array(gridCellNumber);
     exibeWindRose(s3_array, s7_array, s11_array, s15_array, s20_array, s99_array); 
+    //display_windRose_on_MAP(); // 10 ago
+    //exibeWindRose_on_MAP(s3_array, s7_array, s11_array, s15_array, s20_array, s99_array); // 10 Ago TESTE
   }
+
+  function display_windRose_on_MAP(){   // SEM USO //// 13 Ago
+    
+    /*Legend specific*/
+    //if (flagLegendExist == true){
+    //  mapa.removeControl(legend);///////
+    //}
+    windRose_Legend = L.control({ position: "bottomright" }); 
+
+    windRose_Legend.onAdd = function(mapa) {
+      var div = L.DomUtil.create("div", "vesselsSpeed_on_MAP");
+      return div;
+    };
+    windRose_Legend.addTo(mapa);
+  };
+
+
   function buildWindRose_array(gridCellID){
     //gridCell_array
     var s3  = [0, 0, 0, 0, 0, 0, 0, 0];
@@ -2038,6 +2108,75 @@ div.space05 {
     //legend.addTo(mapa);   // jul 24 
     flagLegendExist = true;
     fechaAlertMsg(); // novo 16Jul 21jul
+    //alert("The Matching Cells calculation has been done.");
+    
+  }
+  //////////////////////////
+  function displayEnvironmentLegend(id_traj){
+    
+    var xxxxx = "";
+    var buoy_Id = "55";
+    
+    /*Legend specific*/
+    if (flag_Environment_Legend_Exist == true){
+      mapa.removeControl(Environment_Legend);///////
+    }
+    Environment_Legend = L.control({ position: "bottomright" }); 
+
+    Environment_Legend.onAdd = function(mapa) {
+      var div = L.DomUtil.create("div", "legend");
+      
+      div.innerHTML += "<h4>Environmental Data</br></h4>";
+            
+      div.innerHTML += "Wind Direction: xxx" + '</br>';
+      div.innerHTML += "Wind Speed: xxx" + '</br>';
+      div.innerHTML += "Wave Height: xxx" + '</br>';
+      div.innerHTML += "Source: Buoy " + buoy_Id;
+           
+      return div;
+
+      //alert("The Matching Cells calculation has been started.");
+      
+    };
+
+    setTimeout(() => {Environment_Legend.addTo(mapa)}, 1000);// jul 24
+    //legend.addTo(mapa);   // jul 24 
+    flag_Environment_Legend_Exist = true;
+    //fechaAlertMsg(); // novo 16Jul 21jul
+    //alert("The Matching Cells calculation has been done.");
+    
+  }
+  ///////////////////////
+  function displayOptimizationLegend(id_traj){
+    
+    var optimization_Percentage = "64";
+        
+    /*Legend specific*/
+    if (flag_Optimization_Legend_Exist == true){
+      mapa.removeControl(Optimization_Legend);///////
+    }
+    Optimization_Legend = L.control({ position: "bottomleft" }); 
+
+    Optimization_Legend.onAdd = function(mapa) {
+      var div = L.DomUtil.create("div", "legend");
+      
+      div.innerHTML += "<h4>Trajectory " + id_traj + '</br>Grid Cells Waypoints</h4>';
+            
+      div.innerHTML += "Cells: xx, yy, zz:" + '</br>';
+      div.innerHTML += "Total Distance: xxx" + '</br>';
+      div.innerHTML += "Travelled Distance: xxx" + '</br>';
+      div.innerHTML += "Optimization: " + optimization_Percentage + '%';
+           
+      return div;
+
+      //alert("The Matching Cells calculation has been started.");
+      
+    };
+
+    setTimeout(() => {Optimization_Legend.addTo(mapa)}, 1000);// jul 24
+    //legend.addTo(mapa);   // jul 24 
+    flag_Optimization_Legend_Exist = true;
+    //fechaAlertMsg(); // novo 16Jul 21jul
     //alert("The Matching Cells calculation has been done.");
     
   }

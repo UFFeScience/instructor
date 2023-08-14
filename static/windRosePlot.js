@@ -1,5 +1,5 @@
 var r1_Array = [];
-var theta_Array = ["North", "N-E", "East", "S-E", "South", "S-W", "West", "N-W"];
+var theta_Array = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"];
 
 var data = [{
 //    r: r1_Array,
@@ -9,37 +9,37 @@ var data = [{
 //    type: "barpolar"
 //    }, {
     r: [0, 0, 0, 0, 0, 0, 0, 0],
-    theta: ["North", "N-E", "East", "S-E", "South", "S-W", "West", "N-W"],
+    theta: ["N", "NE", "E", "SE", "S", "SW", "W", "NW"],
     name: "< 3 knots",
     marker: {color: "grey"},
     type: "barpolar"
     }, {
     r: [0, 0, 0, 0, 0, 0, 0, 0],
-    theta: ["North", "N-E", "East", "S-E", "South", "S-W", "West", "N-W"],
+    theta: ["N", "NE", "E", "SE", "S", "SW", "W", "NW"],
     name: "3-7 knots",
     marker: {color: "blue"},
     type: "barpolar"
     }, {
     r: [0, 0, 0, 0, 0, 0, 0, 0],
-    theta: ["North", "N-E", "East", "S-E", "South", "S-W", "West", "N-W"],
+    theta: ["N", "NE", "E", "SE", "S", "SW", "W", "NW"],
     name: "7-11 knots",
     marker: {color: "green"},
     type: "barpolar"
     }, {
     r: [0, 0, 0, 0, 0, 0, 0, 0],
-    theta: ["North", "N-E", "East", "S-E", "South", "S-W", "West", "N-W"],
+    theta: ["N", "NE", "E", "SE", "S", "SW", "W", "NW"],
     name: "11-15 knots",
     marker: {color: "yellow"},
     type: "barpolar"
     }, {
     r: [0, 0, 0, 0, 0, 0, 0, 0],
-    theta: ["North", "N-E", "East", "S-E", "South", "S-W", "West", "N-W"],
+    theta: ["N", "NE", "E", "SE", "S", "SW", "W", "NW"],
     name: "15-20 knots",
     marker: {color: "orange"},
     type: "barpolar"
     }, {
     r: [0, 0, 0, 0, 0, 0, 0, 0],
-    theta: ["North", "N-E", "East", "S-E", "South", "S-W", "West", "N-W"],
+    theta: ["N", "NE", "E", "SE", "S", "SW", "W", "NW"],
     name: "20+ knots",
     marker: {color: "red"},
     type: "barpolar"
@@ -47,8 +47,8 @@ var data = [{
 
 var layout = {
     showlegend: false,
-    title: "Vessels Speed (historical)",
-    font: {size: 14},
+    title: "Historical",
+    font: {size: 12},
     //legend: {
         
     //    font: {size: 16}
@@ -102,3 +102,37 @@ function exibe_Blank_WindRose(){
     
     Plotly.newPlot("vesselsSpeed", data, layout, config)
 }
+//////////////////
+/*
+function exibeWindRose_on_MAP(s3, s7, s11, s15, s20, s99){
+    
+    data[0].r = s3;
+    data[1].r = s7;
+    data[2].r = s11;
+    data[3].r = s15;
+    data[4].r = s20;
+    data[5].r = s99;
+    //console.log ("windRose arrays - dentro do js = \n", s3, "\n", s7, "\n", s11, "\n", s15, "\n", s20, "\n",s99);
+
+    Plotly.newPlot("vesselsSpeed_on_MAP", data, layout, config)
+}
+
+//////////
+function exibe_Blank_WindRose_on_MAP(){
+    var s3  = [0, 0, 0, 0, 0, 0, 0, 0];
+    var s7  = [0, 0, 0, 0, 0, 0, 0, 0];
+    var s11 = [0, 0, 0, 0, 0, 0, 0, 0];
+    var s15 = [0, 0, 0, 0, 0, 0, 0, 0];
+    var s20 = [0, 0, 0, 0, 0, 0, 0, 0];
+    var s99 = [0, 0, 0, 0, 0, 0, 0, 0];
+    
+    data[0].r = s3;
+    data[1].r = s7;
+    data[2].r = s11;
+    data[3].r = s15;
+    data[4].r = s20;
+    data[5].r = s99;
+    
+    Plotly.newPlot("vesselsSpeed_on_MAP", data, layout, config)
+}
+*/
