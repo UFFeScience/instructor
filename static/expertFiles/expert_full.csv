@@ -20,4 +20,12 @@ data/AOI Delaware 08-05-23 Grid 2k.csv,data/AOI Delaware 09-05-23 Grid 2k.csv,8.
 data/AOI Delaware 08-05-23 Grid 2k.csv,data/AOI Delaware 09-05-23 Grid 2k.csv,1.0,claudio,4.0,normal,very low,26/07/2023,02:02:38
 data/AOI Delaware 08-05-23 Grid 2k.csv,data/AOI Delaware 09-05-23 Grid 2k.csv,1.0,claudio,7.0,normal,high,02/08/2023,19:44:35
 data/AOI Delaware 08-05-23 Grid 2k.csv,data/AOI Delaware 09-05-23 Grid 2k.csv,1.0,renan,7.0,normal,very low,03/08/2023,01:55:26
-data/AOI Delaware 08-05-23 Grid 2k.csv,data/AOI Delaware 09-05-23 Grid 2k.csv,1,claudio,4,normal,very low,13/08/2023,22:55:28
+data/AOI Delaware 08-05-23 Grid 2k.csv,data/AOI Delaware 09-05-23 Grid 2k.csv,1.0,claudio,4.0,normal,very low,13/08/2023,22:55:28
+data/AOI Delaware 08-05-23 Grid 2k.csv,data/AOI Delaware 09-05-23 Grid 2k.csv,1.0,claudio,3.0,normal,very low,17/08/2023,23:24:46
+data/AOI Delaware 08-05-23 Grid 2k.csv,data/AOI Delaware 09-05-23 Grid 2k.csv,1.0,ferraz,4.0,normal,very low,24/08/2023,12:58:50
+data/AOI Delaware 08-05-23 Grid 2k.csv,data/AOI Delaware 09-05-23 Grid 2k.csv,1.0,braga,4.0,normal,very low,24/08/2023,13:09:44
+data/AOI Delaware 08-05-23 Grid 2k.csv,data/AOI Delaware 09-05-23 Grid 2k.csv,1.0,braga,4.0,anomalous,low,24/08/2023,13:09:56
+data/AOI Delaware 08-05-23 Grid 2k.csv,data/AOI Delaware 09-05-23 Grid 2k.csv,1,renan,4,anomalous,very low,24/08/2023,14:31:23
+data/AOI Delaware 08-05-23 Grid 2k.csv,data/AOI Delaware 09-05-23 Grid 2k.csv,12,renan,4,anomalous,medium,24/08/2023,14:31:46
+data/AOI Delaware 08-05-23 Grid 2k.csv,data/AOI Delaware 09-05-23 Grid 2k.csv,12,renan,4,normal,very high,24/08/2023,14:32:09
+data/AOI Delaware 08-05-23 Grid 2k.csv,data/AOI Delaware 09-05-23 Grid 2k.csv,12,renan,4,anomalous,low,24/08/2023,14:34:05

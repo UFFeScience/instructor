@@ -7,7 +7,7 @@ function calculaGridParametros(latInfAOI, latMedAOI, latSupAOI, lonInfAOI, lonSu
     
     var qtdeCel_X = parseInt((distX / parseInt(tamCel)) + 1);
     var qtdeCel_Y = parseInt((distY / parseInt(tamCel)) + 1);
-    console.log ("distX = ",distX, " qtdeCelX = ", qtdeCel_X, " qtdeCelY = ", qtdeCel_Y);
+    console.log ("distX = ",distX, " distY = ",distY, " qtdeCelX = ", qtdeCel_X, " qtdeCelY = ", qtdeCel_Y);
     var difLatAOI  = parseFloat(latSupAOI) - parseFloat(latInfAOI);
     var difLongAOI = parseFloat(lonSupAOI) - parseFloat(lonInfAOI);
 

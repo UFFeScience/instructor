@@ -29,6 +29,10 @@ div.space {
 div.space18 {
   line-height: 1.8;
 }
+div.space12 {
+  line-height: 1.2;
+}
+
 div.space08 {
   line-height: 0.8;
 }
@@ -327,15 +331,12 @@ div.space05 {
             <!-- alt-->
             <div class="row">
               <div class="leftPanel">
-                <div class="space08">
+                <div class="space05">
                   <fieldset id="classificationPanel" disabled class="visible">  <!-- style="width:265px" -->
                     <legend>Classification</legend>     
                             <input type="radio" id="btnSelectNormal" name="btnRadioNormal" value="normal" checked />
-                            <label for="btnSelectNormal">Normal</label>
-                    
-                            <input type="radio" id="btnSelectAnomalous" name="btnRadioNormal" value="anomalous" />
-                            <label for="btnSelectAnomalous">Anomalous</label> &nbsp; &nbsp;
-                            <br><br>
+                            <label for="btnSelectNormal">Normal</label>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+
                             <label for="confidence">Confidence:</label>
                             <select id="confidence">
                                 <option value="very low" >Very low</option>
@@ -343,14 +344,32 @@ div.space05 {
                                 <option value="medium"   >Medium</option>
                                 <option value="high"     >High</option>
                                 <option value="very high">Very high</option>
-                            </select>&nbsp; &nbsp;
-                            <button id="btnSaveClassif"  onclick="btnClassifAnomaly();">Save</button>
+                            </select>&nbsp; 
+                            
+
+                            <button id="btnSaveClassif"  onclick="btnClassifAnomaly();">Classify</button><br><br>
+                    
+                            <input type="radio" id="btnSelectAnomalous" name="btnRadioNormal" value="anomalous" />
+                            <label for="btnSelectAnomalous">Anomalous</label> &nbsp;
+                            
+                            <!---->
+                            <label for="anomalous_type">Type:</label>
+                            <select id="anomalous_type">
+                                <option value="very low" >unusual speed</option>
+                                <option value="low"      >unusual course</option>
+                                <option value="medium"   >U-turn</option>
+                                <option value="high"     >Prohibit Area</option>
+                                <option value="very high">Poor Optimization</option>
+                            </select>&nbsp;
+
+                            <button id="btnExport"  onclick="download_classifications();">Export</button><br>
+
                   </fieldset>
                 </div>
               </div>
               
               <div class="rightPanel" style="float: left;">
-                &nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;
+                &nbsp; 
                 
                 <!--
                 <button type="button" id="btnFinish" onclick="finishTrajectoryAnalysis();" style="background-color: rgb(141, 163, 236);"disabled>Finish</button>
@@ -518,6 +537,7 @@ div.space05 {
   var flag_active_back_end_process = false;  //////////// novo 19jul
   var flag_runing_js_function = false;  /////// novo 24jul
   var flag_trajectory_analysis = false; // added 05 ago
+  var array_classifications = []; // added 24 ago
   
 
   const fileInput = document.getElementById('aoi_File'); // 22jul
@@ -1013,6 +1033,37 @@ div.space05 {
     } else {alert("It would have at least three locations in the map to save these.")}; 
 
   }
+  ////////////////// novo 24 ago /////////////////////////////
+  function download_classifications() {  
+    //console.log("locations pontos dentro da funcao download = ", pontos); // novo 12jul
+    if (array_classifications.length > 0) {
+        //define the heading for each row of the data  
+        var csv = ""; //'LAT,LONG\n';  
+          
+        //merge the data with CSV  
+        array_classifications.forEach(function(row) {  
+                csv += row.join(',');  
+                csv += "\n";  
+        });  
+        //polygon_CSV = csv;
+        //display the created CSV data on the web browser
+        //document.write(csv);  
+        var hiddenElement = document.createElement('a');  
+        hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);  
+        hiddenElement.target = '_blank';  
+          
+        //provide the name for the CSV file to be downloaded  
+        hiddenElement.download = 'classifications.csv';  
+        hiddenElement.click(); 
+        
+    } else {alert("It would have at least one classification to make downloads.")}; 
+
+  }
+
+
+
+
+  ///////////////////////////////////////////
   function excluirUltPonto(){
       //  console.log(e.target);
       var latUltPonto = pontos[pontos.length - 1][0];
@@ -1226,8 +1277,40 @@ div.space05 {
             }
     });
   }
+  ////////////////////////////// novo 24 Ago /////////////////
+  function saveClassificationFile_browser(){
+
+    const d = new Date();
+
+    var nameFile_historical_AIS = document.getElementById("inputTxtFileName").value; /// 22 jul
+    var nameFile_traj_AIS = document.getElementById("inputDataSetsFileName").value; /// 22 jul
+
+    let strDate = d.toLocaleDateString();
+    let strTime = d.toLocaleTimeString();
+
+    var typeTraj = ""
+    var trajetoria = document.getElementById("listBoxTrajectories").value;
+    var clustering = document.getElementById("clustering").value;
+
+    var confidence = document.getElementById("confidence").value;
+    var normalState  = document.getElementById("btnSelectNormal");
+    if (normalState.checked){
+        typeTraj = "normal"
+    } else {
+        typeTraj = "anomalous"
+    }
+    var classification_row = [nameFile_historical_AIS, nameFile_traj_AIS, trajetoria, clustering, 
+                                typeTraj, confidence,strDate,strTime];
+    console.log("classification_row = ", classification_row);
+    array_classifications.push(classification_row);
+    console.log("array_classifications = ", array_classifications);
+    
+  }
 
   function saveClassificationFile(){
+
+    ////////// added 24 ago 
+    saveClassificationFile_browser();
 
     const d = new Date();
 
@@ -2006,6 +2089,10 @@ div.space05 {
   }
 
   function downloadClassificationFile(){
+
+  /////////////// novo 24 ago //////////////
+    download_classifications(); // added 24 ago
+
     $.ajax({
             url: "{{ url_for('downloadClassification') }}",
             type: "GET",
