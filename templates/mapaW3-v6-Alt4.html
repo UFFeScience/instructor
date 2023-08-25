@@ -73,7 +73,7 @@ div.space05 {
 <dialog class="dialogoInfo" id="Info_Msg">
   <div style="text-align: left;">
     <h2>Login Sucessfull!</h2><br>
-    <h2>The <span style="color: #e71d89; background-color: black;"> highlighted </span> 
+    <h2>The <span style="color: #e71d89; background-color: black;">highlighted</span> 
        itens indicate the next action available/recomended to be executed.</h2>
     <!-- -->
     <button onclick="fechaInfo_Msg();" autofocus style="display:block; margin: 0 auto; background-color: rgb(141, 163, 236);"> Ok </button>
@@ -214,8 +214,9 @@ div.space05 {
       <a href="#" onclick="enable_AIS_File_btn();" id="subButton_enable_AIS_File" >Analysis (side panel)</a>
       
       <a href="#" onclick="concat_AIS_Files();" id="concat_Files" >Build File</a>
-      
+    <!--  
       <a href="#" onclick="downloadClassificationFile();" id="downloadClassification">Download Classifications</a>
+    -->
     </div>
   </div>
 
@@ -334,7 +335,7 @@ div.space05 {
                 <div class="space05">
                   <fieldset id="classificationPanel" disabled class="visible">  <!-- style="width:265px" -->
                     <legend>Classification</legend>     
-                            <input type="radio" id="btnSelectNormal" name="btnRadioNormal" value="normal" checked />
+                            <input type="radio" id="btnSelectNormal" name="btnRadioNormal" onchange="btnRadioNormal_select();" value="normal" checked />
                             <label for="btnSelectNormal">Normal</label>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
 
                             <label for="confidence">Confidence:</label>
@@ -349,17 +350,17 @@ div.space05 {
 
                             <button id="btnSaveClassif"  onclick="btnClassifAnomaly();">Classify</button><br><br>
                     
-                            <input type="radio" id="btnSelectAnomalous" name="btnRadioNormal" value="anomalous" />
+                            <input type="radio" id="btnSelectAnomalous" name="btnRadioNormal" onchange="btnRadioAnomalous_select();" value="anomalous" />
                             <label for="btnSelectAnomalous">Anomalous</label> &nbsp;
                             
                             <!---->
-                            <label for="anomalous_type">Type:</label>
-                            <select id="anomalous_type">
-                                <option value="very low" >unusual speed</option>
-                                <option value="low"      >unusual course</option>
-                                <option value="medium"   >U-turn</option>
-                                <option value="high"     >Prohibit Area</option>
-                                <option value="very high">Poor Optimization</option>
+                            <label for="anomalous_type" >Type:</label>
+                            <select id="anomalous_type" disabled>
+                                <option value="unusual speed"    >unusual speed</option>
+                                <option value="unusual course"   >unusual course</option>
+                                <option value="U-turn"           >U-turn</option>
+                                <option value="Prohibit Area"    >Prohibit Area</option>
+                                <option value="Poor Optimization">Poor Optimization</option>
                             </select>&nbsp;
 
                             <button id="btnExport"  onclick="download_classifications();">Export</button><br>
@@ -463,43 +464,15 @@ div.space05 {
 	pontos.pop();
     	
 	//var mapa = L.map('mapa').setView([-14,-38], 4);
-  var mapa = L.map('mapa').setView([0,0], 4);
+  var mapa = L.map('mapa').setView([30,-20], 3);
   L.control.scale().addTo(mapa);
 
 	var tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-		maxZoom: 19, attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+		maxZoom: 19, minZoom: 2, attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 	}).addTo(mapa);
 
   //////////////////////////
-  /*
-  var windRoseLayerGroup = new L.LayerGroup(); 
-  //windRoseLayerGroup.addTo(mapa); 
-
-  //.addTo(trajectoryLayerGroup) 
-  //mapa.addLayer(trajectoryLayerGroup); 
-
-  var div = L.DomUtil.create("div", "vesselsSpeed_on_MAP");
-  windRose_Legend = L.control({ position: "bottomright" }); //"topright" });  // 11 ago
-  windRose_Legend.addTo(windRoseLayerGroup);// jul 24
-  windRose_Legend.onAdd = function(mapa) {
-    var div = L.DomUtil.create("div", "vesselsSpeed_on_MAP");
-    //let contents = div.innerHTML;
-    //document.getElementById("vesselsSpeed_on_MAP").innerHTML = "==== NOVO TESTE ==";
-    //div.innerHTML = "++++++++++++++TESTE DE EXIBICAO ++++++++++++++++++++++";//exibe_Blank_WindRose_on_MAP();
-    //div.innerHTML = exibe_Blank_WindRose_on_MAP();
-    //div.innerHTML = newHTML;
-    //exibe_Blank_WindRose_on_MAP();
-    //var btn_on_MAP_next = L.DomUtil.create("button", "btn_next_on_MAPP");
-    //btn_on_MAP_next.innerHTML;
-    return div;
-  };
-  //legend.addTo(mapa)
-  windRose_Legend.onAdd(mapa);
-  //windRose_Legend.addTo(windRoseLayerGroup);// jul 24
-  windRoseLayerGroup.addTo(mapa);
-  //exibe_Blank_WindRose_on_MAP();
-
-  //windRose_Legend.addTo(mapa); */
+  
 ///////////////////////////////////
 
   var markersLayerGroup = new L.LayerGroup(); 
@@ -541,12 +514,28 @@ div.space05 {
   
 
   const fileInput = document.getElementById('aoi_File'); // 22jul
+  const btnRadioNormal_getElement = document.getElementById('btnSelectNormal'); // added 25 ago
+  const btnRadioAnomalous_getElement = document.getElementById('btnSelectAnomalous');
 
-  exibe_Blank_WindRose(); // 30 jul added to show a blank WindRose at first time
+  exibe_Blank_WindRose(); // show a blank WindRose at first time
   exibeAboutPage();
-  //display_windRose_on_MAP(); // 12 ago
+  
     //////////////////////////////////// FUNCTIONS ////////////////////////////////
+  
+  function btnRadioNormal_select(){
+    var anomalous_selectType = document.getElementById("anomalous_type");
+    if (btnRadioNormal_getElement.checked == true){
+      anomalous_selectType.disabled = true;
+    } 
+  }
 
+  function btnRadioAnomalous_select(){ // 25 ago
+    var anomalous_selectType = document.getElementById("anomalous_type");
+    if (btnRadioAnomalous_getElement.checked == true){
+      anomalous_selectType.disabled = false;
+    }
+  }
+  
   fileInput.addEventListener('change', event => { // 22Jul
     loadArea2();
   });
@@ -1035,19 +1024,18 @@ div.space05 {
   }
   ////////////////// novo 24 ago /////////////////////////////
   function download_classifications() {  
-    //console.log("locations pontos dentro da funcao download = ", pontos); // novo 12jul
+    
     if (array_classifications.length > 0) {
         //define the heading for each row of the data  
-        var csv = ""; //'LAT,LONG\n';  
+        //var csv = ""; //'LAT,LONG\n';  
+        var csv = 'UserName, nameFile_historical_AIS, nameFile_traj_AIS, trajectoryID, clustering, typeTraj, anomalous_type,strDate,strTime\n';
           
         //merge the data with CSV  
         array_classifications.forEach(function(row) {  
                 csv += row.join(',');  
                 csv += "\n";  
         });  
-        //polygon_CSV = csv;
-        //display the created CSV data on the web browser
-        //document.write(csv);  
+        
         var hiddenElement = document.createElement('a');  
         hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);  
         hiddenElement.target = '_blank';  
@@ -1187,7 +1175,8 @@ div.space05 {
   }
 
   function btnClassifAnomaly(){
-    saveClassificationFile();
+    //saveClassificationFile();
+    saveClassificationFile_browser(); // added 25 ago
   }
   
   function performPost() {
@@ -1294,16 +1283,21 @@ div.space05 {
 
     var confidence = document.getElementById("confidence").value;
     var normalState  = document.getElementById("btnSelectNormal");
+    var anomalous_type = document.getElementById("anomalous_type").value;
+    
+
     if (normalState.checked){
-        typeTraj = "normal"
+        typeTraj = "normal";
+        anomalous_type = "not aplicable";
     } else {
         typeTraj = "anomalous"
     }
-    var classification_row = [nameFile_historical_AIS, nameFile_traj_AIS, trajetoria, clustering, 
-                                typeTraj, confidence,strDate,strTime];
+    var classification_row = [expertID, nameFile_historical_AIS, nameFile_traj_AIS, trajetoria, clustering, 
+                                typeTraj, anomalous_type,strDate,strTime];
     console.log("classification_row = ", classification_row);
     array_classifications.push(classification_row);
     console.log("array_classifications = ", array_classifications);
+    alert("The classification has been stored in memory. Use the <Export> button to export all the classifications to a local file.");
     
   }
 
@@ -2088,10 +2082,9 @@ div.space05 {
     
   }
 
-  function downloadClassificationFile(){
+  function downloadClassificationFile(){  // replaced by download_classifications()
 
-  /////////////// novo 24 ago //////////////
-    download_classifications(); // added 24 ago
+  //  download_classifications(); 
 
     $.ajax({
             url: "{{ url_for('downloadClassification') }}",
