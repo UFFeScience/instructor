@@ -29,6 +29,14 @@ def homepage():
     #print(sys.path) #
     return render_template("mapaW3-v6-Alt4.html")
 
+@app.route('/success', methods = ['POST'])  
+def success():  
+    if request.method == 'POST':  
+        f = request.files['historical_file']
+       # f.save(f.filename)  
+        return ""
+
+
 
 @app.route('/create_file', methods=['POST']) # Not used
 def create_file():
@@ -63,6 +71,27 @@ def selectAIS_File():
     resposta = jsonify(selectNameFile())
     resposta.headers.add("Access-Control-Allow-Origin", "*")
     return resposta
+
+##################
+@app.route('/selectAIS_File2', methods=['POST'])
+def selectAIS_File2():
+     
+    
+    f = request.files['historical_file']
+    #dados = request.get_json()
+
+    ais_df = pd.read_csv(f); #novo
+    #ais_df.shape
+    print ("Tam array ais = ",ais_df.shape)
+    print("head 5 = ",ais_df.head(5))
+
+    resposta = jsonify(f.filename)
+    resposta.headers.add("Access-Control-Allow-Origin", "*")
+    print("filename = ", f.filename)
+    return resposta
+
+
+############
 
 @app.route('/selectDatasetFile', methods=['GET'])
 def selectDatasetFile():
@@ -434,6 +463,7 @@ def loadExpertFile():
     resposta.headers.add("Access-Control-Allow-Origin", "*")
     return resposta
 
+######### replaced with javaScript in Front-end #######
 @app.route('/downloadClassification',  methods=["GET"])
 def downloadClassification():
     
@@ -458,9 +488,7 @@ def downloadClassification():
             f.close()
         except:
             msg = "Error occurred while printing the file."
-           # print("Error occurred while printing the file.")
         
-
         try:
             shutil.copyfile(src1, destination1)
             shutil.copyfile(src2, destination2)
@@ -496,8 +524,7 @@ def downloadClassification():
         except:
             msg = "Unexpected error:"
             #print("Unexpected error:", sys.exc_info())
-
-
+        
         ##########################################################
         #shutil.copyfile(src1, destination1)
         #shutil.copyfile(src2, destination2)
@@ -505,6 +532,7 @@ def downloadClassification():
     resposta.headers.add("Access-Control-Allow-Origin", "*")
     return resposta
 
+######### replaced with javaScript in Front-end #######
 @app.route('/saveClassification', methods=['POST'])
 def saveClassification():
     
@@ -530,8 +558,7 @@ def saveClassification():
   
     index = len(global_expert_df)
     index_full = len(global_expert_full_df)
-    #print("tamanho expert_df = ", index)
-
+    
     global_expert_df.loc[index,"Filename_historical_AIS"]  = filename_historical_AIS #####
     global_expert_full_df.loc[index_full,"Filename_historical_AIS"]  = filename_historical_AIS
 

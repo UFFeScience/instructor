@@ -217,6 +217,7 @@ div.space05 {
     <!--  
       <a href="#" onclick="downloadClassificationFile();" id="downloadClassification">Download Classifications</a>
     -->
+      
     </div>
   </div>
 
@@ -257,9 +258,18 @@ div.space05 {
             <div class="space18">
               <div>    
                 <button type="button" id="btnSelectAIS_File" disabled onclick="async_selectAIS_File();">Select File</button>
+                <!-- teste-->
+                <button type="button" id="btnSelectAIS_File_TESTE" onclick="async_selectAIS_File_NEW();">TESTE</button>
                 <input type="text" id="inputTxtFileName" name="Name" disabled/>&nbsp;&nbsp;
                 <button id="btnPlot" onclick="async_aisPlotFile();" disabled>Plot</button><br>
-                 
+                <!--
+                <input type="file" id="inputFile_historical_AIS" name="historical_file" accept=".csv" class="not-visible" /> 
+                -->
+                <form method=post action = "/success" enctype=multipart/form-data>
+                  <input type="file" id="inputFile_historical_AIS" name="historical_file" accept=".csv" class="not-visible" /> <!--novo 28 ago-->
+                  <input type="submit" value="Upload">
+                </form>
+                 <!---->
                 <fieldset id="parametersPanel" class="visible">  <!-- style="width:265px" -->
                   <legend>Clustering Algorithm & Parameters</legend>    
                   <label for="clustering">Algorithm:</label>
@@ -320,9 +330,10 @@ div.space05 {
                     <select id="listBoxTrajectories" disabled>
                     </select>&nbsp;&nbsp;
                     
-                    <button type="button" id="btnShow" onclick="async_showTrajectory();" disabled>Plot </button>&nbsp;
-                    <button type="button" id="btnPlay_trajectory" onclick="play_trajectory();" disabled>Play</button>&nbsp;
-                    <button type="button" id="btnShow_panel_matching_cells" onclick="show_panel_matching_cells();" disabled>Statistics Panel</button>
+                    <button type="button" id="btnShow" onclick="async_showTrajectory();" disabled>Plot &#x27F3</button>&nbsp;&nbsp;&nbsp;
+                    <button type="button" id="btnPlay_trajectory" onclick="play_trajectory();" disabled>Play</button>
+                    <button type="button" id="btnStop_Play_trajectory" onclick="stop_play_trajectory();" disabled>Stop</button>&nbsp;&nbsp;&nbsp;
+                    <button type="button" id="btnShow_panel_matching_cells" onclick="show_panel_matching_cells();" disabled>Statistics</button>
                     
 
                   </div> 
@@ -514,8 +525,11 @@ div.space05 {
   
 
   const fileInput = document.getElementById('aoi_File'); // 22jul
+  const fileInput_historical_AIS = document.getElementById('inputFile_historical_AIS'); // 28 ago
+
   const btnRadioNormal_getElement = document.getElementById('btnSelectNormal'); // added 25 ago
   const btnRadioAnomalous_getElement = document.getElementById('btnSelectAnomalous');
+  var flag_stop_button_active = false; // added 26 ago
 
   exibe_Blank_WindRose(); // show a blank WindRose at first time
   exibeAboutPage();
@@ -539,6 +553,11 @@ div.space05 {
   fileInput.addEventListener('change', event => { // 22Jul
     loadArea2();
   });
+  ////////////// 28 ago
+  fileInput_historical_AIS.addEventListener('change', event => { // 22Jul
+    send_AIS_historical_file();
+  });
+
 
   var input_User = document.getElementById("inputTxtName");
   input_User.addEventListener("keypress", function(event) {
@@ -906,6 +925,8 @@ div.space05 {
     //console.log("retorno do AOI_File.click = ",retorno);
     
   }
+
+
 
   function loadArea2(){
 
@@ -1352,8 +1373,8 @@ div.space05 {
   function fechaInstructions(){
     modalInstructions.close()
   }
-
-  function async_selectAIS_File(){
+ 
+  function async_selectAIS_File(){  
     (async () => {
       let response = await selectAIS_File();
       await response; ///gridCreation;
@@ -1361,8 +1382,40 @@ div.space05 {
     
     })();
   }
+   ///////////////////// 28 ago /////////////////
+  function async_selectAIS_File_NEW(){
+    var AIS_historical_file = document.getElementById("inputFile_historical_AIS");
+    AIS_historical_file.click();
+  }
+
+  function send_AIS_historical_file(){
+
+    //var dados = JSON.stringify([latInfGrid, latSupGrid, lonInfGrid, lonSupGrid,
+    //                            polygon_CSV, larguraCelula, alturaCelula, qtdeCel_X]);
+
+    let uploadedFile = document.getElementById('inputFile_historical_AIS').files[0];
+         var form_data = new FormData();
+         form_data.append("historical_file",uploadedFile);
+         //form_data.append("dadosTeste", dados);
+         $.ajax({
+            url: "{{ url_for('selectAIS_File2') }}",
+            method: "POST",
+            processData: false,
+            contentType: false,
+            //dataType: 'multipart/form-data',
+            data: form_data,
+            success: function(){
+              alert("Success send AIS historical file");
+              //alert("filename dentro do ajax = ", retorno);
+            },
+            error: function(){
+              alert("error execution send AIS historical file");
+            }
+         });
 
 
+  }
+  ////////////////////////////////// 28 ago 
   function selectAIS_File(){
     $.ajax({
             url: "{{ url_for('selectAIS_File') }}",
@@ -1378,11 +1431,9 @@ div.space05 {
   function openFileAIS(retorno){
     
     //console.log("retorno = ", retorno);
-    
     var textField = $('#inputTxtFileName');
     textField.disabled = false;
 
-    
     //textField.val(retorno); novo 13jul
     textField.val("data/AOI Delaware 08-05-23 Grid 2k.csv");
 
@@ -1940,11 +1991,11 @@ div.space05 {
   function btnNext(){
     if (trajectoryPointIndex < aisAOI_trajSelected.length -1){
       trajectoryPointIndex = trajectoryPointIndex + 1;
-      //displayedPointsLayerGroup.removeLayer(circle); nao testado
       drawGridCell(trajectoryPointIndex);
-      ////////// 22 jul
+      
       btn = document.getElementById("btnPrevious");
       btn.disabled = false;
+      
       if (trajectoryPointIndex == aisAOI_trajSelected.length -1){
         btn = document.getElementById("btnNext");
         btn.disabled = true;
@@ -1953,27 +2004,51 @@ div.space05 {
     } 
   }
   function play_trajectory(){
-    
-    //while (trajectoryPointIndex < aisAOI_trajSelected.length -1){
+    var btnStop = document.getElementById("btnStop_Play_trajectory");
+    disable_btnPlay_trajectory(true); // added 26 ago 23h
+    disable_btnPlot_trajectory(true);
+
+    if (flag_stop_button_active == true){
+      flag_stop_button_active = false; // added 26 ago
+      disable_btnPlay_trajectory(false); // added 26 ago 23h
+      disable_btnPlot_trajectory(false);
+      return
+    }
+    btnStop.disabled = false;
     if (trajectoryPointIndex != aisAOI_trajSelected.length -1){
       btnNext();
       setTimeout(play_trajectory, 300); 
     } else {
-      //trajectoryPointIndex = 0;
-      //drawGridCell(trajectoryPointIndex);
-
       var btn = document.getElementById("btnPrevious");
       btn.disabled = true;
       btn = document.getElementById("btnNext");
       btn.disabled = false;
-      //showTrajectory(); // removed 05ago
+      
       plotSelectedTrajectory(); // add 05 ago
       trajectoryPointIndex = 0; // add 05 ago
       drawGridCell(trajectoryPointIndex); // 05 ago
+      flag_stop_button_active = false; // added 26 ago
+      btnStop.disabled = true; //added 26 ago
+      disable_btnPlay_trajectory(false); // added 26 ago 23h
+      disable_btnPlot_trajectory(false);
       return
     }  
     highlight_element_HMI_button("btnPlay_trajectory", "");  // 02 ago
     
+  }
+  function disable_btnPlay_trajectory(boolean){
+      var btn = document.getElementById("btnPlay_trajectory");
+      btn.disabled = boolean;
+  }
+  function disable_btnPlot_trajectory(boolean){
+      var btn = document.getElementById("btnShow");
+      btn.disabled = boolean;
+  }
+  
+  function stop_play_trajectory(){
+    var btn = document.getElementById("btnStop_Play_trajectory");
+    btn.disabled = true;
+    flag_stop_button_active = true;
   }
 
   function async_selectDatasetFile(){
