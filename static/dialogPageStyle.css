@@ -24,6 +24,7 @@ dialog {
     max-width: 400px;
     border-radius: .5rem;
     width: 50%;
+    /*position: relative;*/
 }
 
 .dialogoInfo{

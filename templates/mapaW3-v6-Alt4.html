@@ -8,8 +8,7 @@
 
     <link rel="stylesheet" href="/static/pageStyle.css">
     <link rel="stylesheet" href="/static/dialogPageStyle.css">
-
-    
+        
     <script src="/static/haversine.js"></script>
     <script src="/static/getMinMax.js"></script>
     <script src="/static/gridCalc.js"></script>
@@ -40,8 +39,6 @@ div.space08 {
 div.space05 {
   line-height: 0.5;
 }
-
-
 
 </style>
 </head>
@@ -95,10 +92,7 @@ div.space05 {
     <img src="/static/waiting-icon-star.gif" style="float: inline-start;" width="50" height="50">
     <h3>&nbsp; &nbsp; Please wait for the processing.</h3>
   </div>
-   
-  
 </dialog>
-
 
 <dialog class="dialogoLogin" id="loginPage">
   <div style="text-align: center;">
@@ -182,9 +176,6 @@ div.space05 {
     <div class="subnav-content">
       <a href="#" onclick="removeArea();" id="removeArea" >Remove</a>
       <a href="#" onclick="select_AOI_File();" id="select_AOI_File">Load File</a>
-      <!--
-      <a href="#" onclick="loadArea2();" id="loadAOI">Load File</a>
-      -->
       <a href="#" onclick="gerarPoligono();" id="geraAOI">Create</a>
       <a href="#" onclick="download_csv_file();" id="saveAOI" >Save into a File</a>
       <input type="file" id="aoi_File" accept=".csv" class="not-visible" /> <!--novo 11jul-->
@@ -203,25 +194,18 @@ div.space05 {
       <a href="#" onclick="setSizeCell(5000);">5Km </a>
     </div>
   </div>
-  <!--
-  <div class="subnav">
-    <button class="subnavbtn" onclick="gridCreation();">Grid Creation </button>
-  </div>
-  -->
+ 
   <div class="subnav">
     <button class="subnavbtn" id="btn_Trajectory_Data">Trajectory Data <i class="fa fa-caret-down"></i></button>
     <div class="subnav-content">
       <a href="#" onclick="enable_AIS_File_btn();" id="subButton_enable_AIS_File" >Analysis (side panel)</a>
-      
-      <a href="#" onclick="concat_AIS_Files();" id="concat_Files" >Build File</a>
-    <!--  
-      <a href="#" onclick="downloadClassificationFile();" id="downloadClassification">Download Classifications</a>
-    -->
-      
+      <a href="#" onclick="file_AIS_select_dialog();" id="id_filter_AOI_from_AIS_file">Filter AIS data</a>
+      <a href="#" onclick="concat_AIS_Files_v2();" id="concat_Files" >Concat filtered Files</a>
+      <input type="file" id="id_filter_AOI" accept=".csv" class="not-visible" /> <!--novo 29 ago-->
+      <input type="file" id="id_concat_filtered_files" accept=".csv" multiple class="not-visible" /> <!--novo 01 set-->
     </div>
   </div>
-
-
+  
   <div class="subnav">
     <button class="subnavbtn" id="btn_Help">Help <i class="fa fa-caret-down"></i></button>
     <div class="subnav-content">
@@ -237,11 +221,7 @@ div.space05 {
       <h3>MAP</h3>
       <div id="mapa" style="width: 100.0%; height: 670px;">
       </div>
-      <!--
       
-      <div id="vesselsSpeed_on_MAP" >
-      </div>
-      -->
     </div>
   </div>
   <div class="rightcolumn">
@@ -266,7 +246,7 @@ div.space05 {
                 <input type="file" id="inputFile_historical_AIS" name="historical_file" accept=".csv" class="not-visible" /> 
                 -->
                 <form method=post action = "/success" enctype=multipart/form-data>
-                  <input type="file" id="inputFile_historical_AIS" name="historical_file" accept=".csv" class="not-visible" /> <!--novo 28 ago-->
+                  <input type="file" id="inputFile_historical_AIS" multiple name="historical_file" accept=".csv" class="not-visible" /> <!--novo 28 ago-->
                   <input type="submit" value="Upload">
                 </form>
                  <!---->
@@ -323,9 +303,7 @@ div.space05 {
                     <button type="button" id="btnLoadDatasets_File" onclick="async_selectDatasetFile();" disabled>Select Dataset </button>
                     <input type="text" id="inputDataSetsFileName" name="datasetsName" disabled/>&nbsp;&nbsp;
                     <button id="btnLoadDataset" onclick="async_loadDatasetFile();" disabled>Load</button>
-                    
                     <br>
-                    
                     <label for="listBoxTrajectories">Trajectory:</label>
                     <select id="listBoxTrajectories" disabled>
                     </select>&nbsp;&nbsp;
@@ -334,8 +312,6 @@ div.space05 {
                     <button type="button" id="btnPlay_trajectory" onclick="play_trajectory();" disabled>Play</button>
                     <button type="button" id="btnStop_Play_trajectory" onclick="stop_play_trajectory();" disabled>Stop</button>&nbsp;&nbsp;&nbsp;
                     <button type="button" id="btnShow_panel_matching_cells" onclick="show_panel_matching_cells();" disabled>Statistics</button>
-                    
-
                   </div> 
                   <div class="space05">
                     <br>
@@ -358,13 +334,10 @@ div.space05 {
                                 <option value="very high">Very high</option>
                             </select>&nbsp; 
                             
-
                             <button id="btnSaveClassif"  onclick="btnClassifAnomaly();">Classify</button><br><br>
-                    
                             <input type="radio" id="btnSelectAnomalous" name="btnRadioNormal" onchange="btnRadioAnomalous_select();" value="anomalous" />
                             <label for="btnSelectAnomalous">Anomalous</label> &nbsp;
                             
-                            <!---->
                             <label for="anomalous_type" >Type:</label>
                             <select id="anomalous_type" disabled>
                                 <option value="unusual speed"    >unusual speed</option>
@@ -382,7 +355,6 @@ div.space05 {
               
               <div class="rightPanel" style="float: left;">
                 &nbsp; 
-                
                 <!--
                 <button type="button" id="btnFinish" onclick="finishTrajectoryAnalysis();" style="background-color: rgb(141, 163, 236);"disabled>Finish</button>
                 -->
@@ -444,7 +416,9 @@ div.space05 {
   <p>&copy; Instructor 2022-2023 &nbsp;&nbsp; Claudio V. Ribeiro</p>
 </div>
 
-<!------------------------  SCRIPT ---------------------------------------->
+<!--*********************************************************************-->
+<!--                           SCRIPT                                    -->
+<!--*********************************************************************-->
 
 <script>
   var latInfGrid, latSupGrid, lonInfGrid, lonSupGrid, latMedGrid;
@@ -481,10 +455,6 @@ div.space05 {
 	var tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 		maxZoom: 19, minZoom: 2, attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 	}).addTo(mapa);
-
-  //////////////////////////
-  
-///////////////////////////////////
 
   var markersLayerGroup = new L.LayerGroup(); 
   markersLayerGroup.addTo(mapa); 
@@ -526,7 +496,9 @@ div.space05 {
 
   const fileInput = document.getElementById('aoi_File'); // 22jul
   const fileInput_historical_AIS = document.getElementById('inputFile_historical_AIS'); // 28 ago
-
+  const fileInput_filter_AOI_from_AIS = document.getElementById('id_filter_AOI'); // 29 ago
+  const fileInput_concat_filtered_files = document.getElementById('id_concat_filtered_files'); // 29 ago
+  
   const btnRadioNormal_getElement = document.getElementById('btnSelectNormal'); // added 25 ago
   const btnRadioAnomalous_getElement = document.getElementById('btnSelectAnomalous');
   var flag_stop_button_active = false; // added 26 ago
@@ -534,7 +506,155 @@ div.space05 {
   exibe_Blank_WindRose(); // show a blank WindRose at first time
   exibeAboutPage();
   
-    //////////////////////////////////// FUNCTIONS ////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+                                    // FUNCTIONS //
+  //////////////////////////////////////////////////////////////////////////////
+  function file_AIS_select_dialog(){
+
+    if (flagGridCreation == false){
+      alert("It must have a Grid created.");
+      return;
+    }
+    var file_select_dialog = document.getElementById("id_filter_AOI");
+    file_select_dialog.click();
+  }
+  function concat_AIS_Files_v2(){
+    
+    var file_select_dialog = document.getElementById("id_concat_filtered_files");
+    file_select_dialog.click();
+  }
+  
+  // Simple JavaScript Promise that reads a file as text.
+  function readFileAsText(file){
+    return new Promise(function(resolve,reject){
+        let fr = new FileReader();
+
+        fr.onload = function(){
+            resolve(fr.result);
+        };
+
+        fr.onerror = function(){
+            reject(fr);
+        };
+
+        fr.readAsText(file);
+    });
+  }
+
+  function filter_AOI_from_AIS_file(){
+    alert("This action could take several minutes.");
+    exibeAlertMsg(); //not working
+    var fileSize = 0;
+    var theFile = document.getElementById("id_filter_AOI");
+    //var theFile = document.getElementById("id_filter_AOI").files;//
+    var filename_ais_historical = theFile.files[0].name;
+    //var filename_ais_historical = theFile[0].name;//
+    console.log("nome do arquivo = ", filename_ais_historical);
+    let data_row_AIS = [];
+    let data_to_save_into_file = [];
+    var valid_lat_lon = false;
+    let additional_fields = ["999", "999", "0", "0"];/////
+    additional_fields[0] = additional_fields[0].split(",");///
+         
+    if (typeof (FileReader) != "undefined") { //check if browser support FileReader
+    
+      var myReader = new FileReader(); // file reader object
+      myReader.onload = function(e) {  //get file contents, split them by line
+          
+          let data = myReader.result.split("\n");
+          data.shift(); // remove first element - the header
+          data.pop(); // remove last element - blank array
+          for (let i in data) { //loop each row split them by "," and save it in array
+            data[i] = data[i].split(",");
+            data_row_AIS[i] = data[i];
+            
+            valid_lat_lon = is_belong_AOI(data_row_AIS[i][2], data_row_AIS[i][3]);  //lat, long
+            if (valid_lat_lon == true){
+              data_row_AIS[i] = [...additional_fields,...data_row_AIS[i]];// ok ///////////
+              //ais_Historical_AOI_ArrayFiltered.push(data_row_AIS[i]);
+              data_to_save_into_file.push(data_row_AIS[i]);
+            }
+          }
+          console.log("ais_historical AOI filtered = ", data_to_save_into_file);//
+          console.log("antes do save");
+          save_AIS_historical_data_filtered_to_file(data_to_save_into_file, filename_ais_historical);
+          fechaAlertMsg();//////////////////////////
+          console.log("depois do save");
+      }
+      myReader.readAsText(theFile.files[0]);  //call file reader onload
+    }
+    else {
+        alert("This browser does not support FileReader - HTML5.");
+    }
+    ////////
+    var total_files = theFile.files.length;
+    console.log("numero de arqs = ", total_files);
+    //////////
+    return false;   
+  }
+  
+  function concat_file_from_AIS_filtered(){
+    
+    alert("This action could take several minutes.");
+    exibeAlertMsg(); //not working
+    let readers = [];
+    let data_temp = "";// myReader.result.split("\n");
+    
+    var theFiles = document.getElementById("id_concat_filtered_files").files;//
+    total_files = theFiles.length;
+          
+    for(let i = 0;i < total_files;i++){
+      readers.push(readFileAsText(theFiles[i]));
+    }
+    var csv_concat_files = "";  
+    
+    // Trigger Promises
+    Promise.all(readers).then((values) => {
+        // ["File1 Content", "File2 Content" ... "FileN Content"]
+        console.log(values);
+        for(let i = 0;i < total_files;i++){
+          csv_concat_files = csv_concat_files + values[i];  // works
+        }
+        
+        var hiddenElement = document.createElement('a');  
+        hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv_concat_files);  
+        hiddenElement.target = '_blank';  
+          
+        //provide the name for the CSV file to be downloaded  
+        hiddenElement.download = 'concated_files_data_filtered_AOI_';  
+        hiddenElement.click(); 
+    });
+    fechaAlertMsg();
+  }
+
+  function is_belong_AOI(latitude, longitude){
+
+    var lat = parseFloat(latitude);
+    var lon = parseFloat(longitude);
+
+    var lonInf = parseFloat(lonInfGrid);
+    var lonSup = parseFloat(lonSupGrid);
+    var latInf  = parseFloat(latInfGrid);
+    var latSup  = parseFloat(latSupGrid);
+    
+    if (lon < lonInf || lon < -180.0){
+      return false;
+    }
+    if (lon > lonSup || lon > 180.0){
+      return false;
+    }
+    if (lat < latInf || lat < -90.0){
+      return false;
+    }
+    if (lat > latSup || lat > 90.0){
+      return false;
+    } 
+    if (isPointInPolygon(latitude, longitude, pontos) == false){
+      return false;
+    } else{
+      return true;
+    }
+  }
   
   function btnRadioNormal_select(){
     var anomalous_selectType = document.getElementById("anomalous_type");
@@ -558,6 +678,14 @@ div.space05 {
     send_AIS_historical_file();
   });
 
+  fileInput_filter_AOI_from_AIS.addEventListener('change', event => { // 29 ago
+    
+    filter_AOI_from_AIS_file();
+  });
+  
+  fileInput_concat_filtered_files.addEventListener('change', event => { // 29 ago
+    concat_file_from_AIS_filtered();
+  });
 
   var input_User = document.getElementById("inputTxtName");
   input_User.addEventListener("keypress", function(event) {
@@ -738,7 +866,6 @@ div.space05 {
       default:
         // code block
     } 
-
   }
 
   function show_Parameters_labels_inputs(p1, p2, p3, label_P1, value_P1, label_P2, value_P2, label_P3, value_P3){
@@ -869,7 +996,6 @@ div.space05 {
 		if (localZoom == 3){
       mapa.setView([0, 0], 4);
       //mapaAIS.setView([3, 5], 3);
-
     }
     if (localZoom == 4){
       mapa.setView([-24, 112], 4);
@@ -879,10 +1005,7 @@ div.space05 {
       mapa.setView([45, 0], 4);
       //mapaAIS.setView([45, 0], 3);
     }
-    //var elemento = document.getElementById("btn_Map_Set_View"); // 02 Ago
-    //elemento.style.backgroundColor = "inherit"; removed 05 ago
-    //elemento = document.getElementById("btn_AOI"); // 02 Ago
-    //elemento.style.color = "rgb(90, 47, 158)";
+    
     highlight_element_HMI("btn_Map_Set_View", "btn_AOI"); //added 05 ago
   };
 
@@ -907,7 +1030,6 @@ div.space05 {
           mapa.removeLayer(polylinha); // added 05 ago
           cellsLayerGroup.clearLayers(); //
 
-
           flagGridCreation = false;
       }
       highlight_element_HMI("btn_Grid_Creation", "btn_AOI"); // 02 ago
@@ -923,11 +1045,8 @@ div.space05 {
     AOI_File.click();
     //retorno = AOI_File.click();
     //console.log("retorno do AOI_File.click = ",retorno);
-    
   }
-
-
-
+  
   function loadArea2(){
 
     //var AOI_File = document.getElementById("aoi_File");
@@ -970,8 +1089,7 @@ div.space05 {
     //console.log(data);
     return false;    //plotLoadedArea(data2);
   }
-
-
+  
   function loadArea(){
     //loadArea2(); // novo 11jul
     //alert("parada no comando loadArea"); //
@@ -1068,9 +1186,27 @@ div.space05 {
     } else {alert("It would have at least one classification to make downloads.")}; 
 
   }
-
-
-
+  function save_AIS_historical_data_filtered_to_file(array_data_AIS_to_file, filename){
+    if (array_data_AIS_to_file.length > 0) {
+        //define the header for each row of the data  
+        //var csv = 'MMSI,BaseDateTime,LAT,LON,SOG,COG,Heading,VesselName,IMO,CallSign,VesselType,Status,Length,Width,Draft,Cargo,TranscieverClass,speedBIN,courseBIN,TrajID,GridCell\n';
+        var csv = "";  // without header
+        //merge the data with CSV  
+        array_data_AIS_to_file.forEach(function(row) {  
+                csv += row.join(',');  
+                csv += "\n";  
+        });  
+        
+        var hiddenElement = document.createElement('a');  
+        hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);  
+        hiddenElement.target = '_blank';  
+          
+        //provide the name for the CSV file to be downloaded  
+        hiddenElement.download = 'historical_data_filtered_AOI_' + filename;  
+        hiddenElement.click(); 
+        
+    } else {alert("The filtered array of AIS data is empty and couldn't be saved into a file.")}; 
+  }
 
   ///////////////////////////////////////////
   function excluirUltPonto(){
@@ -1200,16 +1336,8 @@ div.space05 {
     saveClassificationFile_browser(); // added 25 ago
   }
   
-  function performPost() {
-        $.ajax({
-            type: "POST",
-            url: "{{ url_for('create_file') }}",
-            data: {"name" : "Jim"},
-        })
-    }
-  
   function exibeInfo_Msg(){
-    modalInfo.showModal()
+    modalInfo.showModal();
   }
   function fechaInfo_Msg(){
     modalInfo.close()
@@ -1218,15 +1346,17 @@ div.space05 {
 
   function exibeAlertMsg(){
     flag_active_back_end_process = false; ////novo 19jul
-    modalAlert.showModal()
+    //modalAlert.showModal();
+    //document.body.appendChild(document.getElementById('AlertMsg'));///
+    modalAlert.showModal();
   }
   function fechaAlertMsg(){
     flag_active_back_end_process = true; ////novo 19jul
-    modalAlert.close()
+    modalAlert.close();
   }
   
   function exibeAboutPage(){
-    modalAbout.showModal()
+    modalAbout.showModal();
   }
   function fechaAboutPage(){
     modalAbout.close()
@@ -1261,7 +1391,6 @@ div.space05 {
   function validaLogin(retorno){
 
     expertFileName = retorno;
-    //console.log("depois do ajax - expertFileName = ", expertFileName);
     
     if (expertFileName == 'none') {
       //console.log("valor none");
@@ -1269,9 +1398,6 @@ div.space05 {
     } else {
       modalLogin.close();
       exibeInfo_Msg(); // 03 ago
-      //highlight_element_HMI("", "btn_Map_Set_View"); // removed 03 ago
-      //alert("Arquivo de classificação carregado"); /// 25 jul // removed 02 ago
-      //loadExpertFile(); // jul23
     }
   }
   function loadExpertFile(){
@@ -1306,7 +1432,6 @@ div.space05 {
     var normalState  = document.getElementById("btnSelectNormal");
     var anomalous_type = document.getElementById("anomalous_type").value;
     
-
     if (normalState.checked){
         typeTraj = "normal";
         anomalous_type = "not aplicable";
@@ -1393,10 +1518,16 @@ div.space05 {
     //var dados = JSON.stringify([latInfGrid, latSupGrid, lonInfGrid, lonSupGrid,
     //                            polygon_CSV, larguraCelula, alturaCelula, qtdeCel_X]);
 
-    let uploadedFile = document.getElementById('inputFile_historical_AIS').files[0];
+    let uploadedFile = document.getElementById('inputFile_historical_AIS').files;//.files[0];
          var form_data = new FormData();
-         form_data.append("historical_file",uploadedFile);
-         //form_data.append("dadosTeste", dados);
+
+         len = uploadedFile.length;
+         for (var i=0; i<len; i++){
+          form_data.append(uploadedFile[i].name, uploadedFile[i]);
+         }
+         //form_data.append("historical_file",uploadedFile[0]);
+         //form_data.append("historical_file2",uploadedFile[1]);////
+         
          $.ajax({
             url: "{{ url_for('selectAIS_File2') }}",
             method: "POST",
@@ -1412,8 +1543,6 @@ div.space05 {
               alert("error execution send AIS historical file");
             }
          });
-
-
   }
   ////////////////////////////////// 28 ago 
   function selectAIS_File(){
@@ -1583,8 +1712,7 @@ div.space05 {
         
     })();
   }
-
-
+  
   async function applyClustering(){ // 08 ago
     
     var listBoxClustering = document.getElementById("clustering");
@@ -1597,8 +1725,6 @@ div.space05 {
     
     //console.log("front variável dados = ", dados);
     //console.log("Clustering = ", idClustering);
-    
-
     var len = ais_Historical_AOI_ArrayFiltered.length;
     if (len == 0){
       alert("Botao apply - arquivo selecionado não possui dados de AIS no Grid/AOI selecionada");
@@ -1633,7 +1759,6 @@ div.space05 {
         await response; //
       })();
 */
-//////////////////
     //}
 
     //////////////
@@ -1813,9 +1938,7 @@ div.space05 {
     btn.disabled = true;
     highlight_element_HMI_button("btnShow_panel_matching_cells", ""); // 02 ago
   }
-
-
-
+  
   function plotSelectedTrajectory(){
 
     var len = aisAOI_trajSelected.length;
@@ -1850,8 +1973,6 @@ div.space05 {
       idTrajetory = listBoxTraj.value;
       displayEnvironmentLegend("55"); // 14 Ago
       displayOptimizationLegend(idTrajetory); // 14 Ago
-
-
     } else {
       alert("The trajectory selected is empty");
     }
@@ -1973,8 +2094,7 @@ div.space05 {
             radius: 50
           }).addTo(displayedPointsLayerGroup) 
       mapa.addLayer(displayedPointsLayerGroup); 
-      //////////////
-
+      
       trajectoryPointIndex = trajectoryPointIndex - 1;
       drawGridCell(trajectoryPointIndex);
       ////////// 22 jul
@@ -2101,8 +2221,6 @@ div.space05 {
     
     })();
   }
-
-
   function loadDatasetFile(){
     alert("This action may be extended for one or more minutes after closing this message. At the end another message will inform the status.");  
     exibeAlertMsg(); 
@@ -2158,7 +2276,6 @@ div.space05 {
   }
 
   function downloadClassificationFile(){  // replaced by download_classifications()
-
   //  download_classifications(); 
 
     $.ajax({
@@ -2323,9 +2440,7 @@ div.space05 {
       div.innerHTML += "Optimization: " + optimization_Percentage + '%';
            
       return div;
-
       //alert("The Matching Cells calculation has been started.");
-      
     };
 
     setTimeout(() => {Optimization_Legend.addTo(mapa)}, 1000);// jul 24
@@ -2333,7 +2448,6 @@ div.space05 {
     flag_Optimization_Legend_Exist = true;
     //fechaAlertMsg(); // novo 16Jul 21jul
     //alert("The Matching Cells calculation has been done.");
-    
   }
   
   function get_PercentageMatchCells(){
@@ -2400,14 +2514,21 @@ div.space05 {
     fechaAlertMsg(); // novo 4Jul
   }
   function checkBox_Auto_Function() {
-  var checkBox = document.getElementById("checkBox_Auto");
-  //var text = document.getElementById("text");
-  if (checkBox.checked == true){
-    //text.style.display = "block";
-  } else {
-     //text.style.display = "none";
+    var checkBox = document.getElementById("checkBox_Auto");
+    //var text = document.getElementById("text");
+    if (checkBox.checked == true){
+      //text.style.display = "block";
+    } else {
+      //text.style.display = "none";
+    }
   }
-}
+  function performPost() {
+        $.ajax({
+            type: "POST",
+            url: "{{ url_for('create_file') }}",
+            data: {"name" : "Jim"},
+        })
+  }
 
 </script>
 
