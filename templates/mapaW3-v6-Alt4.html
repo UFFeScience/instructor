@@ -237,14 +237,16 @@ div.space05 {
         -->    
             <div class="space18">
               <div>    
-                <button type="button" id="btnSelectAIS_File" disabled onclick="async_selectAIS_File();">Select File</button>
+                <button type="button" id="btnSelectAIS_File" disabled onclick="selectAIS_File();">Load File</button>
                 <!-- teste-->
                 <button type="button" id="btnSelectAIS_File_TESTE" onclick="async_selectAIS_File_NEW();">TESTE</button>
                 <input type="text" id="inputTxtFileName" name="Name" disabled/>&nbsp;&nbsp;
-                <button id="btnPlot" onclick="async_aisPlotFile();" disabled>Plot</button><br>
-                <!--
-                <input type="file" id="inputFile_historical_AIS" name="historical_file" accept=".csv" class="not-visible" /> 
-                -->
+                <button id="btn_apply_filter_vessels" onclick="apply_vessels_filter();" >Apply Filters</button>&nbsp;
+                
+                <button id="btnPlot" onclick="aisPlotFile();" disabled>Plot</button><br> <!-- altered 03 set -->
+                <!--03 set -->
+                <input type="file" id="inputFile_load_filtered_historical_AIS" name="load_historical_file" accept=".csv" class="not-visible" /> 
+                <!--  03 set -->
                 <form method=post action = "/success" enctype=multipart/form-data>
                   <input type="file" id="inputFile_historical_AIS" multiple name="historical_file" accept=".csv" class="not-visible" /> <!--novo 28 ago-->
                   <input type="submit" value="Upload">
@@ -312,6 +314,10 @@ div.space05 {
                     <button type="button" id="btnPlay_trajectory" onclick="play_trajectory();" disabled>Play</button>
                     <button type="button" id="btnStop_Play_trajectory" onclick="stop_play_trajectory();" disabled>Stop</button>&nbsp;&nbsp;&nbsp;
                     <button type="button" id="btnShow_panel_matching_cells" onclick="show_panel_matching_cells();" disabled>Statistics</button>
+                    <!--10 set -->
+                    <input type="file" id="inputFile_load_filtered_trajectory_AIS" name="load_trajectory_file" accept=".csv" class="not-visible" /> 
+                    <!--10 set -->
+
                   </div> 
                   <div class="space05">
                     <br>
@@ -478,6 +484,7 @@ div.space05 {
   let trajetoriaArray = [];
   var totalTraj = 0;
   var aisAOI_trajSelected = [];
+  var g_cluster_df = [];  // 10 set
   var gridCell_array = [];
   var flagLegendExist = false; 
   var flag_Environment_Legend_Exist = false; // 14 Ago
@@ -498,7 +505,9 @@ div.space05 {
   const fileInput_historical_AIS = document.getElementById('inputFile_historical_AIS'); // 28 ago
   const fileInput_filter_AOI_from_AIS = document.getElementById('id_filter_AOI'); // 29 ago
   const fileInput_concat_filtered_files = document.getElementById('id_concat_filtered_files'); // 29 ago
-  
+  const fileInput_load_filtered_historical_AIS = document.getElementById('inputFile_load_filtered_historical_AIS'); //03 set
+  const fileInput_load_filtered_trajectory_AIS = document.getElementById('inputFile_load_filtered_trajectory_AIS'); //10 set
+
   const btnRadioNormal_getElement = document.getElementById('btnSelectNormal'); // added 25 ago
   const btnRadioAnomalous_getElement = document.getElementById('btnSelectAnomalous');
   var flag_stop_button_active = false; // added 26 ago
@@ -509,6 +518,40 @@ div.space05 {
   //////////////////////////////////////////////////////////////////////////////
                                     // FUNCTIONS //
   //////////////////////////////////////////////////////////////////////////////
+
+  function geracaoBINs(speed_str, course_str){
+    
+    var speedBIN = 0;
+    let vCourse = ['0N','1NE', '1NE', '2E','2E', '3SE', '3SE', '4S', '4S', '5SW', '5SW', '6W', '6W','7NW','7NW', '0N'];
+    //if course < 0: # novo 23Mar
+    //    course = course + 360  #for negative values
+    speed = parseFloat(speed_str);
+    //console.log("speed = ", speed);
+    course = parseFloat(course_str);
+    
+    var course_Positive = (course + 360) % 360; // convert to positive values if necessary
+
+    var index = parseInt(course_Positive / 22.5); // each cardinal and colateral point has a segment of 45 degrees (2 x 22.5)
+    
+    let courseBIN = vCourse[index];
+    
+    if (speed <= 3){
+        speedBIN = 3; // "0-3"
+    }else if (speed <= 7){
+        speedBIN = 7; // "3-7"
+    }else if (speed <= 11){
+        speedBIN = 11; //"7-11"
+    }else if (speed <= 15){
+        speedBIN = 15; //"11-15"
+    }else if (speed <= 20){
+        speedBIN = 20; // "15-20"
+    }else{ 
+        speedBIN = 99; // "20+"
+    }
+    //console.log("speedBIN = ", speedBIN);
+    return [speedBIN, courseBIN];
+  }
+
   function file_AIS_select_dialog(){
 
     if (flagGridCreation == false){
@@ -553,8 +596,10 @@ div.space05 {
     let data_row_AIS = [];
     let data_to_save_into_file = [];
     var valid_lat_lon = false;
-    let additional_fields = ["999", "999", "0", "0"];/////
-    additional_fields[0] = additional_fields[0].split(",");///
+    //var speedBIN = "";
+    //var courseBIN = "";
+    let additional_fields = []; //["999", "999", "0", "0"];/////
+    //additional_fields[0] = additional_fields[0].split(",");///
          
     if (typeof (FileReader) != "undefined") { //check if browser support FileReader
     
@@ -562,7 +607,7 @@ div.space05 {
       myReader.onload = function(e) {  //get file contents, split them by line
           
           let data = myReader.result.split("\n");
-          data.shift(); // remove first element - the header
+          data.shift(); // remove first element - the header // removed teste 05 set
           data.pop(); // remove last element - blank array
           for (let i in data) { //loop each row split them by "," and save it in array
             data[i] = data[i].split(",");
@@ -570,8 +615,16 @@ div.space05 {
             
             valid_lat_lon = is_belong_AOI(data_row_AIS[i][2], data_row_AIS[i][3]);  //lat, long
             if (valid_lat_lon == true){
-              data_row_AIS[i] = [...additional_fields,...data_row_AIS[i]];// ok ///////////
-              //ais_Historical_AOI_ArrayFiltered.push(data_row_AIS[i]);
+              const [speedBIN, courseBIN] = geracaoBINs(data_row_AIS[i][4], data_row_AIS[i][5]);
+              //additional_fields = [speedBIN, courseBIN, '0', '0'];///
+              
+              data_row_AIS[i].splice(16, 1,); // remove field  transceiver class
+              data_row_AIS[i].splice(13, 2);  // remove fields width and draft
+              data_row_AIS[i].splice(11, 1);  // remove field status
+              data_row_AIS[i].splice(6, 4, '0', '0', courseBIN, speedBIN); //remove fields heading,
+                                                                          // vesselName, IMO, CallSign
+
+              //data_row_AIS[i] = [...additional_fields,...data_row_AIS[i]];// ok ///////////
               data_to_save_into_file.push(data_row_AIS[i]);
             }
           }
@@ -589,6 +642,7 @@ div.space05 {
     ////////
     var total_files = theFile.files.length;
     console.log("numero de arqs = ", total_files);
+    
     //////////
     return false;   
   }
@@ -607,15 +661,21 @@ div.space05 {
       readers.push(readFileAsText(theFiles[i]));
     }
     var csv_concat_files = "";  
-    
+    var csv = 'MMSI,BaseDateTime,LAT,LON,SOG,COG,TrajID,GridCell,courseBIN,speedBIN,VesselType,Length,Cargo\n';
     // Trigger Promises
     Promise.all(readers).then((values) => {
         // ["File1 Content", "File2 Content" ... "FileN Content"]
         console.log(values);
         for(let i = 0;i < total_files;i++){
-          csv_concat_files = csv_concat_files + values[i];  // works
+          var file_contents = values[i].split('\n');
+          file_contents.shift();
+          file_contents.forEach(function(row) {  
+              csv_concat_files += row + "\n";  
+          }); 
+          //csv_concat_files = csv_concat_files + values[i];  // works
         }
-        
+        csv_concat_files = csv + csv_concat_files;
+
         var hiddenElement = document.createElement('a');  
         hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv_concat_files);  
         hiddenElement.target = '_blank';  
@@ -686,6 +746,46 @@ div.space05 {
   fileInput_concat_filtered_files.addEventListener('change', event => { // 29 ago
     concat_file_from_AIS_filtered();
   });
+
+  fileInput_load_filtered_historical_AIS.addEventListener('change', event => { // 03 set
+    load_filtered_historical_AIS_file();
+  });
+
+  ////////// 10 set
+  fileInput_load_filtered_trajectory_AIS.addEventListener('change', event => { // 03 set
+    load_filtered_trajectory_AIS_file();
+  });
+
+  /////// fim 10 set
+
+  ////////////////////////////////// 03 set/////////////////
+  function selectAIS_File(){
+  
+    var file_select_dialog = document.getElementById("inputFile_load_filtered_historical_AIS");
+    file_select_dialog.click();
+  }
+  function load_filtered_historical_AIS_file(){
+    
+    let data_row_AIS = [];
+    let data_to_save_into_file = [];
+    var theFile = document.getElementById("inputFile_load_filtered_historical_AIS").files[0];//
+    let data = readFileAsText(theFile);
+    data.then((values) => {
+      let data_file = values.split("\n");
+      data_file.shift(); // added 06 set  00h47 tira o header
+      data_file.pop();   // added 06 set  00h58 tira o ultimo
+      for (let i in data_file) { //loop each row split them by "," and save it in array
+            data_file[i] = data_file[i].split(",");
+            data_row_AIS[i] = data_file[i];
+	          //data_to_save_into_file.push(data_row_AIS[i]);
+            ais_Historical_AOI_ArrayFiltered.push(data_row_AIS[i]);
+      }
+      console.log("data_file = ", ais_Historical_AOI_ArrayFiltered);
+      openFileAIS(theFile.name);
+      
+    });
+  }
+
 
   var input_User = document.getElementById("inputTxtName");
   input_User.addEventListener("keypress", function(event) {
@@ -1188,11 +1288,15 @@ div.space05 {
   }
   function save_AIS_historical_data_filtered_to_file(array_data_AIS_to_file, filename){
     if (array_data_AIS_to_file.length > 0) {
+        
+        arr = array_data_AIS_to_file.sort(function (a, b) { // sort by MMSI and BaseDateTime
+                  return a[0].localeCompare(b[0]) || a[1].localeCompare(b[1]);
+        });
         //define the header for each row of the data  
-        //var csv = 'MMSI,BaseDateTime,LAT,LON,SOG,COG,Heading,VesselName,IMO,CallSign,VesselType,Status,Length,Width,Draft,Cargo,TranscieverClass,speedBIN,courseBIN,TrajID,GridCell\n';
-        var csv = "";  // without header
+        var csv = 'MMSI,BaseDateTime,LAT,LON,SOG,COG,TrajID,GridCell,courseBIN,speedBIN,VesselType,Length,Cargo\n';
+        //var csv = "";  // without header
         //merge the data with CSV  
-        array_data_AIS_to_file.forEach(function(row) {  
+        arr.forEach(function(row) {  
                 csv += row.join(',');  
                 csv += "\n";  
         });  
@@ -1204,6 +1308,12 @@ div.space05 {
         //provide the name for the CSV file to be downloaded  
         hiddenElement.download = 'historical_data_filtered_AOI_' + filename;  
         hiddenElement.click(); 
+        /////////////
+        //arr = array_data_AIS_to_file.sort(function (a, b) {
+        //        return a[0].localeCompare(b[0]) || a[1].localeCompare(b[1]);
+        //    });
+        console.log("arr = \n", arr);
+
         
     } else {alert("The filtered array of AIS data is empty and couldn't be saved into a file.")}; 
   }
@@ -1515,8 +1625,8 @@ div.space05 {
 
   function send_AIS_historical_file(){
 
-    //var dados = JSON.stringify([latInfGrid, latSupGrid, lonInfGrid, lonSupGrid,
-    //                            polygon_CSV, larguraCelula, alturaCelula, qtdeCel_X]);
+    var dados = JSON.stringify([latInfGrid, latSupGrid, lonInfGrid, lonSupGrid,
+                             polygon_CSV, larguraCelula, alturaCelula, qtdeCel_X]);
 
     let uploadedFile = document.getElementById('inputFile_historical_AIS').files;//.files[0];
          var form_data = new FormData();
@@ -1525,7 +1635,11 @@ div.space05 {
          for (var i=0; i<len; i++){
           form_data.append(uploadedFile[i].name, uploadedFile[i]);
          }
-         //form_data.append("historical_file",uploadedFile[0]);
+         form_data.append("latInfGrid",latInfGrid);
+         form_data.append("latSupGrid", latSupGrid);
+         form_data.append("polygon_CSV", polygon_CSV);
+         form_data.append("alturaCelula", alturaCelula);
+
          //form_data.append("historical_file2",uploadedFile[1]);////
          
          $.ajax({
@@ -1544,65 +1658,111 @@ div.space05 {
             }
          });
   }
-  ////////////////////////////////// 28 ago 
-  function selectAIS_File(){
-    $.ajax({
-            url: "{{ url_for('selectAIS_File') }}",
-            type: "GET",
-            dataType: 'json',
-            success: openFileAIS,
-            error: function(){
-              alert("error execution selection AIS File");
-            }
-    });
-  }
-
-  function openFileAIS(retorno){
+  
+  function openFileAIS(filename_historical_file){
     
-    //console.log("retorno = ", retorno);
     var textField = $('#inputTxtFileName');
     textField.disabled = false;
 
-    //textField.val(retorno); novo 13jul
-    textField.val("data/AOI Delaware 08-05-23 Grid 2k.csv");
-
-    //pathHistoricalFileAISdata = retorno; // novo 13jul
-    pathHistoricalFileAISdata = "data/AOI Delaware 08-05-23 Grid 2k.csv"
-
+    textField.val(filename_historical_file); 
+    
+    pathHistoricalFileAISdata = filename_historical_file; // novo 13jul // added 03 set
+    
     var btn = document.getElementById("btnPlot");
     btn.disabled = false;
     highlight_element_HMI_button("btnSelectAIS_File", "btnPlot"); // 02 ago
   }
  
-  function AISplotPanel(){
+  ///////////////////  03 set /////////////////////
+
+  function apply_vessels_filter(){
+
+    //////////// codigo para o filtro
     
-    var dados = JSON.stringify([latInfGrid, latSupGrid, lonInfGrid, lonSupGrid,
-                                pathHistoricalFileAISdata, polygon_CSV, larguraCelula, alturaCelula, qtdeCel_X]);
-    //console.log("front variável dados = ", dados);
+    //////////////
+    var MMSI_previous = parseInt(ais_Historical_AOI_ArrayFiltered[0][0]);
+    var MMSI_actual = 999999999;
+    var lat_vessel = 0;
+    var lon_vessel = 0;
+    
+    var id_TrajID = 1 ;
+
+    var len = ais_Historical_AOI_ArrayFiltered.length;
+    console.log("iniciando a funcao apply_vessels_filters - length do ais_hist = ", len);
+    for (var i=0; i<len; i++){
+        
+        MMSI_actual = parseInt(ais_Historical_AOI_ArrayFiltered[i][0]);
+                            
+        if (MMSI_previous != MMSI_actual){
+            MMSI_previous = MMSI_actual;
+            id_TrajID = id_TrajID + 1;
+        };
+        ais_Historical_AOI_ArrayFiltered[i][6] = id_TrajID;
+        lat_vessel = parseFloat(ais_Historical_AOI_ArrayFiltered[i][2]);
+        lon_vessel = parseFloat(ais_Historical_AOI_ArrayFiltered[i][3]);
+
+        ais_Historical_AOI_ArrayFiltered[i][7] = GridNavio2(lat_vessel,lon_vessel, latInfGrid, lonInfGrid, larguraCelula, alturaCelula, qtdeCel_X); //gridCell
+    }
+  }
+
+  function aisPlotFile(){
+    alert("This action may be extended for one or more minutes after closing this message. At the end another message will inform the status.");  
+    exibeAlertMsg();
+    
+    $("#aisPlotPanel").removeClass("not-visible");
+    $("#aisPlotPanel").addClass("visible");
+
+    const [latInfAOI, latSupAOI, lonInfAOI, lonSupAOI, latMedAOI] = findMinMax(pontos);
+        
+    AISplotPanel();
+    //plotAisDataPanel();
+  }
+  ///////////////////////////////// 03 set //////////////////
+  function AISplotPanel(){
+     ////////////////////// novo TESTE
+    //plotAisDataPanel(0);
+    //////////////////
+    var form_data_rosewind = new FormData();
+
+    var csv_ais_Historical = 'MMSI,BaseDateTime,LAT,LON,SOG,COG,TrajID,GridCell,courseBIN,speedBIN,VesselType,Length,Cargo\n'; 
+          
+        //merge the data with CSV  
+    ais_Historical_AOI_ArrayFiltered.forEach(function(row) {  
+      csv_ais_Historical += row.join(',');  
+      csv_ais_Historical += "\n";  
+    }); 
+    form_data_rosewind.append("ais_Historical_AOI_ArrayFiltered", csv_ais_Historical);
+
     $.ajax({
       url: "{{ url_for('openHistoricalFileAndFilterAOI') }}",
       type: "POST",
-      dataType: 'json',
-      contentType: 'application/json',
-      data: dados,
+      processData: false,
+      contentType: false,
+      //dataType: 'multipart/form-data',
+      data: form_data_rosewind,
       success: plotAisDataPanel,
       error: function(){
         fechaAlertMsg();
         alert("erro execução Post para Open File");
       }
     });
-    ////////////////////// novo 19jul
-
   }
 
   function plotAisDataPanel(retorno){
     
     //console.log(retorno);
-    var ret = JSON.parse(retorno[0]); // historical AIS data ????
-    gridCell_array = JSON.parse(retorno[1]); 
+    //var ret = JSON.parse(retorno[0]); // historical AIS data ????
+
+    /////////// corrigir //////////
+    gridCell_array = JSON.parse(retorno); //[1]); 
+    console.log("gridCell_array = \n", gridCell_array);
+    ////////////////////////////
+    let vet = ais_Historical_AOI_ArrayFiltered; // added 04 set
     
-    var len = ret.length;
-    
+    //var len = ret.length;
+    var len = vet.length;
+    console.log("plotAisDataPanel - length of ais_Historical_AOI_ArrayFiltered = ", len);
+
     if (len > 0){
       mapa.removeLayer(markersLayerGroup); 
       mapa.removeLayer(cellsLayerGroup);
@@ -1610,10 +1770,11 @@ div.space05 {
       //flagGridCreation = false;  /// jul22
       
       for (var i = 0; i < len; i++) {
-        
-          ais_Historical_AOI_ArrayFiltered.push(ret[i]);
+          //console.log("primeiros lat e long = ", vet[i][2], " ", vet[i][3]);
+          //console.log("primeiros lat e long com parseFloat = ", parseFloat(vet[i][2]), parseFloat(vet[i][3]));
+          //ais_Historical_AOI_ArrayFiltered.push(ret[i]); // removed 04 set
 
-          var circle = L.circle([ret[i][2], ret[i][3]], {
+          var circle = L.circle([vet[i][2], vet[i][3]], {
             color: 'red',
             fillColor: '#f03',
             fillOpacity: 0.5,
@@ -1646,36 +1807,7 @@ div.space05 {
     //console.log(ais_Historical_AOI_ArrayFiltered);
     fechaAlertMsg(); //////////////// novo 19jul
   }
-
-  function async_aisPlotFile(){
-    (async () => {
-      let response = await aisPlotFile();
-      await response; ///gridCreation;
-      //let user = await response; ///gridCreation;
-    
-    })();
-  }
-
-
-  function aisPlotFile(){
-    alert("This action may be extended for one or more minutes after closing this message. At the end another message will inform the status.");  
-    exibeAlertMsg();
-    //$("#windRosePanel").removeClass("visible"); // removed 30 jul
-    //$("#windRosePanel").addClass("not-visible"); // removed 30 jul
-    $("#aisPlotPanel").removeClass("not-visible");
-    $("#aisPlotPanel").addClass("visible");
-
-    //polygon = L.polygon(pontos, {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", 			"noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 1}
-    //                ).addTo(mapaAIS); // jul 30
-
-    const [latInfAOI, latSupAOI, lonInfAOI, lonSupAOI, latMedAOI] = findMinMax(pontos);
-    
-    //mapaAIS.setView([latMedAOI, (lonInfAOI + lonSupAOI)/2], 6);  //30 jul
-    AISplotPanel();
-    //var card = document.getElementById("cardInferior"); // 30 jul
-    //card.style.opacity = 1.0; // 30 jul
-  }
-
+  
   function enableTrajectoryPanel(){
    
     var btn = document.getElementById("listBoxTrajectories");
@@ -1721,7 +1853,37 @@ div.space05 {
     var param1 = document.getElementById("inputParameter1").value;
     var param2 = document.getElementById("inputParameter2").value;
     var param3 = document.getElementById("inputParameter3").value; // novo 25Jun
-    var dados = JSON.stringify([idClustering, latInfGrid, latSupGrid, lonInfGrid, lonSupGrid, param1, param2, param3]);
+    //var dados = JSON.stringify([idClustering, latInfGrid, latSupGrid, lonInfGrid, lonSupGrid, param1, param2, param3]);
+    
+    ///////// teste 09 set
+    var form_data_clustering = new FormData();
+
+    form_data_clustering.append("idClustering",idClustering);
+    form_data_clustering.append("latSupGrid"  ,latSupGrid);
+    form_data_clustering.append("latInfGrid"  ,latInfGrid);
+    form_data_clustering.append("lonSupGrid"  ,lonSupGrid);
+    form_data_clustering.append("lonInfGrid"  ,lonInfGrid);
+    
+
+    form_data_clustering.append("param1" , param1);
+    form_data_clustering.append("param2" , param2);
+    form_data_clustering.append("param3" , param3);
+
+    //
+    var csv_ais_Historical = 'MMSI,BaseDateTime,LAT,LON,SOG,COG,TrajID,GridCell,courseBIN,speedBIN,VesselType,Length,Cargo\n'; 
+          
+        //merge the data with CSV  
+    ais_Historical_AOI_ArrayFiltered.forEach(function(row) {  
+      csv_ais_Historical += row.join(',');  
+      csv_ais_Historical += "\n";  
+    });  
+
+    //
+
+    //ais_historical_json = JSON.stringify(ais_Historical_AOI_ArrayFiltered);
+
+    form_data_clustering.append("ais_Historical_AOI_ArrayFiltered", csv_ais_Historical);
+    //////// fim teste 09 set
     
     //console.log("front variável dados = ", dados);
     //console.log("Clustering = ", idClustering);
@@ -1732,45 +1894,24 @@ div.space05 {
     }  
     alert("Starting the clustering process.");
     exibeAlertMsg(); 
-    //seleciona o clustering
-    /*
-    if (idClustering == 1){
-      applyNoneClustering(len);
-      fechaAlertMsg(); // novo 4Jul
-    } else {
-      
-      $.ajax({
-        url: "{{ url_for('applyClustering') }}",
-        type: "POST",
-        dataType: 'json',
-        contentType: 'application/json',
-        data: dados,
-        success: plot_Clustering_LatLon,
-        error: function(){
-          fechaAlertMsg();
-          alert("erro execução Post para applyClustering");
-        }
-      });
-      */
-///////////////
-/*
-      (async () => {
-        let response = await exec_applyClustering(dados);
-        await response; //
-      })();
-*/
-    //}
-
-    //////////////
-    exec_applyClustering(dados);
-    /////////////
     
+    ///////////////////////////////////////////////////
+    $.ajax({
+      url: "{{ url_for('applyClustering') }}",
+      type: "POST",
+      processData: false,
+      contentType: false,
+      //dataType: 'multipart/form-data',
+      data: form_data_clustering,
+      success: plot_Clustering_LatLon,
+      error: function(){
+        fechaAlertMsg();
+        alert("erro execução Post para applyClustering");
+      }
+    });
     enableTrajectoryPanel();
     console.log("passou no ajax applyClustering");
     //fechaAlertMsg(); // 06 ago
-    //while (flag_active_back_end_process == true) {
-    //  console.log("Waiting for back-end process to finish");
-    //}
   }
 
   function exec_applyClustering(dados){
@@ -1807,6 +1948,8 @@ div.space05 {
     console.log("passou no success - plot_Clustering");
     var df_Clusters_LatLon = JSON.parse(retorno[0]); 
     var df_ClusterColorTable  = JSON.parse(retorno[1]); 
+    console.log("df_Clusters_LatLon = \n", df_Clusters_LatLon);
+    console.log("df_ClusterColorTable = \n", df_ClusterColorTable);
 
     lenGlobal = df_ClusterColorTable.length;
     while (global_df_ClusterColorTable.length) { //remove all the elements inside the array
@@ -1815,6 +1958,17 @@ div.space05 {
     for (index=0; index < lenGlobal; index++){
       global_df_ClusterColorTable.push(df_ClusterColorTable[index]); // make a global copy
     }
+
+    //////////////////
+    lenGlobal = df_Clusters_LatLon.length;
+    while (g_cluster_df.length) { //remove all the elements inside the array
+      g_cluster_df.pop(); 
+    }
+    for (index=0; index < lenGlobal; index++){
+      g_cluster_df.push(df_Clusters_LatLon[index]); // make a global copy
+    }
+    
+    ///////////////
 
     var len = df_Clusters_LatLon.length;
     var clusterColor = "";
@@ -1855,7 +2009,7 @@ div.space05 {
       highlight_element_HMI_button("clustering", ""); // 02 ago
       highlight_element_HMI_button("btnApply", "btnLoadDatasets_File");
     } else {
-      alert("erro na execução plotDBSCAN_LAT-LON");
+      alert("erro na execução function plot_Clustering_LatLon");
     } 
     console.log("tamanho df_Clusters_LatLon = ", df_Clusters_LatLon.length);
     //console.log(df_Clusters_LatLon);
@@ -1889,7 +2043,7 @@ div.space05 {
     for (index=0; index < len; index++){
 
       //if (count_idTrajetory <= idTrajetory){
-        if (idTrajetory == ais_Trajectory_AOI_ArrayFiltered[index][20]){
+        if (idTrajetory == ais_Trajectory_AOI_ArrayFiltered[index][6]){ // 20
           aisAOI_trajSelected.push(ais_Trajectory_AOI_ArrayFiltered[index]);
         }
 
@@ -1999,14 +2153,13 @@ div.space05 {
     var bg = document.getElementById("inputTxtSpeed");
     bg.style.color = "green"; // CORRIGIR
     
-    var cardinalLetter = aisAOI_trajSelected[index][19]; 
-    var gridCellNumber = aisAOI_trajSelected[index][21];
+    var cardinalLetter = aisAOI_trajSelected[index][8];             //[19]; 
+    var gridCellNumber = aisAOI_trajSelected[index][7];        //[21];
     
     var textFieldCourse = $('#inputTxtCourse');
     textFieldCourse.disabled = false;
     textFieldCourse.val(aisAOI_trajSelected[index][5] + " " + cardinalLetter);
-    console.log("MMSI = ", aisAOI_trajSelected[index][0], " Course = ", aisAOI_trajSelected[index][5],
-     " Heading = ", aisAOI_trajSelected[index][6], " Cell = ", gridCellNumber);
+    console.log("MMSI = ", aisAOI_trajSelected[index][0], " Course = ", aisAOI_trajSelected[index][5], " Cell = ", gridCellNumber);
 
     // windrose data
     const [s3_array, s7_array, s11_array, s15_array, s20_array, s99_array] = buildWindRose_array(gridCellNumber);
@@ -2180,6 +2333,7 @@ div.space05 {
   }
 
   function selectDatasetFile(){
+    /**
     $.ajax({
             url: "{{ url_for('selectDatasetFile') }}",
             type: "GET",
@@ -2189,11 +2343,37 @@ div.space05 {
               alert("error execution selection AIS File");
             }
     });
+    **/
+    var file_select_dialog = document.getElementById("inputFile_load_filtered_trajectory_AIS");
+    file_select_dialog.click();
   }
 
-  function openDatasetFile(retorno){
+  ///////////// 10set
+  function load_filtered_trajectory_AIS_file(){
+    
+    let data_row_AIS = [];
+    let data_to_save_into_file = [];
+    var theFile = document.getElementById("inputFile_load_filtered_trajectory_AIS").files[0];//
+    let data = readFileAsText(theFile);
+    data.then((values) => {
+      let data_file = values.split("\n");
+      data_file.shift(); // added 06 set  00h47 tira o header
+      data_file.pop();   // added 06 set  00h58 tira o ultimo
+      for (let i in data_file) { //loop each row split them by "," and save it in array
+            data_file[i] = data_file[i].split(",");
+            data_row_AIS[i] = data_file[i];
+	          //data_to_save_into_file.push(data_row_AIS[i]);
+            ais_Trajectory_AOI_ArrayFiltered.push(data_row_AIS[i]);
+      }
+      console.log("dataset_file = ", ais_Trajectory_AOI_ArrayFiltered);
+      openDatasetFile(theFile.name);
+    });
+  }
+  /////////////
+
+  function openDatasetFile(filename_trajectory_file){           //retorno){
     ////////////// novo 13jul
-    retorno = "data/AOI Delaware 09-05-23 Grid 2k.csv";
+    retorno = filename_trajectory_file; //"data/AOI Delaware 09-05-23 Grid 2k.csv";
     //console.log(retorno);
     if (retorno == ""){
       return;
@@ -2203,10 +2383,10 @@ div.space05 {
     textField.disabled = false;
 
     //textField.val(retorno); novo 13jul
-    textField.val("data/AOI Delaware 09-05-23 Grid 2k.csv");
+    textField.val(filename_trajectory_file); //"data/AOI Delaware 09-05-23 Grid 2k.csv");
     
     //pathDatasetFile = retorno; // novo 13jul
-    pathDatasetFile = "data/AOI Delaware 09-05-23 Grid 2k.csv";
+    pathDatasetFile = filename_trajectory_file; //"data/AOI Delaware 09-05-23 Grid 2k.csv";
     
     var btn = document.getElementById("btnLoadDataset");
     btn.disabled = false;
@@ -2223,8 +2403,8 @@ div.space05 {
   }
   function loadDatasetFile(){
     alert("This action may be extended for one or more minutes after closing this message. At the end another message will inform the status.");  
-    exibeAlertMsg(); 
-    
+    //exibeAlertMsg(); 
+    /**
     var dados = JSON.stringify([latInfGrid, latSupGrid, lonInfGrid, lonSupGrid,
                                 pathDatasetFile, polygon_CSV, larguraCelula, alturaCelula, qtdeCel_X]);
     //console.log("front variável dados = ", dados);
@@ -2241,20 +2421,51 @@ div.space05 {
         
       }
     });
+    **/
+    //////////// codigo para o filtro
+
+
+    //////////////
+    var MMSI_previous = parseInt(ais_Trajectory_AOI_ArrayFiltered[0][0]);
+    var MMSI_actual = 999999999;
+    var lat_vessel = 0;
+    var lon_vessel = 0;
+    
+    var id_TrajID = 1 ;
+
+    var len = ais_Trajectory_AOI_ArrayFiltered.length;
+    console.log("iniciando a funcao loadDatasetFile");
+    for (var i=0; i<len; i++){
+        
+        MMSI_actual = parseInt(ais_Trajectory_AOI_ArrayFiltered[i][0]);
+                            
+        if (MMSI_previous != MMSI_actual){
+            MMSI_previous = MMSI_actual;
+            id_TrajID = id_TrajID + 1;
+        };
+        ais_Trajectory_AOI_ArrayFiltered[i][6] = id_TrajID;
+        lat_vessel = parseFloat(ais_Trajectory_AOI_ArrayFiltered[i][2]);
+        lon_vessel = parseFloat(ais_Trajectory_AOI_ArrayFiltered[i][3]);
+
+        ais_Trajectory_AOI_ArrayFiltered[i][7] = GridNavio2(lat_vessel,lon_vessel, latInfGrid, lonInfGrid, larguraCelula, alturaCelula, qtdeCel_X); //gridCell
+        //ais_Historical_AOI_ArrayFiltered[i][9] = gridCell;
+    }
+    getArrayData_forTrajectories(id_TrajID);
+
   }
-  function getArrayData_forTrajectories(retorno){
+  function getArrayData_forTrajectories(totalTraj){
     //console.log(retorno);
-    var ret = JSON.parse(retorno[0]); 
-    totalTraj = JSON.parse(retorno[1]); 
+    //var ret = JSON.parse(retorno[0]); 
+    //totalTraj = JSON.parse(retorno[1]); 
     console.log("total de traj = ", totalTraj);
     
-    var len = ret.length;
+    var len = ais_Trajectory_AOI_ArrayFiltered.length;
     
     if (len > 0){
             
-      for (var i = 0; i < len; i++) {
-        ais_Trajectory_AOI_ArrayFiltered.push(ret[i]);
-      }  
+      //for (var i = 0; i < len; i++) {
+      //  ais_Trajectory_AOI_ArrayFiltered.push(ret[i]);
+      //}  
       loadSelectBoxTrajectories(totalTraj);
       btn = document.getElementById("btnShow"); // novo 21Mai // realocado do final 02 ago
       btn.disabled = false;
@@ -2452,8 +2663,19 @@ div.space05 {
   
   function get_PercentageMatchCells(){
     console.log("js Tamanho aisAOI_trajSelected = ", aisAOI_trajSelected.length)
-    var dado = JSON.stringify(aisAOI_trajSelected);
-        
+    //var dado = JSON.stringify(aisAOI_trajSelected);
+    /////////////////////////////////////////////////////////
+    var csv_g_cluster_df = 'MMSI,LAT,LON,SOG,GridCell,xm,ym,Clus_Db\n'; 
+          
+    //merge the data with CSV  
+    g_cluster_df.forEach(function(row) {  
+      csv_g_cluster_df += row.join(',');  
+      csv_g_cluster_df += "\n";  
+    });  
+
+    ///////////////////////////////////////////////////////////////////////
+    var dado = JSON.stringify([aisAOI_trajSelected, csv_g_cluster_df]);  
+
     $.ajax({
             url: "{{ url_for('calc_ClusterMatch') }}",
             type: "POST",

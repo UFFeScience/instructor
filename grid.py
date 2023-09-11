@@ -70,6 +70,15 @@ def selectAIS_File2():
 
     #dados = request.get_json()
     files = [request.files.get(x) for x in request.files]
+    dados0 = request.form.get('latInfGrid')
+    dados1 = request.form.get('latSupGrid')
+
+    #dados0 = request.form.getlist('latInfGrid')
+    #dados1 = request.form.getlist('latSupGrid')
+
+    dados2 = request.form.get('polygon_CSV')
+    #dados2 = request.form.getlist('polygon_CSV')
+    dados3 = request.form.get('alturaCelula')
 
     for fileAIS in files:
         ais_df = pd.read_csv(fileAIS) #novo
@@ -79,8 +88,20 @@ def selectAIS_File2():
     #ais_df.shape
         print ("Tam array ais = ",ais_df.shape)
         ais_df.to_csv("d:testeRequest.csv", index=False) # 
-    #print("head 5 = ",ais_df1.head(5))
 
+    #for i in range(0, len(dados)):
+    arr = pd.read_csv(io.StringIO(dados2), sep=",")
+    
+    print(" latInfGrid = "  , dados0)
+    print(" latSupGrid = "  , dados1)
+    print(" polygon_CSV = " , dados2)
+    print(" alturaCelula = ", dados3)
+        
+    print("soma = ", float(dados0) + float(dados1))
+
+    print("array polygon = \n", arr)
+    #print("soma = ", float(dados0[0]) + float(dados1[0]))
+    
     #print ("Tam array ais 2= ",ais_df2.shape)
 
     #resposta = jsonify(f.filename)
@@ -124,21 +145,22 @@ def openTrajectoryFileAndFilterAOI():
 @app.route('/openHistoricalFileAndFilterAOI', methods=['POST'])
 def openHistoricalFileAndFilterAOI():
     #global global_Historical_AIS_data
-    global global_Historical_AIS_df
+    #global global_Historical_AIS_df
     
     if request.method == 'POST':
        
-       dadosAIS = request.get_json()
+       dadosAIS = request.form.get('ais_Historical_AOI_ArrayFiltered') 
+       dados = pd.read_csv(io.StringIO(dadosAIS), sep=",") 
+       #global_Historical_AIS_df, id_TrajID = openFileAndFilterAOI(dadosAIS) # id_TrajId not used
+       #global_Historical_AIS_df['NumCluster'] = 999 
 
-       global_Historical_AIS_df, id_TrajID = openFileAndFilterAOI(dadosAIS) # id_TrajId not used
-       global_Historical_AIS_df['NumCluster'] = 999 
-
-       ais_df_gridCells = gridCellsData_for_RoseWind(global_Historical_AIS_df)
+       ais_df_gridCells = gridCellsData_for_RoseWind(dados); #global_Historical_AIS_df)
+       print("back end - ais_df_gridCells = \n", ais_df_gridCells)
        
        ais_df_gridCells_json = ais_df_gridCells.to_json(orient='values')
-       global_Historical_AIS_df_json = global_Historical_AIS_df.to_json(orient='values')
-       #resposta = jsonify(global_Historical_AIS_df_json, id_TrajID, ais_df_gridCells_json)
-       resposta = jsonify(global_Historical_AIS_df_json, ais_df_gridCells_json) 
+       #global_Historical_AIS_df_json = global_Historical_AIS_df.to_json(orient='values')
+       resposta = jsonify(ais_df_gridCells_json)
+       #resposta = jsonify(global_Historical_AIS_df_json, ais_df_gridCells_json) 
        resposta.headers.add("Access-Control-Allow-Origin", "*")
 
        return resposta #("", 204)
@@ -150,25 +172,29 @@ def applyClustering():
 
     if request.method == 'POST':
        
-       data = request.get_json()
+       #data = request.get_json()
        
-       id_clustering = data[0]
-       llat= data[1]
-       ulat= data[2] 
-       llon= data[3]
-       ulon= data[4]
+       id_clustering = request.form.get('idClustering') #data[0]
+       llat = request.form.get('latInfGrid')   #data[1]
+       ulat = request.form.get('latSupGrid')   #data[2] 
+       llon = request.form.get('lonInfGrid')    #data[3]
+       ulon = request.form.get('lonSupGrid')    #data[4]
        
-       parameter1 = data[5] 
-       parameter2 = data[6]
-       parameter3 = data[7]
+       parameter1 = request.form.get('param1')    #data[5] 
+       parameter2 = request.form.get('param2')    #data[6]
+       parameter3 = request.form.get('param3')    #data[7]
 
-       ais_clustered_df, clusterTable_df = clt.select_and_applyclustering(global_Historical_AIS_df, id_clustering, 
+       ais_Historical_AOI_ArrayFiltered = request.form.get('ais_Historical_AOI_ArrayFiltered') 
+       array_ais_Historical = pd.read_csv(io.StringIO(ais_Historical_AOI_ArrayFiltered), sep=",")  #novo 09set
+       #print("array_ais_historical =\n", array_ais_Historical)
+
+       ais_clustered_df, clusterTable_df = clt.select_and_applyclustering(array_ais_Historical, id_clustering, 
                                                                     llon, ulon, llat, ulat, parameter1, parameter2, parameter3)
        
-       global_df_Cluster = ais_clustered_df.copy() 
+       #global_df_Cluster = ais_clustered_df.copy() 
        #global_df_Cluster = ais_clustered_df ###
 
-       global_df_Cluster = global_df_Cluster.reset_index(drop=True) 
+       #global_df_Cluster = global_df_Cluster.reset_index(drop=True) 
 
        ais_clustered_df_json = ais_clustered_df.to_json(orient='values')
        clusterTable_df_json = clusterTable_df.to_json(orient='values')
@@ -179,17 +205,23 @@ def applyClustering():
 @app.route('/calc_ClusterMatch', methods=['POST'])
 def calc_ClusterMatch():
 
-    global global_df_Cluster
-    df_cluster = global_df_Cluster.copy()  #####
+    #global global_df_Cluster
+   # df_cluster = global_df_Cluster.copy()  #####
 
     if request.method == 'POST':
-       df_trajectory  = request.get_json()
-       df_trajectory = pd.Series((v[21] for v in df_trajectory))
        
-       #print("*** INICIO TRAJETORIA ARRAY *** \n", df_trajectory)
+       dados = request.get_json()  #
+       df_trajectory = dados[0]     #
+       df_cluster_aux = dados[1]    #
+       df_cluster = pd.read_csv(io.StringIO(df_cluster_aux), sep=",")  #novo
+       
+       print("df_cluster = \n", df_cluster)
+       #df_trajectory  = request.get_json()
+       df_trajectory = pd.Series((v[7] for v in df_trajectory)) # GridCell #indice anterior 21
+       
+       print("*** TRAJETORIA ARRAY *** \n", df_trajectory)
        #print("*** FIM TRAJETORIA ARRAY ***") 
-       #print("##### global_df_Cluster #### \n", global_df_Cluster) 
-
+       
        perc_pointsNotMatch, df_ClusterTotalMatch = clt.calcPercentageCellsMatch(df_cluster, df_trajectory)
        
        df_ClusterTotalMatch_json = df_ClusterTotalMatch.to_json(orient='values')

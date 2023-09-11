@@ -18,14 +18,14 @@ function calculaGridParametros(latInfAOI, latMedAOI, latSupAOI, lonInfAOI, lonSu
     return [qtdeCel_X, qtdeCel_Y, larguraCel, alturaCel]
 }
 
-function GridNavio2(latNavio,lonNavio){ // Identificacao posicao do navio no Grid - gridNavio
+function GridNavio2(latNavio,lonNavio, latInfAOI, lonInfAOI, larguraCelula, alturaCelula, qtdeCelulasX ){ // Identificacao posicao do navio no Grid - gridNavio
 
     var distLat = parseFloat(latNavio) - parseFloat(latInfAOI);
     var distLon = parseFloat(lonNavio) - parseFloat(lonInfAOI);
-    var posXGridNavio = (distLon / larguraCelula) + 1;
-    var posYGridNavio = (distLat / alturaCelula) + 1;
+    var posXGridNavio = parseInt(distLon / larguraCelula) + 1;
+    var posYGridNavio = parseInt(distLat / alturaCelula) + 1;
     var gridNavio = posXGridNavio + (posYGridNavio - 1) * qtdeCelulasX;
-    return gridNavio, posXGridNavio, posYGridNavio;
+    return parseInt(gridNavio); //, posXGridNavio, posYGridNavio;
 }
 
 function calcVerticesCell(latNavio,lonNavio, latInfAOI, lonInfAOI, larguraCelula, alturaCelula){

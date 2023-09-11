@@ -23,22 +23,54 @@ def select_and_applyclustering(ais_Historical_df, id_clusteringType, llon, ulon,
         resolution = 'h', area_thresh = 10.0, # l -> low
         llcrnrlon=llon, llcrnrlat=llat, #min longitude (llcrnrlon) and latitude (llcrnrlat)
         urcrnrlon=ulon, urcrnrlat=ulat) #max longitude (urcrnrlon) and latitude (urcrnrlat)
-
+        
+    #cluster_df = ais_Historical_df.copy()  #### 26 jul
+    #cluster_df = cluster_df[["MMSI", "LAT", "LON", "SOG", "GridCell"]] # 26 jul
+    cluster_df = ais_Historical_df[['MMSI', 'LAT', 'LON', 'SOG', 'GridCell']] # 09 ago
     
-    cluster_df = ais_Historical_df.copy()  #### 26 jul
-    cluster_df = cluster_df[["MMSI", "LAT", "LON", "SOG", "GridCell"]] # 26 jul
-    #cluster_df = ais_Historical_df[['MMSI', 'LAT', 'LON', 'SOG', 'GridCell']] # 09 ago
     cluster_df = cluster_df.reset_index(drop=True) ### 09 ago
-
-    xs,ys = my_map(np.asarray(cluster_df.LON), np.asarray(cluster_df.LAT))
     
-    cluster_df['xm'] = xs.tolist() # add column xm
-    cluster_df['ym'] = ys.tolist()
+    #######################
+    cluster_df['xm']= 0
+    cluster_df['ym']= 0
+    print("cluster_df = \n", cluster_df)
+    print("tamanho cluster_df = ", len(cluster_df))
 
-    cluster_df_aux = cluster_df[['xm', 'ym']] # novo 24Jun
-    cluster_df_aux = StandardScaler().fit_transform(cluster_df_aux) # novo 24Jun
+
+    np_cluster_df = cluster_df[["LON","LAT"]].to_numpy()
+
+    index = 0
+    for i in np_cluster_df:
+        xs,ys = my_map(i[0], i[1])
+        cluster_df.loc[index, "xm"] = xs
+        cluster_df.loc[index, "ym"] = ys
+        index = index + 1
+        #df_ClusterTable.loc[clust_number_P, 'ceny'] = ceny
+    print("passou pelo for range")
+    ########################
+
+    #######
+    #xs,ys = my_map(np.asarray(cluster_df.LON), np.asarray(cluster_df.LAT))
+    
+    #cluster_df['xm'] = xs.tolist() # add column xm
+    #cluster_df['ym'] = ys.tolist()
+    ######
+
+    cluster_df_tmp = cluster_df[['xm', 'ym']] # novo 24Jun
+    cluster_df_tmp = cluster_df_tmp.reset_index(drop=True)
+
+    print("cluster_df_tmp = \n", cluster_df_tmp)
+
+    cluster_df_tmp2 = StandardScaler().fit_transform(cluster_df_tmp.to_numpy()) # novo 24Jun
      
-    match id_clusteringType:
+    print("passou pelo StandardScaler")
+    print("cluster_df_aux = \n", cluster_df_tmp2)
+
+    cluster_df_aux = pd.DataFrame(cluster_df_tmp2, columns = ['xm','ym'])
+
+    print("antes do match")
+
+    match int(id_clusteringType):
         # None - already been treated
         case 1: 
             stuff = 1 #print("case 1")
@@ -65,6 +97,7 @@ def select_and_applyclustering(ais_Historical_df, id_clusteringType, llon, ulon,
         # DBSCAN (LAT, LON)
         # main parameters: 1 - eps; 2 - min_samples
         case 4: 
+            print("dentro do DBSCAN")
             db = DBSCAN(eps = float(parameter1), min_samples = int(parameter2)).fit(cluster_df_aux)
             labels = db.labels_
 
@@ -182,10 +215,11 @@ def select_and_applyclustering(ais_Historical_df, id_clusteringType, llon, ulon,
 
 
         case _:
-            return  #print("Case valor default")
+            print("Case valor default")
+            return  
 
     #print (cluster_df_aux) 
-    #print (labels[500:560])
+    print (labels[500:560])
     cluster_df["Clus_Db"]=labels
     
     realClusterNum=len(set(labels)) - (1 if -1 in labels else 0)
@@ -200,11 +234,13 @@ def select_and_applyclustering(ais_Historical_df, id_clusteringType, llon, ulon,
 
     df_ClusterTable = pd.DataFrame(columns=['numCluster', 'color', 'cenx', 'ceny'], index=[0])
 
+    print("antes do for clust_number_P")
+
     for clust_number_P in set(labels):
         
         c=((['#000000']) if clust_number_P == -1 else color[clust_number_P])
         clust_set_P = cluster_df[cluster_df.Clus_Db == clust_number_P]                    
-        
+        #print("dentro do for clust_number_P")
         if clust_number_P != -1:  
             cenx=np.mean(clust_set_P.LON) 
             ceny=np.mean(clust_set_P.LAT) 
@@ -217,7 +253,6 @@ def select_and_applyclustering(ais_Historical_df, id_clusteringType, llon, ulon,
     #print("********** df_ClusterTable ****** \n", df_ClusterTable)
         
     return cluster_df, df_ClusterTable
-
 
 # original class Code available at https://github.com/jaumpedro214/posts.git
 class ClusterSimilarityMatrix():
@@ -268,15 +303,15 @@ def calcPercentageCellsMatch(df_Cluster, df_trajectory):
     pointsMatch = 0
     totalPointsTrajectory = len(df_trajectory)
     totalPointsNotMatch = totalPointsTrajectory; # initial value
-    #print("totalPointsTrajectory = ", totalPointsTrajectory)
+    print("totalPointsTrajectory = ", totalPointsTrajectory)
     
-    df_tmp_DB_Cluster = df_Cluster.copy()  #########
-    # df_aux_DB_Cluster = df_Cluster[["Clus_Db", "GridCell"]] 
-    df_aux_DB_Cluster = df_tmp_DB_Cluster.loc[:,['Clus_Db', 'GridCell']].copy() ### 09 ago
+    #df_tmp_DB_Cluster = df_Cluster.copy()  #########
+    df_aux_DB_Cluster = df_Cluster[["Clus_Db", "GridCell"]] 
+    #df_aux_DB_Cluster = df_tmp_DB_Cluster.loc[:,['Clus_Db', 'GridCell']].copy() ### 09 ago
     df_aux_DB_Cluster.drop_duplicates(inplace=True)
     df_aux_DB_Cluster = df_aux_DB_Cluster.sort_values(by=['Clus_Db', 'GridCell'])
     df_aux_DB_Cluster = df_aux_DB_Cluster.reset_index(drop=True) 
-    #print("df_aux_DB_Cluster = ", df_aux_DB_Cluster)
+    print("df_aux_DB_Cluster = ", df_aux_DB_Cluster)
 
     df_tmp_ClusterTotalMatch = df_aux_DB_Cluster.copy() #############
     df_ClusterTotalMatch = df_tmp_ClusterTotalMatch.loc[:,['Clus_Db']].copy()  ## 09 ago
@@ -318,7 +353,6 @@ def calcPercentageCellsMatch(df_Cluster, df_trajectory):
         df_ClusterTotalMatch.loc[n, 'perc_TotalMatch'] = percentageMatch
             
     perc_pointsNotMatch = round((totalPointsNotMatch/totalPointsTrajectory)*100,2)
-    
     #print("perc_pointsNotMatch = ", perc_pointsNotMatch)
     #print("df_ClusterTotalMatch = \n", df_ClusterTotalMatch)
     
