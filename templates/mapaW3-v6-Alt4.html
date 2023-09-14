@@ -196,11 +196,12 @@ div.space05 {
   </div>
  
   <div class="subnav">
-    <button class="subnavbtn" id="btn_Trajectory_Data">Trajectory Data <i class="fa fa-caret-down"></i></button>
+    <button class="subnavbtn" id="btn_Trajectory_Data">Trajectory Processing <i class="fa fa-caret-down"></i></button>
     <div class="subnav-content">
-      <a href="#" onclick="enable_AIS_File_btn();" id="subButton_enable_AIS_File" >Analysis (side panel)</a>
-      <a href="#" onclick="file_AIS_select_dialog();" id="id_filter_AOI_from_AIS_file">Filter AIS data</a>
-      <a href="#" onclick="concat_AIS_Files_v2();" id="concat_Files" >Concat filtered Files</a>
+      <a href="#" onclick="enable_AIS_File_btn();" id="subButton_enable_AIS_File" >Initial Phase</a>
+      <a href="#" onclick="enable_AIS_File_btn();" id="subButton_enable_AIS_File" >Recover Clustering</a>
+      <a href="#" onclick="file_AIS_select_dialog();" id="id_filter_AOI_from_AIS_file">File Preprocessing</a>
+      <a href="#" onclick="concat_AIS_Files_v2();" id="concat_Files" >Files Concatenation</a>
       <input type="file" id="id_filter_AOI" accept=".csv" class="not-visible" /> <!--novo 29 ago-->
       <input type="file" id="id_concat_filtered_files" accept=".csv" multiple class="not-visible" /> <!--novo 01 set-->
     </div>
