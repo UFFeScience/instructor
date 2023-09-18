@@ -15,216 +15,230 @@ from mpl_toolkits.basemap import Basemap
 import random
 
 
-def select_and_applyclustering(ais_Historical_df, id_clusteringType, llon, ulon, llat, ulat, parameter1, parameter2, parameter3):
+def select_and_applyclustering(ais_Historical_df, id_clusteringType, llon, ulon, llat, ulat, parameter1, parameter2, parameter3, flag_apply_Clustering):
 
     #global db 
     #global labels 
-    my_map = Basemap(projection='merc',
-        resolution = 'h', area_thresh = 10.0, # l -> low
-        llcrnrlon=llon, llcrnrlat=llat, #min longitude (llcrnrlon) and latitude (llcrnrlat)
-        urcrnrlon=ulon, urcrnrlat=ulat) #max longitude (urcrnrlon) and latitude (urcrnrlat)
-        
-    #cluster_df = ais_Historical_df.copy()  #### 26 jul
-    #cluster_df = cluster_df[["MMSI", "LAT", "LON", "SOG", "GridCell"]] # 26 jul
-    cluster_df = ais_Historical_df[['MMSI', 'LAT', 'LON', 'SOG', 'GridCell']] # 09 ago
     
-    cluster_df = cluster_df.reset_index(drop=True) ### 09 ago
-    
-    #######################
-    cluster_df['xm']= 0
-    cluster_df['ym']= 0
-    print("cluster_df = \n", cluster_df)
-    print("tamanho cluster_df = ", len(cluster_df))
+    #cluster_df = ais_Historical_df[['MMSI', 'LAT', 'LON', 'SOG', 'GridCell']] # 16 set
+    cluster_df = ais_Historical_df[['MMSI', 'LAT', 'LON', 'SOG', 'GridCell']] # 16 set
+    #np_labels = cluster_df['Clus_Db'].to_numpy()
+    if flag_apply_Clustering == "1":   # false indicates that the historical file has been already clustered
+        #np_labels = cluster_df['Clus_Db'].to_numpy()
+        #cluster_df = cluster_df[['MMSI', 'LAT', 'LON', 'SOG', 'GridCell']] 
 
-
-    np_cluster_df = cluster_df[["LON","LAT"]].to_numpy()
-
-    index = 0
-    for i in np_cluster_df:
-        xs,ys = my_map(i[0], i[1])
-        cluster_df.loc[index, "xm"] = xs
-        cluster_df.loc[index, "ym"] = ys
-        index = index + 1
-        #df_ClusterTable.loc[clust_number_P, 'ceny'] = ceny
-    print("passou pelo for range")
-    ########################
-
-    #######
-    #xs,ys = my_map(np.asarray(cluster_df.LON), np.asarray(cluster_df.LAT))
-    
-    #cluster_df['xm'] = xs.tolist() # add column xm
-    #cluster_df['ym'] = ys.tolist()
-    ######
-
-    cluster_df_tmp = cluster_df[['xm', 'ym']] # novo 24Jun
-    cluster_df_tmp = cluster_df_tmp.reset_index(drop=True)
-
-    print("cluster_df_tmp = \n", cluster_df_tmp)
-
-    cluster_df_tmp2 = StandardScaler().fit_transform(cluster_df_tmp.to_numpy()) # novo 24Jun
-     
-    print("passou pelo StandardScaler")
-    print("cluster_df_aux = \n", cluster_df_tmp2)
-
-    cluster_df_aux = pd.DataFrame(cluster_df_tmp2, columns = ['xm','ym'])
-
-    print("antes do match")
-
-    match int(id_clusteringType):
-        # None - already been treated
-        case 1: 
-            stuff = 1 #print("case 1")
-        
-        # Agglomerative Clustering
-        # main parameters: 1 - estimate of the number of clusters
-        case 2:  
-            #print("case 2")
-            AC = AgglomerativeClustering(n_clusters=int(parameter1))
-            #yhat = AC.fit_predict(cluster_df_aux)
-            #clusters = unique(yhat)
-            labels = AC.fit_predict(cluster_df_aux)
-            #print ("AC clusters = ", labels)
-        
-
-        # BIRCH
-        # main parameters: 1- threshold; 2 - n_clusters 
-        case 3:  
-            #print("case 3")
-            B = Birch(threshold=float(parameter1), n_clusters=int(parameter2))
-            B.fit(cluster_df_aux)
-            labels = B.predict(cluster_df_aux)
+        my_map = Basemap(projection='merc',
+            resolution = 'h', area_thresh = 10.0, # l -> low
+            llcrnrlon=llon, llcrnrlat=llat, #min longitude (llcrnrlon) and latitude (llcrnrlat)
+            urcrnrlon=ulon, urcrnrlat=ulat) #max longitude (urcrnrlon) and latitude (urcrnrlat)
             
-        # DBSCAN (LAT, LON)
-        # main parameters: 1 - eps; 2 - min_samples
-        case 4: 
-            print("dentro do DBSCAN")
-            db = DBSCAN(eps = float(parameter1), min_samples = int(parameter2)).fit(cluster_df_aux)
-            labels = db.labels_
-
-        # DBSCAN (LAT, LON, SPEED)
-        # main parameters: 1 - eps; 2 - min_samples
-        case 5:  
-            db = DBSCAN(eps = float(parameter1), min_samples = int(parameter2)).fit(cluster_df_aux)
-            labels = db.labels_
-
-        # HDBSCAN
-        # main parameters: ???
-        #HDBSCAN(algorithm='best', alpha=1.0, approx_min_span_tree=True,
-        #         gen_min_span_tree=False, leaf_size=40, memory=Memory(cachedir=None),
-        #         metric='euclidean', min_cluster_size=5, min_samples=None, p=None)
-        case 6:  
-            #print("case 6")
-            HDB = hdbscan.HDBSCAN(cluster_selection_epsilon = float(parameter1), min_samples=int(parameter2), min_cluster_size=int(parameter3))
-            HDB.fit(cluster_df_aux)
-            labels = HDB.labels_
-
-        # KMeans
-        # main parameters: 1- n_clusters 
-        case 7: 
-            nr_clusters = int(parameter1)
-            clusterKmeans = KMeans(n_clusters= nr_clusters).fit_predict(cluster_df_aux)
-            labels = clusterKmeans
-
-        # Mean Shift
-        # main parameters: 1 - bandwidth
-        case 8:  
-            #print("case 8")
-            MS = MeanShift()
-            labels = MS.fit_predict(cluster_df_aux)
-
-        # Mini-Batch K-Means
-        # main parameters: 1 - n_clusters 
-        case 9:  
-            #print("case 9")
-            MBK = MiniBatchKMeans(n_clusters=int(parameter1))
-            MBK.fit(cluster_df_aux)
-            labels = MBK.predict(cluster_df_aux)
-
-        # Mixture of Gaussians
-        # main parameters: 1 - n_clusters
-        case 10: 
-            #print("case 10")
-            GM = GaussianMixture(n_components=int(parameter1))
-            GM.fit(cluster_df_aux)
-            labels = GM.predict(cluster_df_aux)
-
-        # OPTICS
-        # main parameters: 1 - eps; 2 - min_samples
-        case 11:  
-            #print("case 11")
-            O = OPTICS(eps=float(parameter1), min_samples=int(parameter2))
-            labels = O.fit_predict(cluster_df_aux)
+       
+        #cluster_df = ais_Historical_df[['MMSI', 'LAT', 'LON', 'SOG', 'GridCell']] # 09 ago # removed 16set
         
-        # Spectral Clustering
-        # main parameters: 1 - n_clusters
-        case 12:  
-            nr_clusters = int(parameter1)
-            try:
-                spectral = SpectralClustering(n_clusters= nr_clusters, assign_labels='cluster_qr').fit_predict(cluster_df_aux)
-                labels = spectral
-            except:
-                stuff = 0 #print("Error execution Spectral Clustering")
+        cluster_df = cluster_df.reset_index(drop=True) ### 09 ago
         
-        # KMeans Ensemble
-        # main parameters: 1 - Number_Kmeans; 2 - Min_Probability; 3 - n_clusters
-        case 13:  
-            Number_Kmeans = int(parameter1)
-            Min_Probability = float(parameter2)
-            nr_clusters =  int(parameter3)
+        #######################
+        cluster_df['xm']= 0
+        cluster_df['ym']= 0
+        print("cluster_df = \n", cluster_df)
+        print("tamanho cluster_df = ", len(cluster_df))
 
-            # Generating base models
-            clustering_models = Number_Kmeans*[
+
+        np_cluster_df = cluster_df[["LON","LAT"]].to_numpy()
+
+        index = 0
+        for i in np_cluster_df:
+            xs,ys = my_map(i[0], i[1])
+            cluster_df.loc[index, "xm"] = xs
+            cluster_df.loc[index, "ym"] = ys
+            index = index + 1
+            #df_ClusterTable.loc[clust_number_P, 'ceny'] = ceny
+        print("passou pelo for range")
+        ########################
+
+        #######
+        #xs,ys = my_map(np.asarray(cluster_df.LON), np.asarray(cluster_df.LAT))
+        
+        #cluster_df['xm'] = xs.tolist() # add column xm
+        #cluster_df['ym'] = ys.tolist()
+        ######
+
+        cluster_df_tmp = cluster_df[['xm', 'ym']] # novo 24Jun
+        cluster_df_tmp = cluster_df_tmp.reset_index(drop=True)
+
+        print("cluster_df_tmp = \n", cluster_df_tmp)
+
+        cluster_df_tmp2 = StandardScaler().fit_transform(cluster_df_tmp.to_numpy()) # novo 24Jun
+        
+        print("passou pelo StandardScaler")
+        print("cluster_df_aux = \n", cluster_df_tmp2)
+
+        cluster_df_aux = pd.DataFrame(cluster_df_tmp2, columns = ['xm','ym'])
+
+        print("antes do match")
+
+        match int(id_clusteringType):
+            # None - already been treated
+            case 1: 
+                stuff = 1 #print("case 1")
+            
+            # Agglomerative Clustering
+            # main parameters: 1 - estimate of the number of clusters
+            case 2:  
+                #print("case 2")
+                AC = AgglomerativeClustering(n_clusters=int(parameter1))
+                #yhat = AC.fit_predict(cluster_df_aux)
+                #clusters = unique(yhat)
+                labels = AC.fit_predict(cluster_df_aux)
+                #print ("AC clusters = ", labels)
+            
+
+            # BIRCH
+            # main parameters: 1- threshold; 2 - n_clusters 
+            case 3:  
+                #print("case 3")
+                B = Birch(threshold=float(parameter1), n_clusters=int(parameter2))
+                B.fit(cluster_df_aux)
+                labels = B.predict(cluster_df_aux)
+                
+            # DBSCAN (LAT, LON)
+            # main parameters: 1 - eps; 2 - min_samples
+            case 4: 
+                print("dentro do DBSCAN")
+                db = DBSCAN(eps = float(parameter1), min_samples = int(parameter2)).fit(cluster_df_aux)
+                labels = db.labels_
+
+            # DBSCAN (LAT, LON, SPEED)
+            # main parameters: 1 - eps; 2 - min_samples
+            case 5:  
+                db = DBSCAN(eps = float(parameter1), min_samples = int(parameter2)).fit(cluster_df_aux)
+                labels = db.labels_
+
+            # HDBSCAN
+            # main parameters: ???
+            #HDBSCAN(algorithm='best', alpha=1.0, approx_min_span_tree=True,
+            #         gen_min_span_tree=False, leaf_size=40, memory=Memory(cachedir=None),
+            #         metric='euclidean', min_cluster_size=5, min_samples=None, p=None)
+            case 6:  
+                #print("case 6")
+                HDB = hdbscan.HDBSCAN(cluster_selection_epsilon = float(parameter1), min_samples=int(parameter2), min_cluster_size=int(parameter3))
+                HDB.fit(cluster_df_aux)
+                labels = HDB.labels_
+
+            # KMeans
+            # main parameters: 1- n_clusters 
+            case 7: 
+                nr_clusters = int(parameter1)
+                clusterKmeans = KMeans(n_clusters= nr_clusters).fit_predict(cluster_df_aux)
+                labels = clusterKmeans
+
+            # Mean Shift
+            # main parameters: 1 - bandwidth
+            case 8:  
+                #print("case 8")
+                MS = MeanShift()
+                labels = MS.fit_predict(cluster_df_aux)
+
+            # Mini-Batch K-Means
+            # main parameters: 1 - n_clusters 
+            case 9:  
+                #print("case 9")
+                MBK = MiniBatchKMeans(n_clusters=int(parameter1))
+                MBK.fit(cluster_df_aux)
+                labels = MBK.predict(cluster_df_aux)
+
+            # Mixture of Gaussians
+            # main parameters: 1 - n_clusters
+            case 10: 
+                #print("case 10")
+                GM = GaussianMixture(n_components=int(parameter1))
+                GM.fit(cluster_df_aux)
+                labels = GM.predict(cluster_df_aux)
+
+            # OPTICS
+            # main parameters: 1 - eps; 2 - min_samples
+            case 11:  
+                #print("case 11")
+                O = OPTICS(eps=float(parameter1), min_samples=int(parameter2))
+                labels = O.fit_predict(cluster_df_aux)
+            
+            # Spectral Clustering
+            # main parameters: 1 - n_clusters
+            case 12:  
+                nr_clusters = int(parameter1)
+                try:
+                    spectral = SpectralClustering(n_clusters= nr_clusters, assign_labels='cluster_qr').fit_predict(cluster_df_aux)
+                    labels = spectral
+                except:
+                    stuff = 0 #print("Error execution Spectral Clustering")
+            
+            # KMeans Ensemble
+            # main parameters: 1 - Number_Kmeans; 2 - Min_Probability; 3 - n_clusters
+            case 13:  
+                Number_Kmeans = int(parameter1)
+                Min_Probability = float(parameter2)
+                nr_clusters =  int(parameter3)
+
+                # Generating base models
+                clustering_models = Number_Kmeans*[
+                    # Note: Do not set a random_state, as the variability is crucial
+                    # This is a extreme simple K-Means
+                    MiniBatchKMeans(n_clusters=nr_clusters, batch_size=64, n_init=1, max_iter=20)
+                ]
+
+                clt_sim_matrix = ClusterSimilarityMatrix()
+                for model in clustering_models:
+                    clt_sim_matrix.fit( model.fit_predict(cluster_df_aux))  # X=X_vectors) ) 
+
+                sim_matrix = clt_sim_matrix.similarity
+                norm_sim_matrix = sim_matrix/sim_matrix.diagonal()
+
+                # Transforming the probabilities into graph edges
+                # similar to DBSCAN
+                graph = (norm_sim_matrix>Min_Probability).astype(int)
+
+                # Extract the connected components
+                n_clusters_ensemble, y_ensemble = connected_components( graph, directed=False, return_labels=True )
+                
+                #print ("********* Nr of clusters final = ", n_clusters_ensemble)
+                labels = y_ensemble
+
+            # Ensemble Clusters
+            # main parameters: 1 - Number_Kmeans; 2 - n_clusters
+            case 14:  
+                Number_Kmeans = int(parameter1)
+                #Min_Probability = 0.9# paramater1
+                nr_clusters =  int(parameter2)
+                
+                clustering_models = Number_Kmeans*[
                 # Note: Do not set a random_state, as the variability is crucial
-                # This is a extreme simple K-Means
-                MiniBatchKMeans(n_clusters=nr_clusters, batch_size=64, n_init=1, max_iter=20)
-            ]
+                    MiniBatchKMeans(n_clusters=16, batch_size=64, n_init=1, max_iter=20)
+                ]
+                aggregator_clt = SpectralClustering(n_clusters=8, affinity="precomputed")
 
-            clt_sim_matrix = ClusterSimilarityMatrix()
-            for model in clustering_models:
-                clt_sim_matrix.fit( model.fit_predict(cluster_df_aux))  # X=X_vectors) ) 
-
-            sim_matrix = clt_sim_matrix.similarity
-            norm_sim_matrix = sim_matrix/sim_matrix.diagonal()
-
-            # Transforming the probabilities into graph edges
-            # similar to DBSCAN
-            graph = (norm_sim_matrix>Min_Probability).astype(int)
-
-            # Extract the connected components
-            n_clusters_ensemble, y_ensemble = connected_components( graph, directed=False, return_labels=True )
-            
-            #print ("********* Nr of clusters final = ", n_clusters_ensemble)
-            labels = y_ensemble
-
-        # Ensemble Clusters
-        # main parameters: 1 - Number_Kmeans; 2 - n_clusters
-        case 14:  
-            Number_Kmeans = int(parameter1)
-            #Min_Probability = 0.9# paramater1
-            nr_clusters =  int(parameter2)
-            
-            clustering_models = Number_Kmeans*[
-            # Note: Do not set a random_state, as the variability is crucial
-                MiniBatchKMeans(n_clusters=16, batch_size=64, n_init=1, max_iter=20)
-            ]
-            aggregator_clt = SpectralClustering(n_clusters=8, affinity="precomputed")
-
-            ens_clt=EnsembleClustering(clustering_models, aggregator_clt)
-            ensemble = ens_clt.fit_predict(cluster_df_aux)
-            labels = ensemble
+                ens_clt=EnsembleClustering(clustering_models, aggregator_clt)
+                ensemble = ens_clt.fit_predict(cluster_df_aux)
+                labels = ensemble
 
 
-        case _:
-            print("Case valor default")
-            return  
+            case _:
+                print("Case valor default")
+                return  
 
-    #print (cluster_df_aux) 
-    print (labels[500:560])
-    cluster_df["Clus_Db"]=labels
+        #print (cluster_df_aux) 
+        print ("labels = \n", labels[3620:3760])
+        cluster_df["Clus_Db"]=labels
+    # end of if
+    else:
+        cluster_df = ais_Historical_df[['MMSI', 'LAT', 'LON', 'SOG', 'GridCell','xm','ym','Clus_Db']] # 16 set
+
+    np_labels = cluster_df["Clus_Db"].to_numpy()
+    print ("np_labels = \n", np_labels[3620:3760])
+    ##############
     
-    realClusterNum=len(set(labels)) - (1 if -1 in labels else 0)
+    realClusterNum=len(set(np_labels)) - (1 if -1 in np_labels else 0)
     #print(realClusterNum)
-    clusterNum = len(set(labels))
+    clusterNum = len(set(np_labels))
     #print(clusterNum)
 
     no_of_colors=realClusterNum
@@ -236,7 +250,7 @@ def select_and_applyclustering(ais_Historical_df, id_clusteringType, llon, ulon,
 
     print("antes do for clust_number_P")
 
-    for clust_number_P in set(labels):
+    for clust_number_P in set(np_labels):
         
         c=((['#000000']) if clust_number_P == -1 else color[clust_number_P])
         clust_set_P = cluster_df[cluster_df.Clus_Db == clust_number_P]                    
@@ -251,6 +265,10 @@ def select_and_applyclustering(ais_Historical_df, id_clusteringType, llon, ulon,
         
     df_ClusterTable.shape
     #print("********** df_ClusterTable ****** \n", df_ClusterTable)
+    ################
+    cluster_df.to_csv("d:cluster_df.csv", index=False) # 
+
+    ###############
         
     return cluster_df, df_ClusterTable
 

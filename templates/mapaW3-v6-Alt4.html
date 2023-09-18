@@ -108,49 +108,80 @@ div.space05 {
 </dialog>
 
 <dialog class="dialogo"    id="instructionsPage">
-  <h2>USER INSTRUCTIONS</h2>
-  <b>=== Navigation Menu ===</b><br><br>
-  
-  <img src="/static/navBar.gif">
-  
-  <p><span style="color: rgb(255, 255, 255);  background-color: black;">Map Set View</span><br>
-  Selection of a zoom area to center the map
-  </p>
-  <span style="color: rgb(255, 255, 255);  background-color: black;">Area of Interest</span><br>
-  - Load: a storaged build area will be loaded from a file (CSV format) <br>
-  - Create: Build an area through the connection of location marks in the order of locations created <br>
-  - Save: All the location markers will be saved in a CSV file (latlongAOI.csv) in the order of locations created.
-  </p>
-  <p>
-    <span style="color: rgb(255, 255, 255);  background-color: black;">Grid Cell Size</span><br>
-   Allow the selection of the Grid Cell Size in meters. The default value is 2000. 
-  </p>
+  <div style="text-align: center;" >
+    <h2>USER INSTRUCTIONS</h2>
+    <b>=== Navigation Menu ===</b><br><br>
+    
+    <p><span style="color: rgb(134, 31, 31);  background-color: rgb(255, 255, 255); ">Map Set View</span></p>
+    <img src="/static/submenu-Map.png" width="600" height="80" ><br>
+  </div>
+    <ul>
+      <li>Selection of a zoom area to center the map.</li>
+    </ul>
+  <div style="text-align: center;"> 
+    <span style="color: rgb(134, 31, 31);  background-color: rgb(255, 255, 255);">Area of Interest</span><br><br>
+          <img src="/static/submenu-AOI.png" width="400" height="80"><br>
+  </div>
+    <ul>
+      <li> Remove: a created or loaded area will be excluded.</li>
+      <li> Load File: a built and storaged area will be loaded from a file (CSV format).</li>
+      <li> Create: Build an area through the connection of location marks in the order of locations created.</li>
+      <li> Save into a File: All the location markers will be saved in a CSV file (latlongAOI.csv) in the order of locations created.</li>
+    </ul>
 
-  <p><span style="color: rgb(255, 255, 255);  background-color: black;">Grid Creation</span><br>
-    A Grid of Cells is built from the AOI and the selected Cell Size.</p>
+  <div style="text-align: center;">
+      <span style="color: rgb(134, 31, 31);  background-color: rgb(255, 255, 255);">Grid Creation (Cell Size)</span><br><br>
+          <img src="/static/submenu-Grid.png" width="400" height="80"> <br><br>
+  </div>
+    <ul>
+      <li>Allow the selection of the Grid Cell Size in meters. Then a Grid of Cells is automatic built from the current AOI.
+    </ul>
 
-  <p><span style="color: rgb(255, 255, 255);  background-color: black;">AIS Data</span><br>
-      AIS data processing from a CSV file format and trajectory classification functionalities.</p>
-  
-  <p><span style="color: rgb(255, 255, 255);  background-color: black;">Help</span><br>
-  - Instructions: To aid the user with the operation of the Vessel Trajectory Classifier Tool <br>
-  - About: To present information of the development description
-  </p>
+  <div style="text-align: center;">
+    <p><span style="color: rgb(134, 31, 31);  background-color: rgb(255, 255, 255);">Trajectory Processing</span></p><br>
+          <img src="/static/submenu-TrajData.png" width="550" height="80"><br>
+  </div>
+    <ul>
+      <li>Initial Phase: This item enables the side panel to start with the loading of a file which contains historical AIS data.</li>
+      <li>Clustering: In this item a dialog box is open to select a file which contains the results of a clustering algorithm execution
+          of a historical AIS datafile.</li>
+      <li>Preprocessing: A dialog box is open to select a AIS file data which would be filtered to collect only the data concernig the AOI. 
+        At the end another dialog box will ask for a filename to save this filtered data. This is a preliminary activity to start the Initial Phase.</li>
+      <li>Concatenation: After the execution a number of File Preprocessing actions, a dialog box will allow the selection of multiple files to
+         concatenate in order to have a higher volume of data inside a unique file. This is also a preliminary activity to start the Initial Phase.</li> 
+    </ul>
+  <div style="text-align: center;">
+    <p><span style="color: rgb(134, 31, 31);  background-color: rgb(255, 255, 255);">Help</span></p><br>
+          <img src="/static/submenu-Help.png"><br>
+  </div>
+    <ul>
+      <li>Instructions: To aid the user with the operation of the INSTRUCTOR Tool.</li>
+      <li>About: To present information concerning the purpose and references of the INSTRUCTOR development.</li>
+    </ul>
 
-  <p><b>Note:</b> The action of page refresh in the browser will perform a new start of the aplication and <br>
-    all the previous interactions will be lost (e.g. location marks/polygons creation).
-  </p>
-  <b>======== MAP ========</b>
-  <p>A set of actions are available through mouse events over the map presented:</p>
-  <p>
-  - Mouse click: create a new location marker<br><br>
-  - Mouse double click: Over an existing location marker, the location will be excluded if it was <br>
-  the last one created<br><br>
-  - Mouse dragging: move the map to a new position<br><br>
-  - Mouse Scrolling: up -> zoom in; down -> zoom out.
-  </p>
-
-   <button onclick="fechaInstructions();" autofocus style="display:block; margin: 0 auto; background-color: rgb(141, 163, 236);">Close</button>
+    <p><b>Note:</b> The action of page refresh in the browser will perform a new start of the aplication and
+      all the previous interactions will be lost (e.g. location marks, polygons creation, clustering and trajectory activities).
+    </p>
+  <div style="text-align: center;">
+    <b>======== MAP ========</b>
+    <p>A set of actions are available through mouse events over the map presented:</p>
+  </div>
+    <ul> 
+      <li>Mouse click: create a new location marker.</li>
+      <li>Mouse double click: Over an existing location marker, the location will be excluded if it was
+        the last one created.</li>
+      <li>Mouse dragging: move the map to a new position.</li>
+      <li>Mouse Scrolling: up -> zoom in; down -> zoom out.</li>
+    </ul>
+  <br>
+  <div style="text-align: center;">
+    <b>======== SIDE PANELS ========</b>
+  </div>
+  <!--
+  <img src="/static/xxxx.png"> 
+  -->
+    <br>
+    <button onclick="fechaInstructions();" style="display:block; margin: 0 auto; background-color: rgb(141, 163, 236);">Close</button>
 </dialog>
 
 <div class="header">
@@ -199,7 +230,9 @@ div.space05 {
     <button class="subnavbtn" id="btn_Trajectory_Data">Trajectory Processing <i class="fa fa-caret-down"></i></button>
     <div class="subnav-content">
       <a href="#" onclick="enable_AIS_File_btn();" id="subButton_enable_AIS_File" >Initial Phase</a>
-      <a href="#" onclick="enable_AIS_File_btn();" id="subButton_enable_AIS_File" >Recover Clustering</a>
+      <!--
+      <a href="#" onclick="recover_clustering_btn();" id="subButton_recover_clustering" >Recover Clustering</a>
+      -->
       <a href="#" onclick="file_AIS_select_dialog();" id="id_filter_AOI_from_AIS_file">File Preprocessing</a>
       <a href="#" onclick="concat_AIS_Files_v2();" id="concat_Files" >Files Concatenation</a>
       <input type="file" id="id_filter_AOI" accept=".csv" class="not-visible" /> <!--novo 29 ago-->
@@ -239,23 +272,28 @@ div.space05 {
             <div class="space18">
               <div>    
                 <button type="button" id="btnSelectAIS_File" disabled onclick="selectAIS_File();">Load File</button>
-                <!-- teste-->
+                <!-- 
                 <button type="button" id="btnSelectAIS_File_TESTE" onclick="async_selectAIS_File_NEW();">TESTE</button>
+                -->
                 <input type="text" id="inputTxtFileName" name="Name" disabled/>&nbsp;&nbsp;
                 <button id="btn_apply_filter_vessels" onclick="apply_vessels_filter();" >Apply Filters</button>&nbsp;
                 
                 <button id="btnPlot" onclick="aisPlotFile();" disabled>Plot</button><br> <!-- altered 03 set -->
                 <!--03 set -->
                 <input type="file" id="inputFile_load_filtered_historical_AIS" name="load_historical_file" accept=".csv" class="not-visible" /> 
-                <!--  03 set -->
+                <!--  03 set 
                 <form method=post action = "/success" enctype=multipart/form-data>
-                  <input type="file" id="inputFile_historical_AIS" multiple name="historical_file" accept=".csv" class="not-visible" /> <!--novo 28 ago-->
+                  <input type="file" id="inputFile_historical_AIS" multiple name="historical_file" accept=".csv" class="not-visible" /> 
                   <input type="submit" value="Upload">
                 </form>
+              -->
                  <!---->
                 <fieldset id="parametersPanel" class="visible">  <!-- style="width:265px" -->
-                  <legend>Clustering Algorithm & Parameters</legend>    
-                  <label for="clustering">Algorithm:</label>
+                  <legend>Clustering Algorithm & Parameters</legend>
+                    <input type="checkbox" id="btn_chk_recover" name="btn_chk_recover" onchange="btn_chk_recover_select();" checked />
+                    <button type="button" id="btn_recover_clustering" onclick="recover_clustering();">Recover</button>&nbsp;
+
+                    <label for="clustering">Algorithm:</label>
                     <select id="clustering" disabled onchange="GetSelectedClusteringValue(this)">
                         <!--<option value="1">None (Density plots only)</option>-->
                         <option value="1">Automatic Mode</option>
@@ -272,8 +310,13 @@ div.space05 {
                         <option value="12">Spectral Clustering</option>
                         <option value="13">K-Means Ensemble</option>
                         <option value="14">Ensemble Clustering</option>
-                    </select><br>
+                    </select>
                     
+                    <button type="button" id="btnApply" onclick="async_applyClustering();" disabled>Run</button>
+                    <!--03 set -->
+                    <input type="file" id="inputFile_load_filtered_historical_AIS_and_clustering" name="load_historical_file_and_clustering" accept=".csv" class="not-visible" /> 
+                    <!--  03 set -->
+                    <br>
                     <label id="lbl_inputParameter1">Auto settings for an Ensemble Clustering</label>
                     <input type="text" id="inputParameter1" disabled value="0" class="not-visible" name="parameter1" size="2"/>&nbsp;
                   
@@ -283,7 +326,8 @@ div.space05 {
                     <label id="lbl_inputParameter3"></label>
                     <input type="text" id="inputParameter3" disabled value="0" class="not-visible" name="parameter3" size="2"/>&nbsp;
                   
-                    <button type="button" id="btnApply" onclick="async_applyClustering();" disabled>Run</button>
+                    
+                    <button type="button" id="btn_save_clustering" onclick="save_clustering();" >Save</button>
                                 
                 </fieldset>  
               </div>
@@ -494,6 +538,7 @@ div.space05 {
   var global_df_ClusterColorTable = []; 
   var perc_pointsNotMatch = 0.0; 
   var df_ClusterTotalMatch = [];
+  var df_clustering = [];    // added 17 set
 
   var firstShowAboutPage_flag = true;
   var flag_active_back_end_process = false;  //////////// novo 19jul
@@ -503,15 +548,18 @@ div.space05 {
   
 
   const fileInput = document.getElementById('aoi_File'); // 22jul
-  const fileInput_historical_AIS = document.getElementById('inputFile_historical_AIS'); // 28 ago
+ // const fileInput_historical_AIS = document.getElementById('inputFile_historical_AIS'); // 28 ago   // removed  17set
   const fileInput_filter_AOI_from_AIS = document.getElementById('id_filter_AOI'); // 29 ago
   const fileInput_concat_filtered_files = document.getElementById('id_concat_filtered_files'); // 29 ago
   const fileInput_load_filtered_historical_AIS = document.getElementById('inputFile_load_filtered_historical_AIS'); //03 set
   const fileInput_load_filtered_trajectory_AIS = document.getElementById('inputFile_load_filtered_trajectory_AIS'); //10 set
-
+  const fileInput_load_filtered_historical_AIS_and_clustered = document.getElementById('inputFile_load_filtered_historical_AIS_and_clustering'); //03 set
+  
   const btnRadioNormal_getElement = document.getElementById('btnSelectNormal'); // added 25 ago
   const btnRadioAnomalous_getElement = document.getElementById('btnSelectAnomalous');
+  const btn_chk_recover_getElement = document.getElementById('btn_chk_recover');  // added 17 set
   var flag_stop_button_active = false; // added 26 ago
+  var b_apply_clustering = "1"; // true added 17 set
 
   exibe_Blank_WindRose(); // show a blank WindRose at first time
   exibeAboutPage();
@@ -519,6 +567,44 @@ div.space05 {
   //////////////////////////////////////////////////////////////////////////////
                                     // FUNCTIONS //
   //////////////////////////////////////////////////////////////////////////////
+
+  function save_clustering(){
+    if (g_cluster_df.length > 0) {
+        //define the heading for each row of the data  
+        var csv = 'MMSI,LAT,LON,SOG,GridCell,xm,ym,Clus_Db\n';
+          
+        //merge the data with CSV  
+        g_cluster_df.forEach(function(row) {  
+                csv += row.join(',');  
+                csv += "\n";  
+        });  
+        //polygon_CSV = csv;
+        //display the created CSV data on the web browser
+        //document.write(csv);  
+        var hiddenElement = document.createElement('a');  
+        hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);  
+        hiddenElement.target = '_blank';  
+          
+        //provide the name for the CSV file to be downloaded  
+        hiddenElement.download = 'Save_Clustering.csv';  
+        hiddenElement.click(); 
+        
+    } else {alert("It would have at least one register to save the clustering into a file.")}; 
+    
+  }
+  /**
+  function recover_clustering_btn(){
+    
+    //selectAIS_File();
+    var btn = document.getElementById("btnApply");
+    btn.disabled = false;
+    highlight_element_HMI_button("btnPlot", "clustering"); // 02 ago
+    highlight_element_HMI_button("", "btnApply");
+    flag_trajectory_analysis = true; // 05 ago
+    
+    b_apply_clustering = "0";
+
+  } **/
 
   function geracaoBINs(speed_str, course_str){
     
@@ -717,6 +803,30 @@ div.space05 {
     }
   }
   
+  function btn_chk_recover_select(){
+
+    //var anomalous_selectType = document.getElementById("btn_chk_recover");
+    
+    if ( btn_chk_recover_getElement.checked == true){
+      console.log("botao check true");
+      var element = document.getElementById("clustering");
+      element.disabled = true;
+      element = document.getElementById("btn_save_clustering");
+      element.disabled = true;
+      element = document.getElementById("btn_recover_clustering");
+      element.disabled = false;
+    }
+    else {
+      console.log("botao check false");
+      var element = document.getElementById("clustering");
+      element.disabled = false;
+      element = document.getElementById("btn_save_clustering");
+      element.disabled = false;
+      element = document.getElementById("btn_recover_clustering");
+      element.disabled = true;
+    }
+  }
+
   function btnRadioNormal_select(){
     var anomalous_selectType = document.getElementById("anomalous_type");
     if (btnRadioNormal_getElement.checked == true){
@@ -735,9 +845,10 @@ div.space05 {
     loadArea2();
   });
   ////////////// 28 ago
+  /**  removed 17 set
   fileInput_historical_AIS.addEventListener('change', event => { // 22Jul
     send_AIS_historical_file();
-  });
+  });**/
 
   fileInput_filter_AOI_from_AIS.addEventListener('change', event => { // 29 ago
     
@@ -751,6 +862,11 @@ div.space05 {
   fileInput_load_filtered_historical_AIS.addEventListener('change', event => { // 03 set
     load_filtered_historical_AIS_file();
   });
+///////////////////////// 17 set
+  fileInput_load_filtered_historical_AIS_and_clustered.addEventListener('change', event => { // 03 set
+    load_filtered_historical_AIS_file_and_clustered();
+  });
+//////////////////////////////////////
 
   ////////// 10 set
   fileInput_load_filtered_trajectory_AIS.addEventListener('change', event => { // 03 set
@@ -758,6 +874,37 @@ div.space05 {
   });
 
   /////// fim 10 set
+
+
+  /////////////// set 17
+  function recover_clustering(){
+    var file_select_dialog = document.getElementById("inputFile_load_filtered_historical_AIS_and_clustering");
+    file_select_dialog.click();
+  }
+  function load_filtered_historical_AIS_file_and_clustered(){
+    
+    let data_row_clustering = [];
+    //let data_to_save_into_file = [];
+    var theFile = document.getElementById("inputFile_load_filtered_historical_AIS_and_clustering").files[0];//
+    let data = readFileAsText(theFile);
+    data.then((values) => {
+      let data_file = values.split("\n");
+      data_file.shift(); // added 06 set  00h47 tira o header
+      data_file.pop();   // added 06 set  00h58 tira o ultimo
+      for (let i in data_file) { //loop each row split them by "," and save it in array
+            data_file[i] = data_file[i].split(",");
+            data_row_clustering[i] = data_file[i];
+	          //data_to_save_into_file.push(data_row_AIS[i]);
+            df_clustering.push(data_row_clustering[i]);
+      }
+      console.log("data_file_clustering = ", df_clustering);
+      //openFileAIS(theFile.name);
+      
+    });
+    b_apply_clustering = "0"; // added 17 set
+  }
+
+  ////////////////
 
   ////////////////////////////////// 03 set/////////////////
   function selectAIS_File(){
@@ -1604,7 +1751,8 @@ div.space05 {
   }
   
   function exibeInstructions(){
-    modalInstructions.showModal()
+    modalInstructions.showModal();
+    modalInstructions.scrollTo(0,0);
   }
   function fechaInstructions(){
     modalInstructions.close()
@@ -1619,11 +1767,13 @@ div.space05 {
     })();
   }
    ///////////////////// 28 ago /////////////////
+  /**
   function async_selectAIS_File_NEW(){
     var AIS_historical_file = document.getElementById("inputFile_historical_AIS");
     AIS_historical_file.click();
-  }
+  }**/
 
+  /**
   function send_AIS_historical_file(){
 
     var dados = JSON.stringify([latInfGrid, latSupGrid, lonInfGrid, lonSupGrid,
@@ -1658,7 +1808,7 @@ div.space05 {
               alert("error execution send AIS historical file");
             }
          });
-  }
+  }**/
   
   function openFileAIS(filename_historical_file){
     
@@ -1714,7 +1864,7 @@ div.space05 {
     $("#aisPlotPanel").addClass("visible");
 
     const [latInfAOI, latSupAOI, lonInfAOI, lonSupAOI, latMedAOI] = findMinMax(pontos);
-        
+    //b_apply_clustering = "1"; // true  added 17 set
     AISplotPanel();
     //plotAisDataPanel();
   }
@@ -1840,13 +1990,14 @@ div.space05 {
   function async_applyClustering(){
 
     (async () => {
-      let response = await applyClustering();
+      //b_apply_clustering = "1"; // ture
+      let response = await applyClustering(b_apply_clustering);
       await response; 
         
     })();
   }
   
-  async function applyClustering(){ // 08 ago
+  async function applyClustering(bool_apply_clustering){ // 08 ago
     
     var listBoxClustering = document.getElementById("clustering");
     idClustering = parseInt(listBoxClustering.value);
@@ -1854,6 +2005,8 @@ div.space05 {
     var param1 = document.getElementById("inputParameter1").value;
     var param2 = document.getElementById("inputParameter2").value;
     var param3 = document.getElementById("inputParameter3").value; // novo 25Jun
+
+    //var b_apply_clustering = document.getElementById("XXXXXX").value; //
     //var dados = JSON.stringify([idClustering, latInfGrid, latSupGrid, lonInfGrid, lonSupGrid, param1, param2, param3]);
     
     ///////// teste 09 set
@@ -1865,29 +2018,31 @@ div.space05 {
     form_data_clustering.append("lonSupGrid"  ,lonSupGrid);
     form_data_clustering.append("lonInfGrid"  ,lonInfGrid);
     
-
     form_data_clustering.append("param1" , param1);
     form_data_clustering.append("param2" , param2);
     form_data_clustering.append("param3" , param3);
-
-    //
-    var csv_ais_Historical = 'MMSI,BaseDateTime,LAT,LON,SOG,COG,TrajID,GridCell,courseBIN,speedBIN,VesselType,Length,Cargo\n'; 
-          
-        //merge the data with CSV  
-    ais_Historical_AOI_ArrayFiltered.forEach(function(row) {  
-      csv_ais_Historical += row.join(',');  
-      csv_ais_Historical += "\n";  
-    });  
-
-    //
-
-    //ais_historical_json = JSON.stringify(ais_Historical_AOI_ArrayFiltered);
-
-    form_data_clustering.append("ais_Historical_AOI_ArrayFiltered", csv_ais_Historical);
-    //////// fim teste 09 set
     
-    //console.log("front variável dados = ", dados);
-    //console.log("Clustering = ", idClustering);
+    form_data_clustering.append("flag_recover_clustering", bool_apply_clustering);
+
+    /////////////////
+    csv_ais_Historical = "";
+    if (bool_apply_clustering == "1"){
+      var csv_ais_Historical = 'MMSI,BaseDateTime,LAT,LON,SOG,COG,TrajID,GridCell,courseBIN,speedBIN,VesselType,Length,Cargo\n'; 
+      ais_Historical_AOI_ArrayFiltered.forEach(function(row) {  
+        csv_ais_Historical += row.join(',');  
+        csv_ais_Historical += "\n";  
+      });  
+    } else {
+      var csv_ais_Historical = 'MMSI,LAT,LON,SOG,GridCell,xm,ym,Clus_Db\n'; 
+      df_clustering.forEach(function(row) {  
+        csv_ais_Historical += row.join(',');  
+        csv_ais_Historical += "\n";  
+      }); 
+
+    }  
+    
+    form_data_clustering.append("ais_Historical_AOI_ArrayFiltered", csv_ais_Historical);
+        
     var len = ais_Historical_AOI_ArrayFiltered.length;
     if (len == 0){
       alert("Botao apply - arquivo selecionado não possui dados de AIS no Grid/AOI selecionada");

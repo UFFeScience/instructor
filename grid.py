@@ -183,19 +183,15 @@ def applyClustering():
        parameter1 = request.form.get('param1')    #data[5] 
        parameter2 = request.form.get('param2')    #data[6]
        parameter3 = request.form.get('param3')    #data[7]
-
+       f_apply_clustering = request.form.get('flag_recover_clustering') #data[8]
+       
        ais_Historical_AOI_ArrayFiltered = request.form.get('ais_Historical_AOI_ArrayFiltered') 
        array_ais_Historical = pd.read_csv(io.StringIO(ais_Historical_AOI_ArrayFiltered), sep=",")  #novo 09set
        #print("array_ais_historical =\n", array_ais_Historical)
 
        ais_clustered_df, clusterTable_df = clt.select_and_applyclustering(array_ais_Historical, id_clustering, 
-                                                                    llon, ulon, llat, ulat, parameter1, parameter2, parameter3)
+                                                                    llon, ulon, llat, ulat, parameter1, parameter2, parameter3, f_apply_clustering)
        
-       #global_df_Cluster = ais_clustered_df.copy() 
-       #global_df_Cluster = ais_clustered_df ###
-
-       #global_df_Cluster = global_df_Cluster.reset_index(drop=True) 
-
        ais_clustered_df_json = ais_clustered_df.to_json(orient='values')
        clusterTable_df_json = clusterTable_df.to_json(orient='values')
        resposta = jsonify(ais_clustered_df_json, clusterTable_df_json)
