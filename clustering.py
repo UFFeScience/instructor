@@ -78,9 +78,16 @@ def select_and_applyclustering(ais_Historical_df, id_clusteringType, llon, ulon,
         print("antes do match")
 
         match int(id_clusteringType):
-            # None - already been treated
+            # Automatic Mode - under development 
+            # first part: DBSCAN
+            # second part: Ensemble
             case 1: 
-                stuff = 1 #print("case 1")
+                #first part - DBSCAN
+                parameter1 = 0.04
+                parameter2 = 18
+                db = DBSCAN(eps = float(parameter1), min_samples = int(parameter2)).fit(cluster_df_aux)
+                labels = db.labels_
+                # second part - under development
             
             # Agglomerative Clustering
             # main parameters: 1 - estimate of the number of clusters

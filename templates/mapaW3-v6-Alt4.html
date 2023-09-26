@@ -290,7 +290,7 @@ div.space05 {
                  <!---->
                 <fieldset id="parametersPanel" class="visible">  <!-- style="width:265px" -->
                   <legend>Clustering Algorithm & Parameters</legend>
-                    <input type="checkbox" id="btn_chk_recover" name="btn_chk_recover" onchange="btn_chk_recover_select();" checked />
+                    <input type="checkbox" id="btn_chk_recover" name="btn_chk_recover" onchange="btn_chk_recover_select();" />
                     <button type="button" id="btn_recover_clustering" onclick="recover_clustering();">Recover</button>&nbsp;
 
                     <label for="clustering">Algorithm:</label>
@@ -820,10 +820,12 @@ div.space05 {
       console.log("botao check false");
       var element = document.getElementById("clustering");
       element.disabled = false;
+      element.click();  // added 25set
       element = document.getElementById("btn_save_clustering");
       element.disabled = false;
       element = document.getElementById("btn_recover_clustering");
       element.disabled = true;
+      
     }
   }
 
@@ -902,6 +904,7 @@ div.space05 {
       
     });
     b_apply_clustering = "0"; // added 17 set
+    show_Parameters_labels_inputs(true, false, false, "File: " + theFile.name, "", "", 0, "", 0);////
   }
 
   ////////////////
@@ -2281,7 +2284,7 @@ div.space05 {
       //////// 14 Ago
       var listBoxTraj = document.getElementById("listBoxTrajectories");
       idTrajetory = listBoxTraj.value;
-      displayEnvironmentLegend("55"); // 14 Ago
+      displayEnvironmentLegend(""); // 14 Ago //id buoy
       displayOptimizationLegend(idTrajetory); // 14 Ago
     } else {
       alert("The trajectory selected is empty");
@@ -2307,7 +2310,7 @@ div.space05 {
     textFieldSpeed.disabled = false;
     textFieldSpeed.val(aisAOI_trajSelected[index][4]);
     var bg = document.getElementById("inputTxtSpeed");
-    bg.style.color = "green"; // CORRIGIR
+    bg.style.color = "black";      //"green"; 
     
     var cardinalLetter = aisAOI_trajSelected[index][8];             //[19]; 
     var gridCellNumber = aisAOI_trajSelected[index][7];        //[21];
@@ -2767,9 +2770,9 @@ div.space05 {
       
       div.innerHTML += "<h4>Environmental Data</br></h4>";
             
-      div.innerHTML += "Wind Direction: xxx" + '</br>';
-      div.innerHTML += "Wind Speed: xxx" + '</br>';
-      div.innerHTML += "Wave Height: xxx" + '</br>';
+      div.innerHTML += "Wind Direction: " + '</br>';
+      div.innerHTML += "Wind Speed: " + '</br>';
+      div.innerHTML += "Wave Height: " + '</br>';
       div.innerHTML += "Source: Buoy " + buoy_Id;
            
       return div;
@@ -2801,10 +2804,10 @@ div.space05 {
       
       div.innerHTML += "<h4>Trajectory " + id_traj + '</br>Grid Cells Waypoints</h4>';
             
-      div.innerHTML += "Cells: xx, yy, zz:" + '</br>';
-      div.innerHTML += "Total Distance: xxx" + '</br>';
-      div.innerHTML += "Travelled Distance: xxx" + '</br>';
-      div.innerHTML += "Optimization: " + optimization_Percentage + '%';
+      div.innerHTML += "Cells: " + '</br>';
+      div.innerHTML += "Total Distance: " + '</br>';
+      div.innerHTML += "Travelled Distance: " + '</br>';
+      div.innerHTML += "Optimization: " + '%';         //optimization_Percentage + '%';
            
       return div;
       //alert("The Matching Cells calculation has been started.");
